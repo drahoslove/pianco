@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pianinous</title>
 <style>
-body [hidden] {
+html body *[hidden] {
 	display: none;
 }
 html, body {
@@ -52,6 +52,7 @@ body.rotated {
 	margin: 0;
 	padding: .5rem 1rem;
 	font-weight: bold;
+	font-size: 110%;
 }
 .buttons button:first-child {
 	border-top-left-radius: 1rem;
@@ -145,6 +146,9 @@ body.rotated {
 </style>
 </head>
 <body>
+	<div class="buttons">
+		<button class="toggle-hint" hidden>⌨</button>
+	</div>
 	<div class="hint" hidden>
 		<button>A</button>
 		<button up>W</button>
@@ -179,8 +183,14 @@ body.rotated {
 </body>
 <script type="module" src="./main.js"></script>
 <script>
+const hintButton = document.querySelector('.toggle-hint')
+const hintBox = document.querySelector('.hint')
 if (!('ontouchstart' in document.documentElement)) {
-	document.querySelector('.hint').hidden = false
+	hintButton.hidden = false
+}
+hintButton.onclick = hintBox.onclick = () => {
+	hintButton.hidden = !!hintBox.hidden
+	hintBox.hidden = !hintBox.hidden
 }
 </script>
 </html>

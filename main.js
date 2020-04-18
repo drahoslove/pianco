@@ -42,32 +42,40 @@ allNotes.forEach(note => {
 })
 
 // init transpose buttons
-const goDown = () => {
-  if (transposition > -3) {
-    transposition--
-  }
+const setTransposition = (n) => {
+  transposition = n
+  if (transposition < -3) transposition = -3
+  if (transposition > +3) transposition = +3
   keyboard.style.left = `${-transposition*21}rem`
   releaseAll(allNotes)()
 }
-const goUp = () => {
-  if (transposition < +3) {
-    transposition++
-  }
-  keyboard.style.left = `${-transposition*21}rem`
-  releaseAll(allNotes)()
-}
-const goMid = () => {
-  transposition = 0
-  keyboard.style.left = `${-transposition*21}rem`
-  releaseAll(allNotes)()
-}
+const goBottom = () => setTransposition(-3)
+const goDown = () => setTransposition(transposition-1)
+const goMid = () => setTransposition(0)
+const goUp = () => setTransposition(transposition+1)
+const goTop = () => setTransposition(+3)
+
 document.querySelector('.go-up').onclick = goUp
 document.querySelector('.go-down').onclick = goDown
 document.querySelector('.go-mid').onclick = goMid
 window.addEventListener('keydown', (e) => {
-  if (e.code === 'ArrowRight') goUp()
-  if (e.code === 'ArrowLeft') goDown()
-  if (e.code === 'Space') goMid()
+  switch(e.code) {
+    case 'ArrowRight':
+    case 'KeyN':
+      return goUp()
+    case 'ArrowLeft':
+    case 'KeyV':
+      return goDown()
+    case 'Space':
+    case 'ArrowUp':
+    case 'KeyB':
+      return goMid()
+    case 'PageDown':
+      return goTop()
+    case 'PageUp':
+      return goBottom()
+    
+  }
 })
 
 
