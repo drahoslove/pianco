@@ -4,15 +4,15 @@ const playingNotes = new Set()
 let transposition = 0
 
 // prepare synth
-const polySynth = new Tone.PolySynth(16, Tone.Synth).toMaster()
-const pressNote = (note) => (e) => {
-  e && e.preventDefault()
+const polySynth = new Tone.PolySynth(32, Tone.Synth).toMaster()
+const pressNote = (note, velocity=0.8) => (e) => {
+  if (playingNotes.has(note)) return
   playingNotes.add(note)
   document.querySelector(`[data-note="${note}"]`).classList.add('pressed')
-  polySynth.triggerAttack([note])
+  polySynth.triggerAttack([note], undefined, velocity)
 }
 const releaseNote = (note) => (e) => {
-  e && e.preventDefault()
+  if (!playingNotes.has(note)) return
   playingNotes.delete(note)
   document.querySelector(`[data-note="${note}"]`).classList.remove('pressed')
   polySynth.triggerRelease([note], "+1i")
@@ -190,24 +190,22 @@ if (navigator.requestMIDIAccess) {
 function onMIDISuccess(midiAccess) {
   for (var input of midiAccess.inputs.values()) {
     midiEl.innerText = input.name
-    console.log(input)
-    input.onstatechange = (e) => {
-      console.log('statechagne', e)
-    }
+    input.onstatechange = (e) => { }
     input.onmidimessage = getMIDIMessage
   }
 }
 
 function getMIDIMessage(midiMessage) {
   const { data } = midiMessage
-  const [command, midiNote, velocity = 0 ] = data
+  const [command, midiNote, midiVelocity = 0 ] = data
 
   const note = Tone.Midi(midiNote).toNote()
+  const velocity = midiVelocity/127
 
   switch (command) {
     case 144: // noteOn
       if (velocity > 0) {
-        pressNote(note)() // TODO pass velocity
+        pressNote(note, velocity)()
       } else {
         releaseNote(note)()
       }
@@ -223,7 +221,6 @@ function getMIDIMessage(midiMessage) {
 
 
 const reorient = () => {
-  console.log('reorinet')
   if (window.screen.orientation.type?.includes('portrait')) {
     document.body.classList.add('rotated')
   } else {
