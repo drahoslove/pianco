@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pianinous</title>
+<style>
+body {
+	height: 100vh;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: #aee;
+	background-color: #faa499;
+	background-image: linear-gradient(319deg, #faa499 0%, #f7dd85 37%, #ffc55c 100%);
+	overflow: hidden;
+}
+
+.buttons {
+	padding: 2rem;
+	display: flex;
+	flex-direction: row;
+}
+.buttons button {
+	display: block;
+	border: 1px solid #888;
+	outline: none;
+	cursor: pointer;
+	margin: 0;
+	padding: .5rem 1rem;
+	font-weight: bold;
+}
+.buttons button:first-child {
+	border-top-left-radius: 1rem;
+	border-bottom-left-radius: 1rem;
+}
+.buttons button:last-child {
+	border-top-right-radius: 1rem;
+	border-bottom-right-radius: 1rem;
+}
+.buttons button:active {
+	border-color: #666;
+}
+
+.keyboard {
+	position: relative;
+	left: 0rem;
+	transition: left 0.4s ease-in-out;
+	height: 15rem;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.keyboard button {
+	border: 1px solid;
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
+}
+.keyboard button[data-note] {
+	border-left-width: .5px;
+	border-right-width: .5px;
+	width: 3rem;
+	height: 100%;
+	padding-top: 8rem;
+	text-align: center;
+	background: #eee;
+	color: #888;
+}
+.keyboard button[data-note*="#"] {
+	width:  2rem;
+	height: 60%;
+	margin: 0 -1rem;
+	z-index: 1;
+	padding: 1rem 0;
+	background: #333 ;
+	color: #888;
+}
+.keyboard button[data-note].pressed {
+	background: #ddd;
+}
+.keyboard button[data-note*="#"].pressed {
+	background: #000;
+}
+
+/* hide nonexistent notes */
+.keyboard button[data-note^="E#"],
+.keyboard button[data-note^="B#"],
+.keyboard button[data-note*="#"]:last-child
+{
+	visibility: hidden;
+}
+</style>
+</head>
+<body>
+	<div class="buttons">
+		<button class="go-down"> &lt; </button>
+		<button class="go-mid"> &times;</button>
+		<button class="go-up"> &gt; </button>
+	</div>
+	<div class="keyboard">
+	</div>
+</body>
+<script type="module" src="./main.js"></script>
+</html>
