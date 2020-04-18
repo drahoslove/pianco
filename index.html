@@ -26,6 +26,13 @@ body {
 	display: flex;
 	flex-direction: row;
 }
+
+@media screen and (max-height: 600px) {
+	.buttons {
+		padding: 1rem;
+	}
+}
+
 .buttons button {
 	display: block;
 	border: 1px solid #888;
@@ -50,7 +57,7 @@ body {
 .keyboard {
 	position: relative;
 	left: 0rem;
-	transition: left 0.4s ease-in-out;
+	transition: left 0.25s ease-in;
 	height: 15rem;
 	display: flex;
 	justify-content: center;
@@ -69,7 +76,7 @@ body {
 	height: 100%;
 	padding-top: 8rem;
 	text-align: center;
-	background: #eee;
+	background: #fff7e2;
 	color: #888;
 }
 .keyboard button[data-note*="#"] {
@@ -78,14 +85,15 @@ body {
 	margin: 0 -1rem;
 	z-index: 1;
 	padding: 1rem 0;
-	background: #333 ;
+	background: #461800 ;
 	color: #888;
 }
 .keyboard button[data-note].pressed {
-	background: #ddd;
+	background: #ffeab4;
 }
 .keyboard button[data-note*="#"].pressed {
-	background: #000;
+	background: #0b0400;
+	background: #742801;
 }
 
 /* hide nonexistent notes */

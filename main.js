@@ -65,15 +65,9 @@ document.querySelector('.go-up').onclick = goUp
 document.querySelector('.go-down').onclick = goDown
 document.querySelector('.go-mid').onclick = goMid
 window.addEventListener('keydown', (e) => {
-  if (e.code === 'ArrowRight') {
-    goUp()
-  }
-  if (e.code === 'ArrowLeft') {
-    goDown()
-  }
-  if (e.code === 'Space') {
-    goMid()
-  }
+  if (e.code === 'ArrowRight') goUp()
+  if (e.code === 'ArrowLeft') goDown()
+  if (e.code === 'Space') goMid()
 })
 
 
@@ -84,7 +78,7 @@ keys.forEach(key => {
   key.addEventListener('mousedown', pressNote(note))
   key.addEventListener('mouseup', releaseNote(note))
   key.addEventListener('mouseenter', (e) => {
-    (e.buttons === 1) && pressNote(note)(e)
+    if (e.buttons === 1) pressNote(note)(e)
   })
   key.addEventListener('mouseleave', (e) => {
     if (e.buttons === 1) releaseNote(note)(e)
