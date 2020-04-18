@@ -191,6 +191,9 @@ function onMIDISuccess(midiAccess) {
   for (var input of midiAccess.inputs.values()) {
     midiEl.innerText = input.name
     console.log(input)
+    input.onstatechange = (e) => {
+      console.log('statechagne', e)
+    }
     input.onmidimessage = getMIDIMessage
   }
 }
@@ -214,3 +217,19 @@ function getMIDIMessage(midiMessage) {
       break;
   }
 }
+
+
+// orientation
+
+
+const reorient = () => {
+  console.log('reorinet')
+  if (window.screen.orientation.type?.includes('portrait')) {
+    document.body.classList.add('rotated')
+  } else {
+    document.body.classList.remove('rotated')
+  }
+}
+
+window.onorientationchange = reorient
+reorient()

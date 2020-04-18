@@ -9,20 +9,27 @@ body [hidden] {
 	display: none;
 }
 html, body {
+	display: flex;
 	overflow: hidden;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	width: 100vw;
 	font-family: Arial, Helvetica, sans-serif;
 }
 body {
-	height: 100vh;
 	margin: 0;
-	display: flex;
 	flex-direction: column;
-	justify-content: center;
-	align-items: center;
 	background: #aee;
 	background-color: #faa499;
 	background-image: linear-gradient(319deg, #faa499 0%, #f7dd85 37%, #ffc55c 100%);
 	overflow: hidden;
+}
+body.rotated {
+	transform: rotate(90deg);
+	height: 100vw;
+	width: 100vh;
+	overflow: visible;
 }
 
 .buttons {
