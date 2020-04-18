@@ -48,6 +48,7 @@ const setTransposition = (n) => {
   if (transposition > +3) transposition = +3
   keyboard.style.left = `${-transposition*21}rem`
   releaseAll(allNotes)()
+  return false
 }
 const goBottom = () => setTransposition(-3)
 const goDown = () => setTransposition(transposition-1)
@@ -55,9 +56,12 @@ const goMid = () => setTransposition(0)
 const goUp = () => setTransposition(transposition+1)
 const goTop = () => setTransposition(+3)
 
-document.querySelector('.go-up').onclick = goUp
-document.querySelector('.go-down').onclick = goDown
-document.querySelector('.go-mid').onclick = goMid
+document.querySelector('.go-up').onmousedown = goUp
+document.querySelector('.go-up').ontouchstart = goUp
+document.querySelector('.go-down').onmousedown = goDown
+document.querySelector('.go-down').ontouchstart = goDown
+document.querySelector('.go-mid').onmousedown = goMid
+document.querySelector('.go-mid').ontouchstart = goMid
 window.addEventListener('keydown', (e) => {
   switch(e.code) {
     case 'ArrowRight':
