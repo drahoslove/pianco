@@ -10,6 +10,7 @@ body [hidden] {
 }
 html, body {
 	overflow: hidden;
+	font-family: Arial, Helvetica, sans-serif;
 }
 body {
 	height: 100vh;
@@ -126,6 +127,14 @@ body {
 .hint button[up] {
 	margin: -2rem -1.25rem;
 }
+.midi {
+	opacity: 0.5;
+	font-size: 80%;
+	padding: 0.5rem;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
 </style>
 </head>
 <body>
@@ -155,6 +164,10 @@ body {
 		<button class="go-down"> &lt; </button>
 		<button class="go-mid"> &times;</button>
 		<button class="go-up"> &gt; </button>
+	</div>
+	<div class="midi">
+		<b>MIDI:</b>
+		<span id="midi"></span>
 	</div>
 </body>
 <script type="module" src="./main.js"></script>

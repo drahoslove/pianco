@@ -6,13 +6,13 @@ let transposition = 0
 // prepare synth
 const polySynth = new Tone.PolySynth(16, Tone.Synth).toMaster()
 const pressNote = (note) => (e) => {
-  e.preventDefault()
+  e && e.preventDefault()
   playingNotes.add(note)
   document.querySelector(`[data-note="${note}"]`).classList.add('pressed')
   polySynth.triggerAttack([note])
 }
 const releaseNote = (note) => (e) => {
-  e.preventDefault()
+  e && e.preventDefault()
   playingNotes.delete(note)
   document.querySelector(`[data-note="${note}"]`).classList.remove('pressed')
   polySynth.triggerRelease([note], "+1i")
@@ -170,3 +170,47 @@ window.addEventListener('keyup', e => {
     releaseNote(note)(e)
   }
 })
+
+
+// MIDI
+const midiEl = document.getElementById('midi')
+if (navigator.requestMIDIAccess) {
+  console.log('This browser supports WebMIDI!')
+  midiEl.innerText = 'supported'
+  navigator.requestMIDIAccess()
+    .then(onMIDISuccess, () => {
+      console.log('Could not access your MIDI devices.')
+      midiEl.innerText = 'failed'
+    })
+} else {
+  console.log('WebMIDI is not supported in this browser.')
+  midiEl.innerText = 'not supported'
+}
+
+function onMIDISuccess(midiAccess) {
+  for (var input of midiAccess.inputs.values()) {
+    midiEl.innerText = input.name
+    console.log(input)
+    input.onmidimessage = getMIDIMessage
+  }
+}
+
+function getMIDIMessage(midiMessage) {
+  const { data } = midiMessage
+  const [command, midiNote, velocity = 0 ] = data
+
+  const note = Tone.Midi(midiNote).toNote()
+
+  switch (command) {
+    case 144: // noteOn
+      if (velocity > 0) {
+        pressNote(note)() // TODO pass velocity
+      } else {
+        releaseNote(note)()
+      }
+      break;
+    case 128: // noteOff
+      releaseNote(note)()
+      break;
+  }
+}
