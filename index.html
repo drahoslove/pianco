@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pianinous</title>
 <style>
+body [hidden] {
+	display: none;
+}
 html, body {
 	overflow: hidden;
 }
@@ -103,16 +106,61 @@ body {
 {
 	visibility: hidden;
 }
+
+.hint {
+	display: flex;
+	flex-direction: row;
+	margin-top: 2.5rem;
+	padding-left: 15rem;
+}
+.hint button {
+	width: 2.5rem;
+	height: 1.75rem;
+	margin: 0.25rem;
+	display: block;
+	background-color: hsla(0, 0%, 94%, 0.75);
+	border: 1px solid #6661;
+	border-radius: 6px;
+	font-weight: bold;
+}
+.hint button[up] {
+	margin: -2rem -1.25rem;
+}
 </style>
 </head>
 <body>
+	<div class="hint" hidden>
+		<button>A</button>
+		<button up>W</button>
+		<button>S</button>
+		<button up>E</button>
+		<button>D</button>
+		<button>F</button>
+		<button up>T</button>
+		<button>G</button>
+		<button up>Y</button>
+		<button>H</button>
+		<button up>U</button>
+		<button>J</button>
+		<button>K</button>
+		<button up>O</button>
+		<button>L</button>
+		<button up>P</button>
+		<button>;</button>
+		<button>'</button>
+	</div>
+	<div class="keyboard">
+	</div>
 	<div class="buttons">
 		<button class="go-down"> &lt; </button>
 		<button class="go-mid"> &times;</button>
 		<button class="go-up"> &gt; </button>
 	</div>
-	<div class="keyboard">
-	</div>
 </body>
 <script type="module" src="./main.js"></script>
+<script>
+if (!('ontouchstart' in document.documentElement)) {
+	document.querySelector('.hint').hidden = false
+}
+</script>
 </html>
