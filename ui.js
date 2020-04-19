@@ -40,30 +40,40 @@ if (!('ontouchstart' in document.documentElement)) {
   hintButton.hidden = false
   if (loadSetting('qwerty')) {
     hintBox.hidden = false
+    hintButton.classList.add('on')
   } else {
     hintBox.hidden = true
+    hintButton.classList.remove('on')
   }
 }
-hintButton.onclick = hintBox.onclick = () => {
-  hintBox.hidden = !hintBox.hidden
-  saveSetting('qwerty', !hintBox.hidden)
+hintButton.onclick = function () {
+  this.blur()
+  const on = !!hintBox.hidden
+  hintBox.hidden = !on
+  saveSetting('qwerty', on)
+  this.classList[on ? 'add' : 'remove']('on')
 }
 
 // note labels
 const keyboard = document.querySelector('.keyboard')
+const labelsButtons = document.getElementById('toggle-labels')
 if (loadSetting('labels')) {
   keyboard.classList.add('letters')
+  labelsButtons.classList.add('on')
 } else {
   keyboard.classList.remove('letters')
+  labelsButtons.classList.remove('on')
 }
-const labelsButtons = document.getElementById('toggle-labels')
-labelsButtons.onclick = () => {
+labelsButtons.onclick = function () {
+  this.blur()
 	if (keyboard.classList.contains('letters')) {
     keyboard.classList.remove('letters')
     saveSetting('labels', false)
+    this.classList.remove('on')
 	} else {
     keyboard.classList.add('letters')
     saveSetting('labels', true)
+    this.classList.add('on')
 	}
 }
 

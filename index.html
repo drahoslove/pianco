@@ -66,10 +66,12 @@ body.rotated {
 	outline: none;
 	cursor: pointer;
 	margin: 0;
-	padding: .5rem 1rem;
+	padding: .6rem 1rem 0.4rem;
 	font-size: 110%;
 	-webkit-tap-highlight-color: transparent;
 	border-right-width: 0px;
+	position: relative;
+	background-color: #fff7e2;
 }
 .buttons button:first-child,
 .buttons select:first-child {
@@ -83,8 +85,24 @@ body.rotated {
 	border-right-width: 1px;
 }
 .buttons button:active {
-	border-color: #666;
+	border-color: transparent;
 }
+.buttons button::after {
+	position: absolute;
+	top: -.5rem;
+	left: 0;
+	right: 0;
+}
+.buttons button.on::after {
+	content: '.';
+}
+.buttons button.onon::after {
+	content: '..';
+}
+.buttons button.ononon::after {
+	content: '...';
+}
+
 .buttons select {
 	-webkit-appearance: none;
 	-moz-appearance: none;
@@ -111,6 +129,7 @@ body.rotated {
 	border-radius: 6px !important;
 	font-weight: bold;
 	font-size: 8pt;
+	cursor: default;
 }
 .hint button[up] {
 	margin: -1rem -1.25rem;
@@ -247,9 +266,9 @@ body.rotated {
 			<span id="midi"></span>
 		</div>
 		<div>
-			<button class="go-down">◁</button>
-			<button class="go-mid">⦿</button>
-			<button class="go-up">▷</button>
+			<button id="go-down">◁</button>
+			<button id="go-mid">⦿</button>
+			<button id="go-up">▷</button>
 		</div>
 		<div class="footer">
 			<b>© draho.cz</b>	

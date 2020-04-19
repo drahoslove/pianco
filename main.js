@@ -51,7 +51,7 @@ const instruments = {
 
 // instrument selector
 const instrumentSelector = document.getElementById('instrument')
-instrumentSelector.onchange = function () { instrumentSelector.blur() }
+instrumentSelector.onchange = function () { this.blur() }
 const getInstrument = () => instruments[instrumentSelector.value]
 
 
@@ -98,13 +98,23 @@ allNotes.forEach(note => {
 })
 
 // init transpose buttons
+const goUpBtn = document.getElementById('go-up')
+const goMidBtn = document.getElementById('go-mid')
+const goDownBtn = document.getElementById('go-down')
+goMidBtn.className = transposition === 0 ? 'on': ''
+goUpBtn.className = transposition > 0 ? 'on': ''
+goDownBtn.className = transposition < 0 ? 'on': ''
 const setTransposition = (n) => {
   transposition = n
   if (transposition < -3) transposition = -3
   if (transposition > +3) transposition = +3
   keyboard.style.left = `${-transposition*21}rem`
   releaseAll(allNotes)()
-  return false
+  goMidBtn.className = transposition === 0 ? 'on': ''
+  goUpBtn.className = Array.from(new Array(Math.max(transposition+1, 0)))
+    .fill('').join('on')
+  goDownBtn.className = Array.from(new Array(Math.max(-transposition+1,0)))
+    .fill('').join('on')
 }
 const goBottom = () => setTransposition(-3)
 const goDown = () => setTransposition(transposition-1)
@@ -112,12 +122,12 @@ const goMid = () => setTransposition(0)
 const goUp = () => setTransposition(transposition+1)
 const goTop = () => setTransposition(+3)
 
-document.querySelector('.go-up').onmousedown = goUp
-document.querySelector('.go-up').ontouchstart = goUp
-document.querySelector('.go-down').onmousedown = goDown
-document.querySelector('.go-down').ontouchstart = goDown
-document.querySelector('.go-mid').onmousedown = goMid
-document.querySelector('.go-mid').ontouchstart = goMid
+goUpBtn.onmousedown = goUp
+goUpBtn.ontouchstart = goUp
+goDownBtn.onmousedown = goDown
+goDownBtn.ontouchstart = goDown
+goMidBtn.onmousedown = goMid
+goMidBtn.ontouchstart = goMid
 window.addEventListener('keydown', (e) => {
   switch(e.code) {
     case 'ArrowRight':
@@ -265,7 +275,7 @@ function onMIDISuccess(midiAccess) {
 
 function getMIDIMessage(midiMessage) {
   const { data } = midiMessage
-  const [command, midiNote, midiVelocity = 0 ] = data
+  const [command, midiNote, midiVelocity = 0] = data
 
   const note = Tone.Midi(midiNote).toNote()
   const velocity = midiVelocity/127
