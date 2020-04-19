@@ -35,7 +35,9 @@ body.rotated {
 .buttons {
 	padding: 2rem;
 	display: flex;
+	width: 100%;
 	flex-direction: row;
+	justify-content: space-between;
 }
 
 @media screen and (max-height: 600px) {
@@ -44,27 +46,73 @@ body.rotated {
 	}
 }
 
-.buttons button {
+.buttons>div {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+}
+.buttons>div:first-child {
+	justify-content: flex-start;
+	padding-left: 1.5rem;
+}
+.buttons>div:last-child {
+	justify-content: flex-end;
+	padding-right: 1.5rem;
+}
+
+.buttons>div:first-child:last-child {
+	justify-content: center;
+}
+
+.buttons button,
+.buttons select {
 	display: block;
 	border: 1px solid #888;
 	outline: none;
 	cursor: pointer;
 	margin: 0;
 	padding: .5rem 1rem;
-	font-weight: bold;
 	font-size: 110%;
 	-webkit-tap-highlight-color: transparent;
+	border-right-width: 0px;
 }
-.buttons button:first-child {
+.buttons button:first-child,
+.buttons select:first-child {
 	border-top-left-radius: 1rem;
 	border-bottom-left-radius: 1rem;
 }
-.buttons button:last-child {
+.buttons button:last-child,
+.buttons select:last-child {
 	border-top-right-radius: 1rem;
 	border-bottom-right-radius: 1rem;
+	border-right-width: 1px;
 }
 .buttons button:active {
 	border-color: #666;
+}
+.buttons select option {
+	font-size: 90%;
+}
+
+.hint {
+	display: flex;
+	flex-direction: row;
+	padding-left: 15rem;
+	height: 40px;
+}
+.hint button {
+	width: 2.5rem;
+	height: 1.75rem;
+	margin: 1.5rem 0.25rem;
+	display: block;
+	background-color: hsla(0, 0%, 94%, 0.75);
+	border: none;
+	border-radius: 6px !important;
+	font-weight: bold;
+	font-size: 8pt;
+}
+.hint button[up] {
+	margin: -1rem -1.25rem;
 }
 
 .keyboard {
@@ -109,6 +157,10 @@ body.rotated {
 	background: #742801;
 }
 
+.keyboard button[data-note="C4"] {
+	font-weight: bold;
+}
+
 /* hide nonexistent notes */
 .keyboard button[data-note^="E#"],
 .keyboard button[data-note^="B#"],
@@ -117,25 +169,6 @@ body.rotated {
 	visibility: hidden;
 }
 
-.hint {
-	display: flex;
-	flex-direction: row;
-	margin-top: 2.5rem;
-	padding-left: 15rem;
-}
-.hint button {
-	width: 2.5rem;
-	height: 1.75rem;
-	margin: 0.25rem;
-	display: block;
-	background-color: hsla(0, 0%, 94%, 0.75);
-	border: 1px solid #6661;
-	border-radius: 6px;
-	font-weight: bold;
-}
-.hint button[up] {
-	margin: -2rem -1.25rem;
-}
 .midi {
 	opacity: 0.5;
 	font-size: 80%;
@@ -148,34 +181,47 @@ body.rotated {
 </head>
 <body>
 	<div class="buttons">
-		<button class="toggle-hint" hidden>⌨</button>
-	</div>
-	<div class="hint" hidden>
-		<button>A</button>
-		<button up>W</button>
-		<button>S</button>
-		<button up>E</button>
-		<button>D</button>
-		<button>F</button>
-		<button up>T</button>
-		<button>G</button>
-		<button up>Y</button>
-		<button>H</button>
-		<button up>U</button>
-		<button>J</button>
-		<button>K</button>
-		<button up>O</button>
-		<button>L</button>
-		<button up>P</button>
-		<button>;</button>
-		<button>'</button>
+		<div>
+			<select name="instrument" id="instrument">
+				<option value="piano">🎹 piano</option>
+				<option value="polySynth" selected>↭ synth</option>
+				<!-- <option value="AMSynth">AM synth</option>
+				<option value="FMSynth">FM synt</option> -->
+			</select>
+		</div>
+		<div class="hint" hidden>
+			<button>A</button>
+			<button up>W</button>
+			<button>S</button>
+			<button up>E</button>
+			<button>D</button>
+			<button>F</button>
+			<button up>T</button>
+			<button>G</button>
+			<button up>Y</button>
+			<button>H</button>
+			<button up>U</button>
+			<button>J</button>
+			<button>K</button>
+			<button up>O</button>
+			<button>L</button>
+			<button up>P</button>
+			<button>;</button>
+			<button>'</button>
+		</div>
+		<div>
+			<button id="toggle-score" >🎼</button>
+			<button id="toggle-hint" hidden>⌨️</button>
+		</div>
 	</div>
 	<div class="keyboard">
 	</div>
 	<div class="buttons">
-		<button class="go-down"> &lt; </button>
-		<button class="go-mid"> &times;</button>
-		<button class="go-up"> &gt; </button>
+		<div>
+			<button class="go-down">🞀</button>
+			<button class="go-mid">⦿</button>
+			<button class="go-up">🞂</button>
+		</div>
 	</div>
 	<div class="midi">
 		<b>MIDI:</b>
@@ -184,13 +230,12 @@ body.rotated {
 </body>
 <script type="module" src="./main.js"></script>
 <script>
-const hintButton = document.querySelector('.toggle-hint')
+const hintButton = document.getElementById('toggle-hint')
 const hintBox = document.querySelector('.hint')
 if (!('ontouchstart' in document.documentElement)) {
 	hintButton.hidden = false
 }
 hintButton.onclick = hintBox.onclick = () => {
-	hintButton.hidden = !!hintBox.hidden
 	hintBox.hidden = !hintBox.hidden
 }
 </script>
