@@ -289,7 +289,7 @@ function getMIDIMessage(midiMessage) {
 
 
 const reorient = () => {
-  if (window.screen.orientation.type?.includes('portrait')) {
+  if (window.screen.orientation.type.includes('portrait')) {
     document.body.classList.add('rotated')
   } else {
     document.body.classList.remove('rotated')
