@@ -40,12 +40,6 @@ body.rotated {
 	justify-content: space-between;
 }
 
-@media screen and (max-height: 600px) {
-	.buttons {
-		padding: 1rem;
-	}
-}
-
 .buttons>div {
 	flex: 1;
 	display: flex;
@@ -173,11 +167,41 @@ body.rotated {
 	opacity: 0.5;
 	font-size: 80%;
 	padding: 0.5rem;
-	position: absolute;
-	bottom: 0;
-	left: 0;
+	display: flex;
+	align-items: flex-end;
 }
+
+@media screen and (max-height: 500px), (max-width: 500px) {
+	html {
+		font-size: 100%;
+	}
+	.buttons:first-child {
+		margin-top: 0;
+		padding-top: 0;
+		padding-bottom: 1rem;
+	}
+	.buttons:last-child {
+		margin-bottom: 0;
+		padding-bottom: 0;
+		padding-top: 1rem;
+	}
+	.keyboard {
+		height: 12rem;
+	}
+}
+
 </style>
+<script type="module" src="./main.js"></script>
+<script>
+const hintButton = document.getElementById('toggle-hint')
+const hintBox = document.querySelector('.hint')
+if (!('ontouchstart' in document.documentElement)) {
+	hintButton.hidden = false
+}
+hintButton.onclick = hintBox.onclick = () => {
+	hintBox.hidden = !hintBox.hidden
+}
+</script>
 </head>
 <body>
 	<div class="buttons">
@@ -212,31 +236,22 @@ body.rotated {
 		<div>
 			<button id="toggle-score" >🎼</button>
 			<button id="toggle-hint" hidden>⌨️</button>
+			<button id="toggle-letters">#</button>
 		</div>
 	</div>
 	<div class="keyboard">
 	</div>
 	<div class="buttons">
-		<div>
-			<button class="go-down">🞀</button>
-			<button class="go-mid">⦿</button>
-			<button class="go-up">🞂</button>
+		<div class="midi">
+			<b>MIDI:</b>
+			<span id="midi"></span>
 		</div>
-	</div>
-	<div class="midi">
-		<b>MIDI:</b>
-		<span id="midi"></span>
+		<div>
+			<button class="go-down">◁</button>
+			<button class="go-mid">⦿</button>
+			<button class="go-up">▷</button>
+		</div>
+		<div></div>
 	</div>
 </body>
-<script type="module" src="./main.js"></script>
-<script>
-const hintButton = document.getElementById('toggle-hint')
-const hintBox = document.querySelector('.hint')
-if (!('ontouchstart' in document.documentElement)) {
-	hintButton.hidden = false
-}
-hintButton.onclick = hintBox.onclick = () => {
-	hintBox.hidden = !hintBox.hidden
-}
-</script>
 </html>
