@@ -4,7 +4,12 @@ const playingNotes = new Set()
 let transposition = 0
 
 const instruments = {
-  polySynth: new Tone.PolySynth(16, Tone.Synth).toMaster(),
+  polySynth: new Tone.PolySynth(16, Tone.Synth, {
+    envelope: {
+      attack: 0.01,
+      release: .5,
+    }
+  }).toMaster(),
   AMSynth: new Tone.AMSynth().toMaster(),
   FMSynth: new Tone.FMSynth().toMaster(),
   piano: new Tone.Sampler({
@@ -39,11 +44,13 @@ const instruments = {
     "A7" : "A7.[mp3|ogg]",
     "C8" : "C8.[mp3|ogg]"
   }, {
-    "onload": () => {
+    release: 1,
+    onload: () => {
       console.log('piano samples loaded')
+      releaseAll(allNotes)()
       instrumentSelector.value = 'piano'
     },
-    "baseUrl" : "./salamander/"
+    baseUrl : "./salamander/",
   }).toMaster(),
 
 }
