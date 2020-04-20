@@ -18,7 +18,7 @@ html, body {
 	font-family: Arial, Helvetica, sans-serif;
 }
 body {
-	margin: 0;
+	margin: 0 0 2rem;
 	flex-direction: column;
 	background: #aee;
 	background-color: #faa499;
@@ -135,11 +135,12 @@ body.rotated {
 	margin: -1rem -1.25rem;
 }
 
+/* keboard */
 .keyboard {
 	position: relative;
 	left: 0rem;
 	transition: left 0.25s ease-in;
-	height: 15rem;
+	height: 17.5rem;
 	display: flex;
 	justify-content: center;
 	align-items: flex-start;
@@ -150,38 +151,59 @@ body.rotated {
 	border-bottom-left-radius: 6px;
 	border-bottom-right-radius: 6px;
 	color: transparent;
+	padding: 1rem 0;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
 }
-.keyboard.letters button {
-	color: #888;
+.keyboard button[data-note="C4"] {
+	font-weight: bold;
+	font-size: 105%;
 }
+
 .keyboard button[data-note] {
 	border-left-width: .5px;
 	border-right-width: .5px;
 	width: 3rem;
 	height: 100%;
-	padding-top: 8rem;
 	text-align: center;
 	background: #fff7e2;
-}
-.keyboard button[data-note*="#"] {
-	width:  2rem;
-	height: 60%;
-	margin: 0 -1rem;
-	z-index: 1;
-	padding: 1rem 0;
-	background: #461800 ;
 }
 .keyboard button[data-note].pressed {
 	background: #ffeab4;
 }
+.keyboard.letters button[data-note] {
+	color: #666;
+}
+.keyboard button[data-note*="#"] {
+	width:  1.9rem;
+	height: 60%;
+	margin: 0 -0.95rem;
+	background: #461800;
+	position: relative;
+	z-index: 1;
+}
 .keyboard button[data-note*="#"].pressed {
-	background: #0b0400;
 	background: #742801;
 }
+.keyboard.letters button[data-note*="#"] {
+	color: #aaa;
+}
 
-.keyboard button[data-note="C4"] {
-	font-weight: bold;
-	font-size: 105%;
+/* spread black keys more apart */
+.keyboard button[data-note*='C#'] {
+	left: -0.25rem;
+}
+.keyboard button[data-note*='D#'] {
+	left: +0.25rem;
+}
+.keyboard button[data-note*='F#'] {
+	left: -0.5rem;
+}
+.keyboard button[data-note*='A#'] {
+	left: +0.5rem;
 }
 
 /* hide nonexistent notes */
@@ -202,6 +224,9 @@ body.rotated {
 @media screen and (max-height: 500px), (max-width: 500px) {
 	html {
 		font-size: 100%;
+	}
+	body {
+		margin-bottom: 0;
 	}
 	.buttons:first-child {
 		margin-top: 0;

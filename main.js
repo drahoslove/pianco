@@ -100,6 +100,7 @@ allNotes.push('C8')
 allNotes.forEach(note => {
   const key = document.createElement('button')
   key.dataset.note = note
+  key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (_, n, s, i) => `<span>${n}${s&&'♯'}<sub>${i}</sub>`)
   keyboard.appendChild(key)
   keys.push(key)
 })
@@ -159,7 +160,6 @@ window.addEventListener('keydown', (e) => {
 // init mouse keys
 keys.forEach(key => {
   const { note } = key.dataset
-  key.innerText = note
   key.addEventListener('mousedown', _(pressNote(note)))
   key.addEventListener('mouseup', _(releaseNote(note)))
   key.addEventListener('mouseenter', (e) => {
