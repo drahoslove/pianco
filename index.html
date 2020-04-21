@@ -167,6 +167,7 @@ body.rotated {
 	flex-direction: column;
 	justify-content: flex-end;
 	align-items: center;
+	outline: none;
 }
 .keyboard button[data-note="C4"] {
 	font-weight: bold;
@@ -237,7 +238,7 @@ body.rotated {
 	font-family: Bravura;
 	position: absolute;
 	font-size: 3.25rem;
-	bottom: -1.5em;
+	bottom: -2em;
 	left: 0;
 }
 .staff>span:first-child {
@@ -245,7 +246,7 @@ body.rotated {
 	left: 0;
 	display: block;
 	color: #666;
-	visibility: visible;
+	opacity: 1;
 }
 .staff>span:first-child::first-letter { /* clef */
 	color: #333;
@@ -256,7 +257,8 @@ body.rotated {
 .staff>span {
 	position: absolute;
 	z-index: 1;
-	visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.25s linear;
 }
 .staff>span[data-note="C4"]::before,
 .staff>span[data-note="C#4"]::before,
@@ -285,7 +287,8 @@ body.rotated {
 
 .staff>span.pressed {
 	position: absolute;
-	visibility: visible;
+	opacity: 1;
+	transition: opacity 0.05s linear;
 }
 .staff small {
 	font-size: 100%;

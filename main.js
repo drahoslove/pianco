@@ -174,6 +174,10 @@ keys.forEach(key => {
     e.preventDefault()
     return false
   }
+  key.onselectstart = e => {
+    e.preventDefault()
+    return false
+  }
 })
 keyboard.addEventListener('mouseover', releaseAll(allNotes))
 
