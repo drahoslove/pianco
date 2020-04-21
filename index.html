@@ -44,6 +44,7 @@ body.rotated {
 	flex: 1;
 	display: flex;
 	justify-content: center;
+	position: relative;
 }
 .buttons>div:first-child {
 	justify-content: flex-start;
@@ -221,6 +222,54 @@ body.rotated {
 	align-items: flex-end;
 }
 
+/* staff */
+.staff {
+	position: absolute;
+	font-size: 5.5rem;
+	bottom: 0;
+	left: 0;
+}
+.staff>span:first-child {
+	position: relative;
+	left: 0;
+	display: block;
+	color: #666;
+	visibility: visible;
+}
+.staff>span:first-child::first-letter {
+	color: #333;
+}
+.staff>span {
+	position: absolute;
+	visibility: hidden;
+}
+.staff>span[data-note="C4"]::after,
+.staff>span[data-note="C#4"]::after,
+.staff>span[data-note="A5"]::after,
+.staff>span[data-note="A#5"]::after,
+.staff>span[data-note="B5"]::after
+{
+	content: '𝄖';
+	position: absolute;
+	top: .26em;
+	right: -0.18em;
+	color: #666;
+}
+.staff>span[data-note="B5"]::after {
+	top: .36em;
+}
+
+.staff>span.pressed {
+	position: absolute;
+	visibility: visible;
+}
+.staff small {
+	font-size: 50%;
+	position: relative;
+	top: 0.15rem;
+}
+
+/* phones */
 @media screen and (max-height: 500px), (max-width: 500px) {
 	html {
 		font-size: 100%;
@@ -241,8 +290,10 @@ body.rotated {
 	.keyboard {
 		height: 12rem;
 	}
+	.staff {
+		font-size: 3rem;
+	}
 }
-
 </style>
 <script type="module" src="./main.js"></script>
 <script defer src="./ui.js"></script>
@@ -256,6 +307,13 @@ body.rotated {
 				<!-- <option value="AMSynth">AM synth</option>
 				<option value="FMSynth">FM synt</option> -->
 			</select>
+		</div>
+		<div>
+			<div class="staff" hidden>
+				<!-- 𝄞𝄢𝄚𝄚𝅝𝅗𝅘 -->
+				<span>𝄞𝄚𝄚𝄚𝄚𝄚</span>
+				<span>𝅗</span>
+			</div>	
 		</div>
 		<div class="hint" hidden>
 			<button>A</button>
@@ -277,6 +335,7 @@ body.rotated {
 			<button>;</button>
 			<button>'</button>
 		</div>
+		<div></div>
 		<div>
 			<button id="toggle-score" >🎼</button>
 			<button id="toggle-hint" hidden>⌨️</button>

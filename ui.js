@@ -77,3 +77,47 @@ labelsButtons.onclick = function () {
 	}
 }
 
+// staff
+const staffBox = document.querySelector('.staff')
+const staffButton = document.getElementById('toggle-score')
+if (loadSetting('score')) {
+  staffBox.hidden = false
+  staffButton.classList.add('on')
+} else {
+  staffButton.classList.remove('on')
+  staffBox.hidden = true
+}
+staffButton.onclick = function () {
+  this.blur()
+  const on = !!staffBox.hidden
+  staffBox.hidden = !on
+  saveSetting('score', on)
+  this.classList[on ? 'add' : 'remove']('on')
+}
+const wholeNote = [...staffBox.children].pop()
+;[
+  'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4',
+  'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5',
+].forEach((ch, i) => {
+  const hspace = 0.2
+  const hoffset = 3 // .6
+  const vspace = 0.084
+  const voffset = .06
+  const note = wholeNote.cloneNode(true)
+  note.dataset.note = ch
+  note.style.bottom = (i-3) * vspace - voffset  + 'em'
+  note.style.right = i * -hspace + hoffset + 'em'
+  note.style.transform = 'scaleY(.8)'
+  staffBox.appendChild(note)
+
+  const sharpNote = wholeNote.cloneNode(true)
+  sharpNote.innerHTML = `<small>♯${'' && ['', '&ensp;', '&ensp;', '', ''][i%4]}</small>`
+     + sharpNote.innerText
+  sharpNote.dataset.note = ch.split('').join('#')
+  sharpNote.style.bottom = (i-3) * vspace - voffset + 'em'
+  sharpNote.style.right = i * -hspace + hoffset + 'em'
+  sharpNote.style.transform = 'scaleY(.8)'
+  staffBox.appendChild(sharpNote)
+});
+wholeNote.remove()
+console.log(wholeNote)
