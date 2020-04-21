@@ -247,8 +247,8 @@ body.rotated {
 .staff>span[data-note="C#4"]::after,
 .staff>span[data-note="A5"]::after,
 .staff>span[data-note="A#5"]::after,
-.staff>span[data-note="B5"]::after
-{
+.staff>span[data-note="B5"]::after,
+.staff>span[data-note="C6"]::after {
 	content: '𝄖';
 	position: absolute;
 	top: .26em;
@@ -257,6 +257,13 @@ body.rotated {
 }
 .staff>span[data-note="B5"]::after {
 	top: .36em;
+}
+.staff>span[data-note="C6"]::before {
+	content: '𝄖';
+	position: absolute;
+	right: -0.18em;
+	color: #666;
+	top: .46em;
 }
 
 .staff>span.pressed {
@@ -291,7 +298,7 @@ body.rotated {
 		height: 12rem;
 	}
 	.staff {
-		font-size: 3rem;
+		font-size: 2.5em;
 	}
 }
 </style>
