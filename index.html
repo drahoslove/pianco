@@ -258,7 +258,7 @@ body.rotated {
 	position: absolute;
 	z-index: 1;
 	opacity: 0;
-	transition: opacity 0.25s linear;
+	transition: opacity 0.25s ease-in;
 }
 .staff>span[data-note="C4"]::before,
 .staff>span[data-note="C#4"]::before,
@@ -288,7 +288,7 @@ body.rotated {
 .staff>span.pressed {
 	position: absolute;
 	opacity: 1;
-	transition: opacity 0.05s linear;
+	transition: none;
 }
 .staff small {
 	font-size: 100%;
