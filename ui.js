@@ -100,16 +100,17 @@ const wholeNote = [...staffBox.children].pop()
   'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5',
   'C6',
 ].forEach((ch, i) => {
-  const hspace = 0.2
-  const hoffset = 3 // .6
-  const vspace = 0.084
-  const voffset = .06
+  const hspace = 0.25
+  const hoffset = 3.6 // .6
+  const vspace = 0.125
+  const voffset = -0.125
   const note = wholeNote.cloneNode(true)
   note.dataset.note = ch
   note.style.bottom = (i-3) * vspace - voffset  + 'em'
   note.style.right = i * -hspace + hoffset + 'em'
-  note.style.transform = 'scaleY(.8)'
   staffBox.appendChild(note)
+
+  if (ch === 'C6') return
 
   const sharpNote = wholeNote.cloneNode(true)
   sharpNote.innerHTML = `<small>♯${'' && ['', '&ensp;', '&ensp;', '', ''][i%4]}</small>`
@@ -117,7 +118,6 @@ const wholeNote = [...staffBox.children].pop()
   sharpNote.dataset.note = ch.split('').join('#')
   sharpNote.style.bottom = (i-3) * vspace - voffset + 'em'
   sharpNote.style.right = i * -hspace + hoffset + 'em'
-  sharpNote.style.transform = 'scaleY(.8)'
   staffBox.appendChild(sharpNote)
 });
 wholeNote.remove()
