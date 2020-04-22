@@ -5,33 +5,39 @@ const uid = Math.floor(Math.random()*255)
 
 // WS!
 
-const ws = new WebSocket(
-  location.hostname === 'localhost'
-    ? 'ws://localhost:11088'
-    : 'ws://vps.draho.cz:11088'
-)
+let ws = {}
+try {
+  ws = new WebSocket(
+    location.hostname === 'localhost'
+      ? 'ws://localhost:11088'
+      : 'wss://pianoecho.draho.cz:11088'
+  )
 
-ws.onopen = () => {
-  console.log('ws open')
-}
-ws.onerror = (err) => {
-  console.log('ws error', err)
-}
-ws.onclose = () => {
-  console.log('ws close')
-}
-ws.onmessage = async ({ data }) => {
-  if (data instanceof Blob) {
-    const [uid, on, midiNote, midiVelocity] = new Uint8Array(await data.arrayBuffer())
-    const note = Tone.Midi(midiNote).toNote()
-    if (on) {
-      const velocity = midiVelocity/127
-      pressNote(note, velocity)()
-    } else {
-      releaseNote(note)()
+  ws.onopen = () => {
+    console.log('ws open')
+  }
+  ws.onerror = (err) => {
+    console.log('ws error', err)
+  }
+  ws.onclose = () => {
+    console.log('ws close')
+  }
+  ws.onmessage = async ({ data }) => {
+    if (data instanceof Blob) {
+      const [uid, on, midiNote, midiVelocity] = new Uint8Array(await data.arrayBuffer())
+      const note = Tone.Midi(midiNote).toNote()
+      if (on) {
+        const velocity = midiVelocity/127
+        pressNote(note, velocity)()
+      } else {
+        releaseNote(note)()
+      }
     }
   }
+} catch(e) {
+  console.error(e)
 }
+
 
 const sendNoteOn = (note, velocity) => (e) => {
   pressNote(note, velocity)(e)
