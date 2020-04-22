@@ -7,6 +7,7 @@ let server
 if (!SSL_KEY || !SSL_CA || !SSL_CERT) { // http
 	server = require('http').createServer().listen(PORT)
 } else { // https
+  console.log("using certificate", SSL_KEY)
 	let fs = require('fs')
 	server = require('https').createServer({
 		key: fs.readFileSync(SSL_KEY),
@@ -29,3 +30,4 @@ wss.on('connection', function connection(ws) {
   ws.send('connected')
 })
 
+console.log('listening on port', PORT)
