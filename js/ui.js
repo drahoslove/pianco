@@ -102,8 +102,7 @@ const wholeNote = [...staffBox.children].pop()
   if (ch === 'C6') return
 
   const sharpNote = wholeNote.cloneNode(true)
-  sharpNote.innerHTML = `<small>♯${'' && ['', '&ensp;', '&ensp;', '', ''][i%4]}</small>`
-     + sharpNote.innerText
+  sharpNote.innerHTML = `♯&thinsp;` + sharpNote.innerText
   sharpNote.dataset.note = ch.split('').join('#')
   sharpNote.style.bottom = (i-3) * vspace - voffset + 'em'
   sharpNote.style.right = i * -hspace + hoffset + 'em'

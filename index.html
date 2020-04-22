@@ -144,7 +144,8 @@ body.rotated {
 	margin: -1rem -1.25rem;
 }
 
-/* keboard */
+/*  ===============  keboard  =============== */
+
 .keyboard {
 	width: 156rem; /* (7*7+3)*3 */
 	position: relative;
@@ -159,10 +160,10 @@ body.rotated {
 	align-items: flex-start;
 }
 
-.keyboard>:first-child {
+.keyboard .bottom-keys {
 	width: 100%;
 }
-.keyboard>:last-child {
+.keyboard .top-keys {
 	width: 100%;
 	position: absolute;
 	top: 0;
@@ -171,8 +172,6 @@ body.rotated {
 
 .keyboard button {
 	border: 1px solid #888;
-	border-bottom-left-radius: 6px;
-	border-bottom-right-radius: 6px;
 	color: transparent;
 	padding: 1rem 0;
 	display: flex;
@@ -187,69 +186,92 @@ body.rotated {
 	font-size: 105%;
 }
 
-.keyboard>:first-child button {
-	border-left-width: .75px;
-	border-right-width: .25px; 
+.bottom-keys button {
+	border-left-width: .25px;
+	border-right-width: .75px; 
 	height: 100%;
 	text-align: center;
 	background: #fff7e2;
 	flex: 1 0;
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
+	z-index: 1;
 }
-.keyboard>:first-child button.pressed {
+.bottom-keys button.pressed {
 	background: #ffeab4;
 }
-.keyboard.letters>:first-child button {
+.letters .bottom-keys button {
 	color: #666;
 }
-.keyboard>:last-child button {
+
+.top-keys button {
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	border: none;
 	height: 60%;
 	background: #461800;
 	position: relative;
-	z-index: 1;
 	flex: 1 0;
 }
-.keyboard>:last-child button.pressed {
+.top-keys button.pressed {
 	background: #742801;
 }
-.keyboard.letters>:last-child button {
+.letters .top-keys button {
 	color: #aaa;
 }
-.keyboard>:last-child button:first-child {
-	flex: 1.4285714285714284; /* (2/7 - 2/12) * 12 */
+
+/* correct spacing https://www.mathpages.com/home/kmath043.htm)
+f=g=a=b=72156 units      c=d=e=74606 units  
+f#=g#=a#=72520 units     c#=d#=74235 units  
+F=G=A=B=126546 units     C=D=E=124096 units 
+*/
+.top-keys button[data-note*="F"],
+.top-keys button[data-note*="G"],
+.top-keys button[data-note*="A"],
+.top-keys button[data-note*="B"] {
+	flex: 72156;
 }
-.keyboard>:last-child button:last-child {
-	flex: 1.7142857142857142; /* 1 + 7/12 */
+.top-keys button[data-note*="C"],
+.top-keys button[data-note*="D"],
+.top-keys button[data-note*="E"] {
+	flex: 74606;
+}
+.top-keys button[data-note*="F#"],
+.top-keys button[data-note*="G#"],
+.top-keys button[data-note*="A#"] {
+	flex: 72520;
+}
+.top-keys button[data-note*="C#"],
+.top-keys button[data-note*="D#"] {
+	flex: 74235;
+}
+.bottom-keys button[data-note*="F"],
+.bottom-keys button[data-note*="G"],
+.bottom-keys button[data-note*="A"],
+.bottom-keys button[data-note*="B"] {
+	flex: 126546;
+}
+.bottom-keys button[data-note*="C"],
+.bottom-keys button[data-note*="D"],
+.bottom-keys button[data-note*="E"] {
+	flex: 124096;
 }
 
-/* spread black keys more apart */
-/*
-.keyboard button[data-note*='C#'] {
-	left: -0.33rem;
+.top-keys button:first-child {
+	/* (B+A) - (b+a#)  = (126546+126546) - (72156 + 72520 ) */
+	flex: 108416;
 }
-.keyboard button[data-note*='D#'] {
-	left: +0.33rem;
+.top-keys button:last-child {
+	/* C */
+	flex: 124096;
 }
-.keyboard button[data-note*='F#'] {
-	left: -0.45rem;
-}
-.keyboard button[data-note*='A#'] {
-	left: +0.45rem;
-} */
 
-/* hide nonexistent notes */
-.keyboard>:last-child button {
-	visibility: hidden;
+/* unhide correct accidentals keys */
+.top-keys button[data-note*="#"] {
+	z-index: 2;
 }
-.keyboard>:last-child button[data-note*="#"] {
-	visibility: visible;
-}
-.keyboard button[data-note^="E#"],
-.keyboard button[data-note^="B#"],
-.keyboard button[data-note*="#"]:last-child
-{
-	visibility: hidden;
-}
+
+/* =============== */
 
 .footer {
 	opacity: 0.5;
@@ -258,7 +280,8 @@ body.rotated {
 	align-items: flex-end;
 }
 
-/* staff */
+
+/* =============== staff =============== */
 .staff {
 	font-family: Bravura;
 	position: absolute;
@@ -314,9 +337,6 @@ body.rotated {
 	position: absolute;
 	opacity: 1;
 	transition: none;
-}
-.staff small {
-	font-size: 100%;
 }
 
 /* phones */
@@ -376,8 +396,8 @@ html.cinema {
 
 
 </style>
-<script type="module" src="./main.js"></script>
-<script defer src="./ui.js"></script>
+<script type="module" src="js/main.js"></script>
+<script defer src="js/ui.js"></script>
 </head>
 <body>
 	<div class="buttons">
@@ -425,8 +445,8 @@ html.cinema {
 		</div>
 	</div>
 	<div class="keyboard letters">
-		<div></div>
-		<div></div>
+		<div class="top-keys"></div>
+		<div class="bottom-keys"></div>
 	</div>
 	<div class="buttons">
 		<div class="footer">
