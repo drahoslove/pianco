@@ -40,7 +40,7 @@ try {
       ;(function ping() {
         now = performance.now()
         ws.send('ping')
-        setInterval(ping, 10000 + Math.floor(Math.random()*2000))
+        setTimeout(ping, 10000 + Math.floor(Math.random()*2000))
       })()
     }
   }
