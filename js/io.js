@@ -3,7 +3,7 @@ import { pressNote, releaseNote } from './instrument.js'
 
 const uid = Math.floor(Math.random()*255)
 
-// WS
+// WS!
 
 const ws = new WebSocket(
   location.hostname === 'localhost'
