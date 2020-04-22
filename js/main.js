@@ -114,7 +114,7 @@ keyboard.addEventListener('mouseover', releaseAll())
       const key = document.elementFromPoint(x, y)
       if (key) {
         const { note } = key.dataset
-        if (!playingNotes.has(note)) pressNote(note)(e)
+        pressNote(note)(e)
         touchedKeys[i] = key
       }
     })
@@ -124,11 +124,11 @@ keyboard.addEventListener('mouseover', releaseAll())
       const key = document.elementFromPoint(x, y)
       if (key) {
         const { note } = key.dataset
-        if (!playingNotes.has(note)) pressNote(note)(e)
+        pressNote(note)(e)
       }
       if (touchedKeys[i] && key !== touchedKeys[i]) {
         const { note } = touchedKeys[i].dataset
-        if (playingNotes.has(note)) releaseNote(note)(e)
+        releaseNote(note)(e)
       }
       if (key) {
         touchedKeys[i] = key
@@ -140,7 +140,7 @@ keyboard.addEventListener('mouseover', releaseAll())
       const key = document.elementFromPoint(x, y)
       if (touchedKeys[i]) {
         const { note } = touchedKeys[i].dataset
-        if (playingNotes.has(note)) releaseNote(note)(e)
+        releaseNote(note)(e)
       }
       touchedKeys[i] = null
     })
@@ -173,13 +173,13 @@ const keyMap = (n) => ({
 })
 window.addEventListener('keydown', e => {
   const note = keyMap(transposition)[e.code]
-  if (note && !playingNotes.has(note)) {
+  if (note) {
     pressNote(note)(e)
   }
 })
 window.addEventListener('keyup', e => {
   const note = keyMap(transposition)[e.code]
-  if (note && playingNotes.has(note)) {
+  if (note) {
     releaseNote(note)(e)
   }
 })

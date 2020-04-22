@@ -121,29 +121,6 @@ body.rotated {
 	font-size: 90%;
 }
 
-.hint {
-	display: flex;
-	flex-direction: row;
-	padding-left: 15rem;
-	height: 40px;
-}
-.hint button {
-	width: 2.5rem;
-	min-width: 2.5rem;
-	height: 1.75rem;
-	margin: 1.5rem 0.25rem;
-	display: block;
-	background-color: hsla(0, 0%, 94%, 0.75);
-	border: none;
-	border-radius: 6px !important;
-	font-weight: bold;
-	font-size: 8pt;
-	cursor: default;
-}
-.hint button[up] {
-	margin: -1rem -1.25rem;
-}
-
 /*  ===============  keboard  =============== */
 
 .keyboard {
@@ -273,6 +250,55 @@ F=G=A=B=126546 units     C=D=E=124096 units
 
 /* =============== */
 
+div.hint {
+	width: 31.75rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: center !important;
+	padding-left: 69rem;
+	position: absolute;
+	top: 0;
+}
+.hint button {
+	background-color: transparent;
+	color: #333;
+	height: 1.75rem;
+	border: none;
+	border-radius: 50%;
+	font-weight: bold;
+	cursor: default;
+	z-index: 3;
+	position: relative;
+	top: 2rem;
+	display: flex;
+	justify-content: center;
+	font-size: 14t;
+}
+.hint button[data-note*="#"] {
+	color: #AAA;
+	top: 0.5rem;
+}
+.hint button[data-note*="F"],
+.hint button[data-note*="G"],
+.hint button[data-note*="A"],
+.hint button[data-note*="B"] {
+	flex: 72156;
+}
+.hint button[data-note*="C"],
+.hint button[data-note*="D"],
+.hint button[data-note*="E"] {
+	flex: 74606;
+}
+.hint button[data-note*="F#"],
+.hint button[data-note*="G#"],
+.hint button[data-note*="A#"] {
+	flex: 72520;
+}
+.hint button[data-note*="C#"],
+.hint button[data-note*="D#"] {
+	flex: 74235;
+}
+
 .footer {
 	opacity: 0.5;
 	font-size: 80%;
@@ -287,7 +313,6 @@ F=G=A=B=126546 units     C=D=E=124096 units
 	position: absolute;
 	font-size: 3.25rem;
 	bottom: -2em;
-	left: 0;
 }
 .staff>span:first-child {
 	position: relative;
@@ -416,27 +441,6 @@ html.cinema {
 				<span>𝅗</span>
 			</div>	
 		</div>
-		<div class="hint" hidden>
-			<button>A</button>
-			<button up>W</button>
-			<button>S</button>
-			<button up>E</button>
-			<button>D</button>
-			<button>F</button>
-			<button up>T</button>
-			<button>G</button>
-			<button up>Y</button>
-			<button>H</button>
-			<button up>U</button>
-			<button>J</button>
-			<button>K</button>
-			<button up>O</button>
-			<button>L</button>
-			<button up>P</button>
-			<button>;</button>
-			<button>'</button>
-		</div>
-		<div></div>
 		<div>
 			<button id="toggle-score" >🎼</button>
 			<button id="toggle-qwerty" hidden>⌨️</button>
@@ -447,6 +451,26 @@ html.cinema {
 	<div class="keyboard letters">
 		<div class="top-keys"></div>
 		<div class="bottom-keys"></div>
+		<div class="hint" hidden>
+			<button data-note="C">A</button>
+			<button data-note="C#">W</button>
+			<button data-note="D">S</button>
+			<button data-note="D#">E</button>
+			<button data-note="E">D</button>
+			<button data-note="F">F</button>
+			<button data-note="F#">T</button>
+			<button data-note="G">G</button>
+			<button data-note="G#">Y</button>
+			<button data-note="A">H</button>
+			<button data-note="A#">U</button>
+			<button data-note="B">J</button>
+			<button data-note="C">K</button>
+			<button data-note="C#">O</button>
+			<button data-note="D">L</button>
+			<button data-note="D#">P</button>
+			<button data-note="E">;</button>
+			<button data-note="F">'</button>
+		</div>
 	</div>
 	<div class="buttons">
 		<div class="footer">
