@@ -13,16 +13,8 @@ try {
       : 'wss://pianoecho.draho.cz:11088'
   )
 
-  ws.onopen = () => {
-    console.log('ws open')
-  }
-  ws.onerror = (err) => {
-    console.log('ws error', err)
-  }
-  ws.onclose = () => {
-    console.log('ws close')
-  }
-  ws.onmessage = async ({ data }) => {
+
+  ws.addEventListener('message', async ({ data }) => {
     if (data instanceof Blob) {
       const [uid, on, midiNote, midiVelocity] = new Uint8Array(await data.arrayBuffer())
       const note = Tone.Midi(midiNote).toNote()
@@ -33,7 +25,32 @@ try {
         releaseNote(note)()
       }
     }
+  })
+
+  ws.onopen = () => {
+    console.log('ws open')
+    if (localStorage.DEBUG) {
+      let now
+      ws.addEventListener('message', ({ data }) => {
+        if (data === 'pong') {
+          console.log('ping', Math.floor((performance.now() - now)*100) /100, 'ms')
+        }
+      })
+      ws.onrea
+      ;(function ping() {
+        now = performance.now()
+        ws.send('ping')
+        setInterval(ping, 10000 + Math.floor(Math.random()*2000))
+      })()
+    }
   }
+  ws.onerror = (err) => {
+    console.log('ws error', err)
+  }
+  ws.onclose = () => {
+    console.log('ws close')
+  }
+
 } catch(e) {
   console.error(e)
 }
