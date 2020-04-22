@@ -46,6 +46,8 @@ body.rotated {
 	width: 100%;
 	flex-direction: row;
 	justify-content: space-between;
+	opacity: 1;
+	transition: opacity 0.1s ease 0.2s;
 }
 
 .buttons>div {
@@ -127,7 +129,7 @@ body.rotated {
 	width: 156rem; /* (7*7+3)*3 */
 	position: relative;
 	height: 17.5rem;
-	transition: left 0.25s ease-in, width .5s ease-in-out;
+	transition: left 0.25s ease-in, width .2s ease-in-out, height .2s ease-in-out .1s, padding .15s ease-in-out .15s;
 	left: 0rem;
 	overflow: hidden;
 }
@@ -136,16 +138,11 @@ body.rotated {
 	display: flex;
 	justify-content: center;
 	align-items: flex-start;
-}
-
-.keyboard .bottom-keys {
-	width: 100%;
-}
-.keyboard .top-keys {
-	width: 100%;
 	position: absolute;
 	top: 0;
+	bottom: 0;
 	left: 0;
+	width: 100%;
 }
 
 .keyboard button {
@@ -158,6 +155,7 @@ body.rotated {
 	justify-content: flex-end;
 	align-items: center;
 	outline: none;
+	transition: color 0s ease .2s;
 }
 .keyboard button[data-note="C4"] {
 	font-weight: bold;
@@ -424,13 +422,17 @@ html.cinema {
 	background-image: none;
 }
 .cinema .buttons {
-	visibility: hidden;
+	transition-delay: 0s;
+	opacity: 0;
 }
 .cinema .keyboard {
 	width: 100%;
 	left: 0 !important; /* to disable transposition in cinema mode */
+	height: 0;
+	padding-bottom: 10%;
 }
 .cinema .keyboard button {
+	transition-delay: 0s;
 	color: transparent;
 	font-size: 0;
 }

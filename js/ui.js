@@ -75,11 +75,17 @@ if (!('ontouchstart' in document.documentElement)) {
 
 
 const cinemaOffButton = document.getElementById('cinema-off')
-cinemaOffButton.onclick = () => {
+const offCinema = () => {
   document.getElementById('toggle-cinema').classList.remove('on')
   actions.cinema(false)
   saveSetting('cinema', false)
 }
+cinemaOffButton.onclick = offCinema
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Escape') {
+    offCinema()
+  }
+})
 
 // init staff
 const staffBox = document.querySelector('.staff')
