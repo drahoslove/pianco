@@ -30,5 +30,8 @@
   },
   "browserslist": [
     "> .05% in CZ and not ie <= 9"
-  ]
+  ],
+  "dependencies": {
+    "ws": "^7.2.3"
+  }
 }

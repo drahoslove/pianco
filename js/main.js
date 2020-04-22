@@ -1,9 +1,11 @@
 import {
   allNotes,
-  pressNote,
-  releaseNote,
-  releaseAll,
+  releaseAll, // TODO
 } from './instrument.js'
+import {
+  sendNoteOn as pressNote,
+  sendNoteOff as releaseNote,
+} from './io.js'
 
 let transposition = 0
 
@@ -244,3 +246,4 @@ const reorient = () => {
 
 window.onorientationchange = reorient
 reorient()
+
