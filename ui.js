@@ -4,6 +4,25 @@ const defaultSettings = {
   labels: true,
   qwerty: false,
   score: false,
+  cinema: false,
+}
+
+const actions = {
+  labels: (val) => {
+    const keyboard = document.querySelector('.keyboard')
+    keyboard.classList[val ? 'add' : 'remove']('letters')
+  },
+  qwerty: (val) => {
+    const hintBox = document.querySelector('.hint')
+    hintBox.hidden = !val
+  },
+  score: (val) => {
+    const staffBox = document.querySelector('.staff')
+    staffBox.hidden = !val
+  },
+  cinema: (val) => {
+    document.body.parentElement.classList[val ? 'add' : 'remove']('cinema')
+  },
 }
 
 function saveSetting(key, val) {
@@ -32,68 +51,38 @@ function loadSetting(key) {
   }[key] 
 }
 
+Object.keys(defaultSettings).forEach(key => {
+  const button = document.getElementById(`toggle-${key}`)
+  let val = loadSetting(key)
+  button.classList[val ? 'add': 'remove']('on')
+  actions[key](val)
+  button.onclick = function () {
+    val = !loadSetting(key)
+    button.classList[val ? 'add': 'remove']('on')
+    actions[key](val)
+    saveSetting(key, val)
+    this.blur()
+  }
+})
 
-// qerty hints
-const hintButton = document.getElementById('toggle-hint')
-const hintBox = document.querySelector('.hint')
+
+// do not show toggle qwerty hint button on mobile
+const hintButton = document.getElementById('toggle-qwerty')
+// const hintBox = document.querySelector('.hint')
 if (!('ontouchstart' in document.documentElement)) {
   hintButton.hidden = false
-  if (loadSetting('qwerty')) {
-    hintBox.hidden = false
-    hintButton.classList.add('on')
-  } else {
-    hintBox.hidden = true
-    hintButton.classList.remove('on')
-  }
-}
-hintButton.onclick = function () {
-  this.blur()
-  const on = !!hintBox.hidden
-  hintBox.hidden = !on
-  saveSetting('qwerty', on)
-  this.classList[on ? 'add' : 'remove']('on')
 }
 
-// note labels
-const keyboard = document.querySelector('.keyboard')
-const labelsButtons = document.getElementById('toggle-labels')
-if (loadSetting('labels')) {
-  keyboard.classList.add('letters')
-  labelsButtons.classList.add('on')
-} else {
-  keyboard.classList.remove('letters')
-  labelsButtons.classList.remove('on')
-}
-labelsButtons.onclick = function () {
-  this.blur()
-	if (keyboard.classList.contains('letters')) {
-    keyboard.classList.remove('letters')
-    saveSetting('labels', false)
-    this.classList.remove('on')
-	} else {
-    keyboard.classList.add('letters')
-    saveSetting('labels', true)
-    this.classList.add('on')
-	}
+
+const cinemaOffButton = document.getElementById('cinema-off')
+cinemaOffButton.onclick = () => {
+  document.getElementById('toggle-cinema').classList.remove('on')
+  actions.cinema(false)
+  saveSetting('cinema', false)
 }
 
-// staff
+// init staff
 const staffBox = document.querySelector('.staff')
-const staffButton = document.getElementById('toggle-score')
-if (loadSetting('score')) {
-  staffBox.hidden = false
-  staffButton.classList.add('on')
-} else {
-  staffButton.classList.remove('on')
-  staffBox.hidden = true
-}
-staffButton.onclick = function () {
-  this.blur()
-  const on = !!staffBox.hidden
-  staffBox.hidden = !on
-  saveSetting('score', on)
-  this.classList[on ? 'add' : 'remove']('on')
-}
 const wholeNote = [...staffBox.children].pop()
 ;[
   'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4',
@@ -121,4 +110,3 @@ const wholeNote = [...staffBox.children].pop()
   staffBox.appendChild(sharpNote)
 });
 wholeNote.remove()
-console.log(wholeNote)

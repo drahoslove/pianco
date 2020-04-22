@@ -319,6 +319,30 @@ body.rotated {
 		font-size: 2.5em;
 	}
 }
+
+
+/* cinema mode */
+.cinema-only {
+	display: none;
+}
+.cinema .cinema-only {
+	display: inline;
+}
+
+html.cinema {
+	font-size: 75%;
+}
+
+.cinema body {
+	background-color: #222;
+	background-image: none;
+}
+.cinema .buttons {
+	visibility: hidden;
+}
+
+
+
 </style>
 <script type="module" src="./main.js"></script>
 <script defer src="./ui.js"></script>
@@ -363,8 +387,9 @@ body.rotated {
 		<div></div>
 		<div>
 			<button id="toggle-score" >🎼</button>
-			<button id="toggle-hint" hidden>⌨️</button>
-			<button id="toggle-labels">#</button>
+			<button id="toggle-qwerty" hidden>⌨️</button>
+			<button id="toggle-labels">📝</button>
+			<button id="toggle-cinema">🕶</button>
 		</div>
 	</div>
 	<div class="keyboard letters">
@@ -382,6 +407,9 @@ body.rotated {
 		<div class="footer">
 			<b>© draho.cz</b>	
 		</div>
+	</div>
+	<div class="cinema-only">
+		<button id="cinema-off">X</button>
 	</div>
 </body>
 </html>
