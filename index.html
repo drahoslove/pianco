@@ -126,9 +126,10 @@ body.rotated {
 .keyboard {
 	width: 156rem; /* (7*7+3)*3 */
 	position: relative;
-	left: 0rem;
-	transition: left 0.25s ease-in;
 	height: 17.5rem;
+	transition: left 0.25s ease-in;
+	left: 0rem;
+	overflow: hidden;
 }
 .keyboard>div {
 	height: 100%;
@@ -412,6 +413,7 @@ html.cinema {
 }
 .cinema .keyboard {
 	width: 100%;
+	left: 0 !important; /* to disable transposition in cinema mode */
 }
 .cinema .keyboard button {
 	color: transparent;
