@@ -127,7 +127,7 @@ body.rotated {
 	width: 156rem; /* (7*7+3)*3 */
 	position: relative;
 	height: 17.5rem;
-	transition: left 0.25s ease-in;
+	transition: left 0.25s ease-in, width .5s ease-in-out;
 	left: 0rem;
 	overflow: hidden;
 }
@@ -395,6 +395,21 @@ div.hint {
 /* cinema mode */
 .cinema-only {
 	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	text-align: right;
+}
+#cinema-off {
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	font-size: 1.5rem;
+	background: #888;
+	border: none;
+	margin: .5rem;
+	cursor: pointer;
 }
 .cinema .cinema-only {
 	display: inline;
@@ -489,7 +504,7 @@ html.cinema {
 		</div>
 	</div>
 	<div class="cinema-only">
-		<button id="cinema-off">X</button>
+		<button id="cinema-off">&times;</button>
 	</div>
 </body>
 </html>
