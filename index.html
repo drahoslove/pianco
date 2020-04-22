@@ -146,17 +146,30 @@ body.rotated {
 
 /* keboard */
 .keyboard {
+	width: 156rem; /* (7*7+3)*3 */
 	position: relative;
 	left: 0rem;
 	transition: left 0.25s ease-in;
 	height: 17.5rem;
+}
+.keyboard>div {
+	height: 100%;
 	display: flex;
 	justify-content: center;
 	align-items: flex-start;
 }
 
+.keyboard>:first-child {
+	width: 100%;
+}
+.keyboard>:last-child {
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
 .keyboard button {
-	border: none;
 	border: 1px solid #888;
 	border-bottom-left-radius: 6px;
 	border-bottom-right-radius: 6px;
@@ -174,37 +187,43 @@ body.rotated {
 	font-size: 105%;
 }
 
-.keyboard button[data-note] {
-	/* border-left-width: .25px;
-	border-right-width: .75px; */
-	width: 3rem;
+.keyboard>:first-child button {
+	border-left-width: .75px;
+	border-right-width: .25px; 
 	height: 100%;
 	text-align: center;
 	background: #fff7e2;
+	flex: 1 0;
 }
-.keyboard button[data-note].pressed {
+.keyboard>:first-child button.pressed {
 	background: #ffeab4;
 }
-.keyboard.letters button[data-note] {
+.keyboard.letters>:first-child button {
 	color: #666;
 }
-.keyboard button[data-note*="#"] {
+.keyboard>:last-child button {
 	border: none;
-	width:  1.75rem; /* 7/12 times 3rem */
 	height: 60%;
-	margin: 0 -0.875rem;
 	background: #461800;
 	position: relative;
 	z-index: 1;
+	flex: 1 0;
 }
-.keyboard button[data-note*="#"].pressed {
+.keyboard>:last-child button.pressed {
 	background: #742801;
 }
-.keyboard.letters button[data-note*="#"] {
+.keyboard.letters>:last-child button {
 	color: #aaa;
+}
+.keyboard>:last-child button:first-child {
+	flex: 1.4285714285714284; /* (2/7 - 2/12) * 12 */
+}
+.keyboard>:last-child button:last-child {
+	flex: 1.7142857142857142; /* 1 + 7/12 */
 }
 
 /* spread black keys more apart */
+/*
 .keyboard button[data-note*='C#'] {
 	left: -0.33rem;
 }
@@ -216,9 +235,15 @@ body.rotated {
 }
 .keyboard button[data-note*='A#'] {
 	left: +0.45rem;
-}
+} */
 
 /* hide nonexistent notes */
+.keyboard>:last-child button {
+	visibility: hidden;
+}
+.keyboard>:last-child button[data-note*="#"] {
+	visibility: visible;
+}
 .keyboard button[data-note^="E#"],
 .keyboard button[data-note^="B#"],
 .keyboard button[data-note*="#"]:last-child
@@ -330,7 +355,7 @@ body.rotated {
 }
 
 html.cinema {
-	font-size: 75%;
+	/* font-size: 75%; */
 }
 
 .cinema body {
@@ -339,6 +364,13 @@ html.cinema {
 }
 .cinema .buttons {
 	visibility: hidden;
+}
+.cinema .keyboard {
+	width: 100%;
+}
+.cinema .keyboard button {
+	color: transparent;
+	font-size: 0;
 }
 
 
@@ -393,6 +425,8 @@ html.cinema {
 		</div>
 	</div>
 	<div class="keyboard letters">
+		<div></div>
+		<div></div>
 	</div>
 	<div class="buttons">
 		<div class="footer">

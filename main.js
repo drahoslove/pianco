@@ -47,7 +47,7 @@ const instruments = {
     release: 1,
     onload: () => {
       console.log('piano samples loaded')
-      releaseAll(allNotes)()
+      releaseAll()()
       instrumentSelector.value = 'piano'
     },
     baseUrl : "./salamander/",
@@ -75,8 +75,8 @@ const releaseNote = (note) => (e) => {
   document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.remove('pressed'))
   getInstrument().triggerRelease([note])
 }
-const releaseAll = (notes) => () => {
-  getInstrument().triggerRelease(notes)
+const releaseAll = () => () => {
+  getInstrument().triggerRelease(allNotes)
   playingNotes.clear()
   document.querySelectorAll('.pressed').forEach(({ classList }) => classList.remove('pressed'))
 }
@@ -90,7 +90,7 @@ const _ = cb => e => {
 const keyboard = document.querySelector('.keyboard')
 const keys = []
 const allNotes = []
-allNotes.push("A0","A#0","B0")
+allNotes.push("A0","A#0","B0", "B#0")
 ;[1,2,3,4,5,6,7].forEach(octave => {
   "CDEFGAB".split('').forEach(letter => {
     allNotes.push(`${letter}${octave}`, `${letter}#${octave}`)
@@ -98,10 +98,18 @@ allNotes.push("A0","A#0","B0")
 })
 allNotes.push('C8')
 allNotes.forEach(note => {
+  if (note.includes('E#') || note.includes('B#')) { // duplicit notes
+    return
+  }
   const key = document.createElement('button')
   key.dataset.note = note
   key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (_, n, s, i) => `<span>${n}${s&&'♯'}<sub>${i}</sub>`)
-  keyboard.appendChild(key)
+  keyboard.children[1].appendChild(key)
+  if (!note.includes('#')) {
+    const clone = key.cloneNode(true)
+    keyboard.children[0].appendChild(clone)
+    keys.push(clone)
+  }
   keys.push(key)
 })
 
@@ -117,7 +125,7 @@ const setTransposition = (n) => {
   if (transposition < -3) transposition = -3
   if (transposition > +3) transposition = +3
   keyboard.style.left = `${-transposition*21}rem`
-  releaseAll(allNotes)()
+  releaseAll()()
   goMidBtn.className = transposition === 0 ? 'on': ''
   goUpBtn.className = Array.from(new Array(Math.max(transposition+1, 0)))
     .fill('').join('on')
@@ -179,7 +187,7 @@ keys.forEach(key => {
     return false
   }
 })
-keyboard.addEventListener('mouseover', releaseAll(allNotes))
+keyboard.addEventListener('mouseover', releaseAll())
 
 
 // init touch kyes
@@ -221,7 +229,7 @@ keyboard.addEventListener('mouseover', releaseAll(allNotes))
       touchedKeys[i] = null
     })
   })
-  keyboard.addEventListener('touchcancel', releaseAll(allNotes))
+  keyboard.addEventListener('touchcancel', releaseAll())
 }
 
 // init keyboard keys
