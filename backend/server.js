@@ -5,7 +5,7 @@ const { SSL_KEY, SSL_CA, SSL_CERT } = process.env
 
 let server
 if (!SSL_KEY || !SSL_CA || !SSL_CERT) { // http
-	server = require('http').createServer().listen(PORT)
+	server = require('http').createServer().listen(PORT, '0.0.0.0')
 } else { // https
   console.log("using certificate", SSL_KEY)
 	let fs = require('fs')
