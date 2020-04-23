@@ -70,9 +70,10 @@ body.rotated {
 }
 
 .buttons button,
-.buttons select {
+.buttons select,
+.buttons  label {
 	min-width: 3.5rem;
-	display: block;
+	display: flex;
 	border: 1px solid #888;
 	outline: none;
 	cursor: pointer;
@@ -84,13 +85,11 @@ body.rotated {
 	position: relative;
 	background-color: #fff7e2;
 }
-.buttons button:first-child,
-.buttons select:first-child {
+.buttons div>:first-child {
 	border-top-left-radius: 1rem;
 	border-bottom-left-radius: 1rem;
 }
-.buttons button:last-child,
-.buttons select:last-child {
+.buttons div>:last-child {
 	border-top-right-radius: 1rem;
 	border-bottom-right-radius: 1rem;
 	border-right-width: 1px;
@@ -452,6 +451,10 @@ html.cinema {
 				<!-- <option value="AMSynth">AM synth</option>
 				<option value="FMSynth">FM synt</option> -->
 			</select>
+			<label>
+				<span id="volume-icon">🔊</span>
+				<input id="volume" type="range" min="-20" value="0" max="4" step="4" />
+			</label>
 		</div>
 		<div>
 			<div class="staff" hidden>

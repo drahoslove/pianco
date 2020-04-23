@@ -47,19 +47,53 @@ const instruments = {
     onload: () => {
       console.log('piano samples loaded')
       releaseAll()()
-      instrumentSelector.value = 'piano'
+      setTimeout(() => {
+        releaseAll()()
+        instrumentSelector.value = 'piano'
+      }, 100)
     },
     baseUrl : "/audio/salamander/",
   }).toMaster(),
 
 }
 
-
-// TODO move?
 // instrument selector
 const instrumentSelector = document.getElementById('instrument')
 instrumentSelector.onchange = function () { this.blur() }
 const getInstrument = () => instruments[instrumentSelector.value]
+
+// volume controller
+const volumeIcon = document.getElementById('volume-icon')
+const volumeSelector = document.getElementById('volume')
+
+function updateVolume() {
+  const value = +this.value
+  volumeIcon.innerText = value >= 0 ? '🔊' : '🔉'
+  Tone.Master.volume.value = value
+  if (value === -20) {
+    Tone.Master.mute = true
+    volumeIcon.innerText = '🔈'
+  } else {
+    Tone.Master.mute = false
+  }
+}
+volumeIcon.onclick = () => {
+  if (Tone.Master.mute) {
+    Tone.Master.mute = false
+    volumeIcon.innerText = +volumeSelector.value >= 0 ? '🔊' : '🔉'
+    volumeSelector.disabled = false
+  } else {
+    volumeIcon.innerText = '🔈'
+    Tone.Master.mute = true
+    volumeSelector.disabled = true
+  }
+}
+volumeSelector.parentElement.onwheel = function (e) {
+  const val =  Math.max(+this.min, Math.min(Math.sign(-e.deltaY) * +this.step, +this.max))
+  volumeSelector.value = val + +this.value
+  updateVolume.bind(this)(e)
+}.bind(volumeSelector)
+volumeSelector.onchange = updateVolume
 
 // note playing 
 const pressNote = (note, velocity=0.8) => (e) => {
