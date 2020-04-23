@@ -81,8 +81,8 @@ export {
 }
 
 
-window.autoplay = () => {
-  fetch('/audio/json/blues.json').then((response) => {
+window.autoplay = (url) => {
+  fetch(url || '/audio/json/blues.json').then((response) => {
     response.json().then(midi => {
       const now = Tone.now() + 0.5
       Tone.Transport.loopEnd = '1m'
