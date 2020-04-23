@@ -85,32 +85,29 @@ window.addEventListener('keydown', (e) => {
 
 
 // init mouse keys
-keys.forEach(key => {
-  const { note } = key.dataset
-  key.addEventListener('mousedown', _(pressNote(note)))
-  key.addEventListener('mouseup', _(releaseNote(note)))
-  key.addEventListener('mouseenter', (e) => {
-    if (e.buttons === 1) pressNote(note)(e)
+if (!('ontouchstart' in document.documentElement)) { // only for nontouch devices
+  keys.forEach(key => {
+    const { note } = key.dataset
+    key.addEventListener('mousedown', _(pressNote(note)))
+    key.addEventListener('mouseup', _(releaseNote(note)))
+    key.addEventListener('mouseenter', (e) => {
+      if (e.buttons === 1) pressNote(note)(e)
+    })
+    key.addEventListener('mouseleave', (e) => {
+      if (e.buttons === 1) releaseNote(note)(e)
+    })
+    
+    key.onselect = e => {
+      e.preventDefault()
+      return false
+    }
+    key.onselectstart = e => {
+      e.preventDefault()
+      return false
+    }
   })
-  key.addEventListener('mouseleave', (e) => {
-    if (e.buttons === 1) releaseNote(note)(e)
-  })
-  key.addEventListener('touchend', releaseNote(note))
-  
-  key.onselect = e => {
-    e.preventDefault()
-    return false
-  }
-  key.onselectstart = e => {
-    e.preventDefault()
-    return false
-  }
-})
-keyboard.addEventListener('mouseover', releaseAll())
-
-
-// init touch kyes
-{
+  keyboard.addEventListener('mouseover', releaseAll())
+} else { // init touch kyes
   const touchedKeys = []
   keyboard.addEventListener('touchstart', (e) => {
     ;[...e.targetTouches].forEach(({ clientX: x, clientY: y }, i) => {
