@@ -109,19 +109,26 @@ if (!('ontouchstart' in document.documentElement)) { // only for nontouch device
   keyboard.addEventListener('mouseover', releaseAll())
 } else { // init touch kyes
   const touchedKeys = []
-  keyboard.addEventListener('touchstart', (e) => {
-    ;[...e.targetTouches].forEach(({ clientX: x, clientY: y }, i) => {
-      const key = document.elementFromPoint(x, y)
+  const keyFromTouchPoint = ({ clientX: x, clientY: y}) => {
+    let key = document.elementFromPoint(x, y)
+    while (key && !key.dataset.note) {
+      key = key.parentElement
+    }
+    return key
+  }
+  keyboard.addEventListener('touchstart', _((e) => {
+    ;[...e.targetTouches].forEach((touch, i) => {
+      let key = keyFromTouchPoint(touch)
       if (key) {
         const { note } = key.dataset
         pressNote(note)(e)
         touchedKeys[i] = key
       }
     })
-  })
-  keyboard.addEventListener('touchmove', (e) => {
-    ;[...e.targetTouches].forEach(({ clientX: x, clientY: y }, i) => {
-      const key = document.elementFromPoint(x, y)
+  }))
+  keyboard.addEventListener('touchmove', _((e) => {
+    ;[...e.targetTouches].forEach((touch, i) => {
+      const key = keyFromTouchPoint(touch)
       if (key) {
         const { note } = key.dataset
         pressNote(note)(e)
@@ -134,17 +141,17 @@ if (!('ontouchstart' in document.documentElement)) { // only for nontouch device
         touchedKeys[i] = key
       }
     })
-  })
-  keyboard.addEventListener('touchend', (e) => {
-    ;[...e.changedTouches].forEach(({ clientX: x, clientY: y }, i) => {
-      const key = document.elementFromPoint(x, y)
+  }))
+  keyboard.addEventListener('touchend', _((e) => {
+    ;[...e.changedTouches].forEach((touch, i) => {
+      const key = keyFromTouchPoint(touch)
       if (touchedKeys[i]) {
         const { note } = touchedKeys[i].dataset
         releaseNote(note)(e)
       }
       touchedKeys[i] = null
     })
-  })
+  }))
   keyboard.addEventListener('touchcancel', releaseAll())
 }
 
@@ -172,6 +179,9 @@ const keyMap = (n) => ({
   // 'Backslash': `G${n+5}`,
 })
 window.addEventListener('keydown', e => {
+  if (e.shiftKey || e.ctrlKey || e.metaKey) {
+    return
+  }
   const note = keyMap(transposition)[e.code]
   if (note) {
     pressNote(note)(e)
