@@ -246,4 +246,3 @@ const reorient = () => {
 
 window.onorientationchange = reorient
 reorient()
-
