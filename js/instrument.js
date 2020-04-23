@@ -68,9 +68,9 @@ const volumeSelector = document.getElementById('volume')
 
 function updateVolume() {
   const value = +this.value
-  volumeIcon.innerText = value >= 0 ? '🔊' : '🔉'
+  volumeIcon.innerText = value >= -15 ? '🔊' : '🔉'
   Tone.Master.volume.value = value
-  if (value === -20) {
+  if (value === +this.min) {
     Tone.Master.mute = true
     volumeIcon.innerText = '🔈'
   } else {
@@ -80,7 +80,7 @@ function updateVolume() {
 volumeIcon.onclick = () => {
   if (Tone.Master.mute) {
     Tone.Master.mute = false
-    volumeIcon.innerText = +volumeSelector.value >= 0 ? '🔊' : '🔉'
+    volumeIcon.innerText = +volumeSelector.value >= -15 ? '🔊' : '🔉'
     volumeSelector.disabled = false
   } else {
     volumeIcon.innerText = '🔈'
@@ -89,8 +89,8 @@ volumeIcon.onclick = () => {
   }
 }
 volumeSelector.parentElement.onwheel = function (e) {
-  const val =  Math.max(+this.min, Math.min(Math.sign(-e.deltaY) * +this.step, +this.max))
-  volumeSelector.value = val + +this.value
+  const val =  Math.max(+this.min, Math.min(Math.sign(-e.deltaY) * +this.step + +this.value, +this.max))
+  volumeSelector.value = val
   updateVolume.bind(this)(e)
 }.bind(volumeSelector)
 volumeSelector.onchange = updateVolume
