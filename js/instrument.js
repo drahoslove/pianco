@@ -63,13 +63,17 @@ const getInstrument = () => instruments[instrumentSelector.value]
 
 // note playing 
 const pressNote = (note, velocity=0.8) => (e) => {
-  if (playingNotes.has(note)) return
+  if (playingNotes.has(note)) {
+    return
+  }
   playingNotes.add(note)
   document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.add('pressed'))
   getInstrument().triggerAttack([note], undefined, velocity)
 }
 const releaseNote = (note) => (e) => {
-  if (!playingNotes.has(note)) return
+  if (!playingNotes.has(note)) {
+    return
+  }
   playingNotes.delete(note)
   document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.remove('pressed'))
   getInstrument().triggerRelease([note])

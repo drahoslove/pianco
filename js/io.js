@@ -56,13 +56,13 @@ try {
 }
 
 
-const sendNoteOn = (note, velocity) => (e) => {
+const sendNoteOn = (note, velocity=0.8) => (e) => {
   pressNote(note, velocity)(e)
   if (ws.readyState !== WebSocket.OPEN) {
     return
   }
   const midiNote = Tone.Midi(note).toMidi()
-  const midiVelocity = Math.floor(velocity*255)
+  const midiVelocity = Math.floor(velocity*127)
   ws.send(new Uint8Array([uid, 1, midiNote, midiVelocity]))
 }
 
