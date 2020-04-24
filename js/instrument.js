@@ -47,10 +47,6 @@ const instruments = {
     onload: () => {
       console.log('piano samples loaded')
       instrumentSelector.value = 'piano'
-      // releaseAll()()
-      // setTimeout(() => {
-      //   releaseAll()()
-      // }, 100)
     },
     baseUrl : "/audio/salamander/",
   }).toMaster(),

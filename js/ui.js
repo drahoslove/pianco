@@ -74,6 +74,8 @@ if (!('ontouchstart' in document.documentElement)) {
 }
 
 
+
+// cinema off
 const cinemaOffButton = document.getElementById('cinema-off')
 const offCinema = () => {
   document.getElementById('toggle-cinema').classList.remove('on')
@@ -87,6 +89,8 @@ window.addEventListener('keydown', (e) => {
   }
 })
 
+
+
 // init staff
 const staffBox = document.querySelector('.staff')
 const wholeNote = [...staffBox.children].pop()
@@ -96,7 +100,7 @@ const wholeNote = [...staffBox.children].pop()
   'C6',
 ].forEach((ch, i) => {
   const hspace = 0.25
-  const hoffset = 3.6 // .6
+  const hoffset = 3.6
   const vspace = 0.125
   const voffset = -0.125
   const note = wholeNote.cloneNode(true)
@@ -115,3 +119,18 @@ const wholeNote = [...staffBox.children].pop()
   staffBox.appendChild(sharpNote)
 });
 wholeNote.remove()
+
+
+
+// orientation
+
+const reorient = () => {
+  if (window.screen.orientation.type.includes('portrait')) {
+    document.body.classList.add('rotated')
+  } else {
+    document.body.classList.remove('rotated')
+  }
+}
+
+window.onorientationchange = reorient
+reorient()

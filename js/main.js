@@ -11,7 +11,8 @@ let transposition = 0
 
 const _ = cb => e => {
   e.preventDefault()
-  cb(e)
+  cb && cb(e)
+  return false
 }
 
 // create keys
@@ -21,14 +22,15 @@ const keys = []
 allNotes.forEach(note => {
   const key = document.createElement('button')
   key.dataset.note = note
-  key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (_, n, s, i) => `<span>${n}${s&&'♯'}<sub>${i}</sub>`)
-  keyboard.children[0].appendChild(key)
+  key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (_, n, s, i) => `<span>${n}${s&&'♯'}<sub>${i}</sub></span>`)
+  keyboard.querySelector('.top-keys').appendChild(key)
   if (!note.includes('#')) {
-    const clone = key.cloneNode(true)
-    keyboard.children[1].appendChild(clone)
-    keys.push(clone)
+    const wideKey = key.cloneNode(true)
+    keyboard.querySelector('.bottom-keys').appendChild(wideKey)
+    keys.push(wideKey)
+  } else {
+    keys.push(key)
   }
-  keys.push(key)
 })
 
 // init transpose buttons
@@ -48,7 +50,7 @@ const setTransposition = (n) => {
   goMidBtn.className = transposition === 0 ? 'on': ''
   goUpBtn.className = Array.from(new Array(Math.max(transposition+1, 0)))
     .fill('').join('on')
-  goDownBtn.className = Array.from(new Array(Math.max(-transposition+1,0)))
+  goDownBtn.className = Array.from(new Array(Math.max(-transposition+1, 0)))
     .fill('').join('on')
 }
 const goBottom = () => setTransposition(-3)
@@ -84,7 +86,7 @@ window.addEventListener('keydown', (e) => {
 })
 
 
-// init mouse keys
+// init mouse input
 if (!('ontouchstart' in document.documentElement)) { // only for nontouch devices
   keys.forEach(key => {
     const { note } = key.dataset
@@ -96,18 +98,14 @@ if (!('ontouchstart' in document.documentElement)) { // only for nontouch device
     key.addEventListener('mouseleave', (e) => {
       if (e.buttons === 1) releaseNote(note)(e)
     })
-    
-    key.onselect = e => {
-      e.preventDefault()
-      return false
-    }
-    key.onselectstart = e => {
-      e.preventDefault()
-      return false
-    }
+    key.onselect = _()
+    key.onselectstart = _()
   })
   keyboard.addEventListener('mouseover', releaseAll())
-} else { // init touch kyes
+}
+
+// init touch input 
+if ('ontouchstart' in document.documentElement) { // only for touch devices
   const touchedKeys = []
   const keyFromTouchPoint = ({ clientX: x, clientY: y}) => {
     let key = document.elementFromPoint(x, y)
@@ -155,7 +153,7 @@ if (!('ontouchstart' in document.documentElement)) { // only for nontouch device
   keyboard.addEventListener('touchcancel', releaseAll())
 }
 
-// init keyboard keys
+// init keyboard input
 const keyMap = (n) => ({
   'KeyA': `C${n+4}`,
     'KeyW': `C#${n+4}`,
@@ -176,7 +174,6 @@ const keyMap = (n) => ({
     'KeyP': `D#${n+5}`,
   'Semicolon': `E${n+5}`,
   'Quote': `F${n+5}`,
-  // 'Backslash': `G${n+5}`,
 })
 window.addEventListener('keydown', e => {
   if (e.shiftKey || e.ctrlKey || e.metaKey) {
@@ -195,7 +192,7 @@ window.addEventListener('keyup', e => {
 })
 
 
-// MIDI
+// init MIDI input
 const midiEl = document.getElementById('midi')
 if (navigator.requestMIDIAccess) {
   console.log('This browser supports WebMIDI!')
@@ -239,17 +236,3 @@ function getMIDIMessage(midiMessage) {
   }
 }
 
-
-// orientation
-
-
-const reorient = () => {
-  if (window.screen.orientation.type.includes('portrait')) {
-    document.body.classList.add('rotated')
-  } else {
-    document.body.classList.remove('rotated')
-  }
-}
-
-window.onorientationchange = reorient
-reorient()
