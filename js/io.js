@@ -1,7 +1,15 @@
 import '../lib/Tone.js'
 import { pressNote, releaseNote } from './instrument.js'
 
-const uid = Math.floor(Math.random()*255)
+const UID = Math.floor(Math.random()*255) // TODO obtain from backend
+let GID = (+location.hash.slice(1)) % 256 || 0
+
+window.onhashchange = () => {
+  GID = (+location.hash.slice(1)) % 256 || 0
+  console.log(`${UID}@${GID}`)
+}
+
+console.log(`${UID}@${GID}`)
 
 // WS!
 
@@ -16,7 +24,13 @@ try {
 
   ws.addEventListener('message', async ({ data }) => {
     if (data instanceof Blob) {
-      const [uid, on, midiNote, midiVelocity] = new Uint8Array(await data.arrayBuffer())
+      const [gid, uid, on, midiNote, midiVelocity] = new Uint8Array(await data.arrayBuffer())
+      if (gid !== GID) { // another group
+        return 
+      }
+      if (uid === UID) { // your notes
+        return
+      }
       const note = Tone.Midi(midiNote).toNote()
       if (on) {
         const velocity = midiVelocity/127
@@ -63,7 +77,7 @@ const sendNoteOn = (note, velocity=0.8) => (e) => {
   }
   const midiNote = Tone.Midi(note).toMidi()
   const midiVelocity = Math.floor(velocity*127)
-  ws.send(new Uint8Array([uid, 1, midiNote, midiVelocity]))
+  ws.send(new Uint8Array([GID, UID, 1, midiNote, midiVelocity]))
 }
 
 const sendNoteOff = (note) => (e) => {
@@ -72,7 +86,7 @@ const sendNoteOff = (note) => (e) => {
     return
   }
   const midiNote = Tone.Midi(note).toMidi()
-  ws.send(new Uint8Array([uid, 0, midiNote]))
+  ws.send(new Uint8Array([GID, UID, 0, midiNote]))
 }
 
 export {

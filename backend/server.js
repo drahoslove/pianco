@@ -7,7 +7,8 @@ const WebSocket = require('ws')
 const PORT = 11088
 const { SSL_KEY, SSL_CA, SSL_CERT } = process.env
 
-const ROOT = 0
+const ROOT_USR = 0
+const ROOT_GRP = 0
 
 let server
 if (!SSL_KEY || !SSL_CA || !SSL_CERT) { // http
@@ -84,7 +85,7 @@ async function replayMidi(url) {
 const sendNoteOn = (note) => {
   wss.clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(new Uint8Array([ROOT, 1, note.midi, Math.floor(note.velocity*127)]))
+      client.send(new Uint8Array([ROOT_GRP, ROOT_USR, 1, note.midi, Math.floor(note.velocity*127)]))
     }
   })
 }
@@ -92,7 +93,7 @@ const sendNoteOn = (note) => {
 const sendNoteOff = (note) => {
   wss.clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(new Uint8Array([ROOT, 0, note.midi]))
+      client.send(new Uint8Array([ROOT_GRP, ROOT_USR, 0, note.midi]))
     }
   })
 }
