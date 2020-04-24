@@ -203,7 +203,7 @@ if (navigator.requestMIDIAccess) {
   navigator.requestMIDIAccess()
     .then(onMIDISuccess, () => {
       console.log('Could not access your MIDI devices.')
-      midiEl.innerText = 'failed'
+      midiEl.innerText = 'access failed'
     })
 } else {
   console.log('WebMIDI is not supported in this browser.')

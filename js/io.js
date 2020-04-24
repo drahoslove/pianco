@@ -81,23 +81,10 @@ export {
 }
 
 
-window.autoplay = (url) => {
-  fetch(url || '/audio/json/blues.json').then((response) => {
-    response.json().then(midi => {
-      const now = Tone.now() + 0.5
-      Tone.Transport.loopEnd = '1m'
-      Tone.Transport.loop = false
-      midi.tracks.forEach(track => {
-        track.notes.forEach(note => {
-          Tone.Transport.scheduleOnce(() => {
-            sendNoteOn(note.name, note.velocity)()
-          }, note.time + now)
-          Tone.Transport.scheduleOnce(() => {
-            sendNoteOff(note.name)()
-          }, note.time + now + note.duration)
-        })
-      })
-      Tone.Transport.toggle()
-    })
-  })
+window.autoplay = (url='/audio/midi/blues.mid') => {
+  if (url.startsWith('/')) {
+    url = location.origin + url
+  }
+  ws.send(`autoplay ${url}`)
+  console.log('will play', url, 'soon')
 }

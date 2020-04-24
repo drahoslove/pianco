@@ -32,6 +32,7 @@
     "> .05% in CZ and not ie <= 9"
   ],
   "dependencies": {
+    "@tonejs/midi": "^2.0.22",
     "ws": "^7.2.3"
   }
 }
