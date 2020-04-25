@@ -447,8 +447,8 @@ div.hint {
 }
 .cinema .top-keys button.pressed {
 	background-color: #000;
-	background-image: linear-gradient(180deg,  rgba(34,193,195,.6) 0%,  rgba(255,255,255,.1) 100%);
-}
+	box-shadow: 0px 0px 26px 3px hsl(var(--hue), 57%, 87%);
+	background-image: linear-gradient(180deg, hsla(var(--hue), 70%, 50%, 0.8) 0%, hsla(var(--hue), 70%, 50%, 0.1) 100%);}
 
 .cinema .bottom-keys button {
 	background: #ddd;
@@ -456,10 +456,9 @@ div.hint {
 .cinema .bottom-keys button.pressed {
 	background-color: #fff;
 	z-index: 2;
-	box-shadow: 0px 0px 26px 3px hsl(180, 57%, 87%);
-	background-image: linear-gradient(0deg,  rgba(34,193,195,.2)  0%, rgba(255,255,255,.1) 100%);
+	box-shadow: 0px 0px 26px 3px hsl(var(--hue), 57%, 87%);
+	background-image: linear-gradient(0deg,  hsla(var(--hue), 70%, 45%, 0.2) 0%, hsla(var(--hue), 70%, 100%, 0.1) 100%);
 }
-
 
 
 

@@ -19,11 +19,13 @@ const _ = cb => e => {
 const keyboard = document.querySelector('.keyboard')
 const keys = []
 
-allNotes.forEach(note => {
+allNotes.forEach((note, i) => {
   const key = document.createElement('button')
   key.dataset.note = note
   key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (_, n, s, i) => `<span>${n}${s&&'♯'}<sub>${i}</sub></span>`)
   keyboard.querySelector('.top-keys').appendChild(key)
+  const hue = 360*(i/allNotes.length)
+  key.style.setProperty('--hue', hue)
   if (!note.includes('#')) {
     const wideKey = key.cloneNode(true)
     keyboard.querySelector('.bottom-keys').appendChild(wideKey)
