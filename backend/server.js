@@ -55,7 +55,7 @@ console.log('listening on port', PORT)
 const midis = {}
 const timers = []
 async function replayMidi(url, client) {
-  if (!(url in midi)) {
+  if (!(url in midis)) {
     while (timers.length > 0) {
       clearTimeout(timers.pop())
     }
@@ -75,7 +75,7 @@ async function replayMidi(url, client) {
     }
     midis[url] = midi
   }
-  askForTracks(midi, client)
+  askForTracks(midis[url], client)
 
 }
 
