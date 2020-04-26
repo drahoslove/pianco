@@ -34,7 +34,7 @@ wss.on('connection', function connection(ws) {
       if (message.startsWith('autoplay')) {
         const [_, midiUrl] = message.split(' ', 2)
         console.log('midi autoplay requested', midiUrl)
-        replayMidi(midiUrl)
+        replayMidi(midiUrl, ws)
       }
     } else {
       wss.clients.forEach(client => {
@@ -52,26 +52,34 @@ console.log('listening on port', PORT)
 
 
 // ** autoplay functionality ** //
+const midis = {}
 const timers = []
-async function replayMidi(url) {
-  while (timers.length > 0) {
-    clearTimeout(timers.pop())
+async function replayMidi(url, client) {
+  if (!(url in midi)) {
+    while (timers.length > 0) {
+      clearTimeout(timers.pop())
+    }
+    const res = await fetch(url).catch(e => {
+      console.error(`failed to fetch ${url}\n${e.message}`)
+    })
+    if (!res) return
+    const midiFile = await res.buffer().catch(e => {
+      console.error(`failed to get data from fetched file ${url}\n${e}`)
+    })
+    let midi
+    try {
+      midi = new Midi(midiFile)
+    } catch (e) {
+      console.error(`failed to parse midi file ${url}\n${e}`)
+      return
+    }
+    midis[url] = midi
   }
-  const res = await fetch(url).catch(e => {
-    console.error(`failed to fetch ${url}\n${e.message}`)
-  })
-  if (!res) return
-  const midiFile = await res.buffer().catch(e => {
-    console.error(`failed to get data from fetched file ${url}\n${e}`)
-  })
-  let midi
-  try {
-    midi = new Midi(midiFile)
-  } catch (e) {
-    console.error(`failed to parse midi file ${url}\n${e}`)
-    return
-  }
-  const tracks = pickBestTracks(midi, 3)
+  askForTracks(midi, client)
+
+}
+
+const playTracks = (tracks) => {
   for (let track of tracks) {
     console.log(' - scheduling notes')
     track.notes.forEach(note => {
@@ -81,6 +89,8 @@ async function replayMidi(url) {
     console.log(` - will play ${track.notes.length} ${track.instrument.family} notes`)
   }
 }
+
+
 
 const sendNoteOn = (note) => {
   wss.clients.forEach(client => {
@@ -98,14 +108,36 @@ const sendNoteOff = (note) => {
   })
 }
 
+const askForTracks = (midi, client) => {
+  const tracksInfo = getTracks(midi)
+    .map(({ instrument, notes }) => [instrument.number, notes.length].join(':'))
+    .join(';')
+  client.send(`auto?instrument ${tracksInfo}`)
+  client.once('message', (message) => {
+    if (typeof message === "string") {
+      const [cmd, data] = message.split(' ')
+      if (cmd === 'auto!') {
+        const [url, selection] = data.split(';')
+        const selectedIndexes = selection.split(',').map(Number)
+        const midi = midis[url]
+        const selectedTracks = getTracks(midi).filter((_, i) => selectedIndexes.includes(i))
+        playTracks(selectedTracks)
+      }
+    }
+  })
+}
+
 // select n most piano-like track with most notes
-const pickBestTracks = ({ tracks }, n=1) => {
-  return tracks
+const pickBestTracks = (midi, n=1) => {
+  return getTracks(midi).slice(0, n)
+}
+
+const getTracks = ({ tracks }) => (
+  tracks
     .filter(({ notes }) => notes.length > 0)
     .sort(({ instrument: iA, notes: nA }, { instrument: iB, notes: nB }) => {
       return (iA.number !== iB.number)
         ? iA.number - iB.number // less is better
         : nB.length - nA.length // more is better 
     })
-    .slice(0, n)
-}
+)

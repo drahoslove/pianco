@@ -141,7 +141,7 @@ body.rotated {
 	height: 17.5rem;
 	transition: left 0.25s ease-in, width .2s ease-in-out, height .2s ease-in-out .1s, padding .15s ease-in-out .15s;
 	left: 0rem;
-	overflow: hidden;
+	overflow: visible;
 }
 .keyboard>div {
 	height: 100%;
@@ -448,7 +448,8 @@ div.hint {
 .cinema .top-keys button.pressed {
 	background-color: #000;
 	box-shadow: 0px 0px 26px 3px hsl(var(--hue), 57%, 87%);
-	background-image: linear-gradient(180deg, hsla(var(--hue), 70%, 50%, 0.8) 0%, hsla(var(--hue), 70%, 50%, 0.1) 100%);}
+	background-image: linear-gradient(180deg, hsla(var(--hue), 70%, 50%, 0.8) 0%, hsla(var(--hue), 70%, 50%, 0.1) 100%);
+}
 
 .cinema .bottom-keys button {
 	background: #ddd;
@@ -459,7 +460,6 @@ div.hint {
 	box-shadow: 0px 0px 26px 3px hsl(var(--hue), 57%, 87%);
 	background-image: linear-gradient(0deg,  hsla(var(--hue), 70%, 45%, 0.2) 0%, hsla(var(--hue), 70%, 100%, 0.1) 100%);
 }
-
 
 
 

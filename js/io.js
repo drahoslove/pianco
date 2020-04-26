@@ -1,5 +1,5 @@
 import '../lib/Tone.js'
-import { pressNote, releaseNote } from './instrument.js'
+import { pressNote, releaseNote, instrumentById } from './instrument.js'
 
 const UID = Math.floor(Math.random()*255) // TODO obtain from backend
 let GID = (+location.hash.slice(1)) % 256 || 0
@@ -101,4 +101,23 @@ window.autoplay = (url='/audio/midi/blues.mid') => {
   }
   ws.send(`autoplay ${url}`)
   console.log('will play', url, 'soon')
+  const selectOptions = ({ data: msg }) => {
+    if (typeof msg !== 'string') return;
+    const [cmd, data] = msg.split(' ')
+    if (cmd === 'auto?instrument') {
+      let question = "Select intruments:\n"
+      const preselection = []
+      question += data.split(';').map((str, i) => {
+        const [id, notes] = str.split(':')
+        if (i<3) {
+          preselection.push(i+1)
+        }
+        return `${i+1}: ${instrumentById[id]} - ${notes} notes`
+      }).join('\n')
+      const selection = prompt(question, preselection).split(',').map(i => i-1).join(',')
+      ws.removeEventListener('message', selectOptions)
+      ws.send(`auto! ${url};${selection}`)
+    }
+}
+  ws.addEventListener('message', selectOptions)
 }
