@@ -29,8 +29,9 @@ body {
 	margin: 0 0 2rem;
 	flex-direction: column;
 	background: #aee;
-	background-color: #faa499;
-	background-image: linear-gradient(319deg, #faa499 0%, #f7dd85 37%, #ffc55c 100%);
+	/* background-color: #faa499;
+	background-image: linear-gradient(319deg, #faa499 0%, #f7dd85 37%, #ffc55c 100%); */
+	background-color: #aaa;
 	overflow: hidden;
 }
 body.rotated {
@@ -86,6 +87,7 @@ body.rotated {
 	border-right-width: 0px;
 	position: relative;
 	background-color: #fff7e2;
+	background-color: #fafafa;
 	justify-content: center;
 	border-radius: 0;
 }
@@ -177,30 +179,41 @@ body.rotated {
 	border-right-width: .75px; 
 	height: 100%;
 	text-align: center;
-	background: #fff7e2;
+	/* background-color: #fff7e2; */
+	background-color: #fdfdfd;
 	flex: 1 0;
-	border-bottom-left-radius: 6px;
-	border-bottom-right-radius: 6px;
+	border-bottom-left-radius: 10% 2%;
+	border-bottom-right-radius: 10% 2%;
 	z-index: 1;
 }
 .bottom-keys button.pressed {
-	background: #ffeab4;
+	/* background: #ffeab4; */
+	background-color: #fff;
+	z-index: 2;
+	box-shadow: 0px 0px 20px 3px hsl(calc(var(--hue) * 2), 75%, 85%);
+	background-image: linear-gradient(0deg, hsla(calc(var(--hue) * 2), 70%, 50%, 0.6) 0%, hsla(calc(var(--hue) * 2), 70%, 100%, 0.1) 100%);
+
 }
 .letters .bottom-keys button {
 	color: #666;
 }
 
 .top-keys button {
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 15% 3%;
+	border-bottom-right-radius: 15% 3%;
 	border: none;
 	height: 60%;
-	background: #461800;
+	/* background-color: #461800; */
+	background-color: #212121;
 	position: relative;
 	flex: 1 0;
 }
 .top-keys button.pressed {
-	background: #742801;
+	/* background: #742801; */
+	background-color: #000;
+	box-shadow: 0px 0px 20px 3px hsl(calc(var(--hue) * 2), 75%, 85%);
+	background-image: linear-gradient(180deg, hsla(calc(var(--hue) * 2), 70%, 50%, 0.8) 0%, hsla(calc(var(--hue) * 2), 70%, 50%, 0.1) 100%);
+
 }
 .letters .top-keys button {
 	color: #aaa;
