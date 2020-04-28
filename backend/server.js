@@ -78,7 +78,7 @@ async function replayMidi(url, client) {
 
 const playTracks = (tracks) => {
   while (timers.length > 0) {
-    clearTimeout(timers.pop())
+    clearTimeout(timers.shift())
   }
   for (let track of tracks) {
     console.log(' - scheduling notes')

@@ -434,7 +434,7 @@ div.hint {
 	cursor: pointer;
 }
 .cinema .cinema-only {
-	display: inline;
+	display: block;
 }
 
 .cinema body {
@@ -474,6 +474,64 @@ div.hint {
 	box-shadow: 0px 0px 26px 3px hsl(var(--hue), 57%, 87%);
 	background-image: linear-gradient(0deg,  hsla(var(--hue), 85%, 45%, 0.45) 0%, hsla(var(--hue), 70%, 100%, 0.1) 100%);
 }
+
+.background {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: purple;
+	background-color: black;
+}
+.background .smoke {
+	opacity: 0.2;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-image: url('/img/smoke.png');
+	background-repeat: repeat;
+	background-size: contain;
+  animation-iteration-count: infinite;
+	animation-direction: alternate-reverse;
+}
+.background .smoke:nth-child(1) {
+	animation-name: flow-1;
+	animation-duration: 28s;
+}
+.background .smoke:nth-child(2) {
+	transform: scale(1, -1);	
+	animation-name: flow-2;
+	animation-duration: 23s;
+}
+.background .smoke:nth-child(3) {
+	transform: scale(-1, 1);
+	animation-name: flow-3;
+	animation-duration: 29s;
+}
+.background .smoke:nth-child(4) {
+	transform: scale(-1, -1);
+	animation-name: flow-4;
+	animation-duration: 20s;
+}
+
+@keyframes flow-1 {
+  from {background-position: -75vw 25vh}
+  to {background-position: 75vw -25vh}
+}
+@keyframes flow-2 {
+  from {background-position: -50vw -50vh}
+  to {background-position: 50vw 50vh}
+}
+@keyframes flow-3 {
+  from {background-position: +75vw -75vh}
+  to {background-position: 25vw 25vh}
+}
+@keyframes flow-4 {
+  from {background-position: -25vw -50vh}
+  to {background-position: 75vw 50vh}
+}
+
 
 
 
@@ -560,6 +618,12 @@ input[type=range]::-ms-thumb {
 <script defer src="js/ui.js"></script>
 </head>
 <body>
+	<div class="cinema-only background">
+		<div class="smoke"></div>
+		<div class="smoke"></div>
+		<div class="smoke"></div>
+		<div class="smoke"></div>
+	</div>
 	<div class="buttons">
 		<div>
 			<select name="instrument" id="instrument">
