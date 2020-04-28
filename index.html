@@ -143,8 +143,7 @@ body.rotated {
 	height: 17.5rem;
 	transition: left 0.25s ease-in, width .2s ease-in-out, height .2s ease-in-out .1s, padding .15s ease-in-out .15s;
 	left: 0rem;
-	overflow-y: visible;
-	overflow-x: hidden;
+	overflow: visible;
 }
 .keyboard>div {
 	height: 100%;
@@ -320,6 +319,14 @@ div.hint {
 .hint button[data-note*="C#"],
 .hint button[data-note*="D#"] {
 	flex: 74235;
+}
+
+.hint[style="left: 63rem;"] button:nth-child(14),
+.hint[style="left: 63rem;"] button:nth-child(15),
+.hint[style="left: 63rem;"] button:nth-child(16),
+.hint[style="left: 63rem;"] button:nth-child(17),
+.hint[style="left: 63rem;"] button:nth-child(18) {
+	visibility: hidden;
 }
 
 .footer {
