@@ -56,9 +56,6 @@ const midis = {}
 const timers = []
 async function replayMidi(url, client) {
   if (!(url in midis)) {
-    while (timers.length > 0) {
-      clearTimeout(timers.pop())
-    }
     const res = await fetch(url).catch(e => {
       console.error(`failed to fetch ${url}\n${e.message}`)
     })
@@ -80,6 +77,9 @@ async function replayMidi(url, client) {
 }
 
 const playTracks = (tracks) => {
+  while (timers.length > 0) {
+    clearTimeout(timers.pop())
+  }
   for (let track of tracks) {
     console.log(' - scheduling notes')
     track.notes.forEach(note => {
