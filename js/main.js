@@ -1,10 +1,10 @@
 import {
   allNotes,
-  releaseAll, // TODO
 } from './instrument.js'
 import {
   sendNoteOn as pressNote,
   sendNoteOff as releaseNote,
+  sendOffAll as releaseAll,
 } from './io.js'
 
 let transposition = 0
@@ -24,7 +24,7 @@ allNotes.forEach((note, i, { length }) => {
   key.dataset.note = note
   key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (_, n, s, i) => `<span>${n}${s&&'♯'}<sub>${i}</sub></span>`)
   keyboard.querySelector('.top-keys').appendChild(key)
-  const hue = 360*(i/length)
+  const hue = 360*((i-3)/(12*4))
   key.style.setProperty('--hue', hue)
   if (!note.includes('#')) {
     const wideKey = key.cloneNode(true)

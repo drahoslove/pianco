@@ -1,6 +1,6 @@
 import '../lib/Tone.js'
 
-const playingNotes = new Set()
+const playingNotes = {}
 
 const instruments = {
   polySynth: new Tone.PolySynth(16, Tone.Synth, {
@@ -95,28 +95,33 @@ volumeSelector.parentElement.onwheel = function (e) {
 volumeSelector.onchange = updateVolume
 
 // note playing 
-const pressNote = (note, velocity=0.8) => (e) => {
-  if (playingNotes.has(note)) {
-    return
+const pressNote = (note, velocity=0.8, uid) => (e) => {
+  if (playingNotes[note].has(uid)) {
+    return // already pressed by you
   }
-  playingNotes.add(note)
+  playingNotes[note].add(uid)
+  if (playingNotes[note].size > 1) {
+    return // already pressed by another 
+  }
   document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.add('pressed'))
   getInstrument().triggerAttack([note], undefined, velocity)
 }
-const releaseNote = (note) => (e) => {
-  if (!playingNotes.has(note)) {
-    return
+const releaseNote = (note, uid) => (e) => {
+  if (!playingNotes[note].has(uid)) {
+    return // you are not pressing this
   }
-  playingNotes.delete(note)
+  playingNotes[note].delete(uid)
+  if (playingNotes[note].size > 0) {
+    return // still pressed by another
+  }
   document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.remove('pressed'))
   getInstrument().triggerRelease([note])
 }
-const releaseAll = () => () => {
-  getInstrument().triggerRelease(allNotes)
-  playingNotes.clear()
-  document.querySelectorAll('.pressed').forEach(({ classList }) => classList.remove('pressed'))
+const releaseAll = (uid) => () => {
+  allNotes.forEach(note => {
+    releaseNote(note, uid)
+  })
 }
-
 
 const allNotes = []
 allNotes.push("A0","A#0","B0")
@@ -129,6 +134,11 @@ allNotes.push("A0","A#0","B0")
   })
 })
 allNotes.push('C8')
+
+
+allNotes.forEach(note => {
+  playingNotes[note] = new Set()
+})
 
 const instrumentById = [
 	"acoustic grand piano",

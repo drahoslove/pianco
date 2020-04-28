@@ -1,5 +1,5 @@
 import '../lib/Tone.js'
-import { pressNote, releaseNote, instrumentById } from './instrument.js'
+import { pressNote, releaseNote, releaseAll, instrumentById } from './instrument.js'
 
 const UID = Math.floor(Math.random()*255) // TODO obtain from backend
 let GID = (+location.hash.slice(1)) % 256 || 0
@@ -34,9 +34,9 @@ try {
       const note = Tone.Midi(midiNote).toNote()
       if (on) {
         const velocity = midiVelocity/127
-        pressNote(note, velocity)()
+        pressNote(note, velocity, uid)()
       } else {
-        releaseNote(note)()
+        releaseNote(note, uid)()
       }
     }
   })
@@ -70,8 +70,8 @@ try {
 }
 
 
-const sendNoteOn = (note, velocity=0.8) => (e) => {
-  pressNote(note, velocity)(e)
+const sendNoteOn = (note, velocity=0.8, uid=UID) => (e) => {
+  pressNote(note, velocity, uid)(e)
   if (ws.readyState !== WebSocket.OPEN) {
     return
   }
@@ -80,8 +80,8 @@ const sendNoteOn = (note, velocity=0.8) => (e) => {
   ws.send(new Uint8Array([GID, UID, 1, midiNote, midiVelocity]))
 }
 
-const sendNoteOff = (note) => (e) => {
-  releaseNote(note)(e)
+const sendNoteOff = (note, uid=UID) => (e) => {
+  releaseNote(note, uid)(e)
   if (ws.readyState !== WebSocket.OPEN) {
     return
   }
@@ -89,9 +89,14 @@ const sendNoteOff = (note) => (e) => {
   ws.send(new Uint8Array([GID, UID, 0, midiNote]))
 }
 
+const sendOffAll = (uid=UID) => (e) => {
+  releaseAll(uid)()
+}
+
 export {
   sendNoteOn,
   sendNoteOff,
+  sendOffAll,
 }
 
 
