@@ -502,7 +502,7 @@ body.idle .close {
 	left: 0;
 	right: 0;
 	background-color: black;
-	animation: hue-rot 15s linear 0s infinite alternate;
+	animation: fade-in 2s ease-in, hue-rot 15s linear 0s infinite alternate;
 	/* filter: blur(2px); */
 }
 .background .smoke {
@@ -563,6 +563,12 @@ body.idle .close {
   50%  {background-color: hsl(180, 100%, 55%)}
   75%  {background-color: hsl(240, 100%, 55%)}
   100% {background-color: hsl(360, 100%, 55%)}
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  60% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 @keyframes flow-1 {
