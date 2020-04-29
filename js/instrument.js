@@ -118,8 +118,11 @@ const releaseNote = (note, uid) => (e) => {
   getInstrument().triggerRelease([note])
 }
 const releaseAll = (uid) => () => {
-  allNotes.forEach(note => {
-    releaseNote(note, uid)
+  return allNotes.filter(note => {
+    if (playingNotes[note].has(uid)) {
+      releaseNote(note, uid)()
+      return true
+    }
   })
 }
 

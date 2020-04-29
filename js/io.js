@@ -90,7 +90,7 @@ const sendNoteOff = (note, uid=UID) => (e) => {
 }
 
 const sendOffAll = (uid=UID) => (e) => {
-  releaseAll(uid)()
+  releaseAll(uid)().forEach((note) => sendNoteOff(note))
 }
 
 export {
