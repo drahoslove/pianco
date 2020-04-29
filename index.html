@@ -430,15 +430,23 @@ div.hint {
 	right: 0;
 	text-align: right;
 }
-#cinema-off {
-	width: 2rem;
-	height: 2rem;
+.close {
+	width: 2.25rem;
+	height: 2.25rem;
 	border-radius: 50%;
-	font-size: 1.5rem;
+	font-size: 1.75rem;
 	background: #888;
 	border: none;
 	margin: .5rem;
 	cursor: pointer;
+	transition: opacity 0.2s;
+	opacity: .5;
+}
+.close:hover {
+	opacity: 1;
+}
+body.idle .close {
+	opacity: 0;
 }
 .cinema .cinema-only {
 	display: block;
@@ -448,6 +456,11 @@ div.hint {
 	background-color: #222;
 	background-image: none;
 }
+
+.cinema body.idle * {
+	cursor: none;
+}
+
 .cinema .buttons {
 	transition-delay: 0s;
 	opacity: 0;
@@ -490,9 +503,10 @@ div.hint {
 	right: 0;
 	background-color: purple;
 	background-color: black;
+	filter: blur(2px);
 }
 .background .smoke {
-	opacity: 0.15;
+	opacity: .125;
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -513,6 +527,7 @@ div.hint {
 	animation-name: flow-2;
 	animation-duration: 33s;
 	animation-delay: -9s;
+
 }
 .background .smoke:nth-child(3) {
 	transform: scale(-1, 1);
@@ -703,7 +718,7 @@ input[type=range]::-ms-thumb {
 		</div>
 	</div>
 	<div class="cinema-only">
-		<button id="cinema-off">&times;</button>
+		<button id="cinema-off" class="close">&times;</button>
 	</div>
 </body>
 </html>

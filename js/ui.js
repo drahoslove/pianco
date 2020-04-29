@@ -22,6 +22,13 @@ const actions = {
   },
   cinema: (val) => {
     document.body.parentElement.classList[val ? 'add' : 'remove']('cinema')
+    if (val) {
+      document.body.requestFullscreen()
+    } else {
+      if (document.fullscreenElement) {
+        document.exitFullscreen()
+      }
+    }
   },
 }
 
@@ -81,6 +88,9 @@ const offCinema = () => {
   document.getElementById('toggle-cinema').classList.remove('on')
   actions.cinema(false)
   saveSetting('cinema', false)
+  if (document.fullscreenElement !== null) {
+    document.fullscreenElement.exitFullscreen()
+  }
 }
 cinemaOffButton.onclick = offCinema
 window.addEventListener('keydown', (e) => {
@@ -134,3 +144,15 @@ const reorient = () => {
 
 window.onorientationchange = reorient
 reorient()
+
+
+// mouse idle
+
+let idleTimeout = 0
+document.body.onmousemove = () => {
+  document.body.classList.remove('idle')
+  clearTimeout(idleTimeout)
+  idleTimeout = setTimeout(() => {
+    document.body.classList.add('idle')
+  }, 2500)
+}
