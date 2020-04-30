@@ -103,7 +103,8 @@ const pressNote = (note, velocity=0.8, uid) => (e) => {
   if (playingNotes[note].size > 1) {
     return // already pressed by another 
   }
-  document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.add('pressed'))
+  document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.add('pressed'))  
+  addRect(note)
   getInstrument().triggerAttack([note], undefined, velocity)
 }
 const releaseNote = (note, uid) => (e) => {
@@ -142,6 +143,17 @@ allNotes.push('C8')
 allNotes.forEach(note => {
   playingNotes[note] = new Set()
 })
+
+
+function addRect(note) {
+  const rect = document.createElement('div')
+  const column = document.querySelector(`.pianoroll [data-note="${note}"]`)
+  column.appendChild(rect)
+  setTimeout(() => {
+    rect.remove()
+  }, 60*1000)
+}
+
 
 const instrumentById = [
 	"acoustic grand piano",

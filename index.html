@@ -669,6 +669,78 @@ input[type=range]::-ms-thumb {
   margin-top: 0px!important;
 }
 
+
+/* Pianoroll */
+
+
+.pianoroll {
+	display: none;
+	flex-direction: row;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 50%;
+}
+.pianoroll>div {
+	height: 100%;
+	justify-content: center;
+	position: relative;
+}
+
+.cinema .cinema-only.pianoroll {
+	display: flex;
+}
+
+.pianoroll>div[data-note*="F"],
+.pianoroll>div[data-note*="G"],
+.pianoroll>div[data-note*="A"],
+.pianoroll>div[data-note*="B"] {
+	flex: 72156;
+}
+.pianoroll>div[data-note*="C"],
+.pianoroll>div[data-note*="D"],
+.pianoroll>div[data-note*="E"] {
+	flex: 74606;
+}
+.pianoroll>div[data-note*="F#"],
+.pianoroll>div[data-note*="G#"],
+.pianoroll>div[data-note*="A#"] {
+	flex: 72520;
+}
+.pianoroll>div[data-note*="C#"],
+.pianoroll>div[data-note*="D#"] {
+	flex: 74235;
+}
+
+.pianoroll>div:first-child {
+	/* (B+A) - (b+a#)  = (126546+126546) - (72156 + 72520 ) */
+	flex: 108416;
+}
+.pianoroll>div:last-child {
+	/* C */
+	flex: 124096;
+}
+
+/* flying rectangle */
+.pianoroll>div>div {
+	min-height: 5rem;
+	width: 100%;
+	background-color: hsla(var(--hue), 70%, 50%, 0.9);
+	position: absolute;
+	bottom: 100vh;
+	border-radius: 3px;
+	animation-name: rise-up;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+}
+
+
+@keyframes rise-up {
+	0% { bottom: 5vh; }
+	100% { bottom: 100vh; }
+}
+
 </style>
 <script type="module" src="js/main.js"></script>
 <script defer src="js/ui.js"></script>
@@ -683,6 +755,8 @@ input[type=range]::-ms-thumb {
 		<div class="smoke"></div>
 		<div class="smoke"></div>
 		<div class="smoke"></div>
+	</div>
+	<div class="cinema-only pianoroll">
 	</div>
 	<div class="buttons">
 		<div>

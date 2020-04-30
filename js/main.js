@@ -17,6 +17,7 @@ const _ = cb => e => {
 
 // create keys
 const keyboard = document.querySelector('.keyboard')
+const pianoroll = document.querySelector('.pianoroll')
 const keys = []
 
 allNotes.forEach((note, i, { length }) => {
@@ -33,6 +34,11 @@ allNotes.forEach((note, i, { length }) => {
   } else {
     keys.push(key)
   }
+
+  const column = document.createElement('div')
+  column.dataset.note = note
+  column.style.setProperty('--hue', hue)
+  pianoroll.appendChild(column)
 })
 
 // init transpose buttons
