@@ -114,8 +114,9 @@ const releaseNote = (note, uid) => (e) => {
   playingNotes[note].delete(uid)
   if (playingNotes[note].size > 0) {
     return // still pressed by another
-  }
+	}
   document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.remove('pressed'))
+	releaseRect(note)
   getInstrument().triggerRelease([note])
 }
 const releaseAll = (uid) => () => {
@@ -147,11 +148,19 @@ allNotes.forEach(note => {
 
 function addRect(note) {
   const rect = document.createElement('div')
-  const column = document.querySelector(`.pianoroll [data-note="${note}"]`)
+	const column = document.querySelector(`.pianoroll [data-note="${note}"]`)
+	rect.className = "pressed"
   column.appendChild(rect)
   setTimeout(() => {
     rect.remove()
   }, 60*1000)
+}
+function releaseRect(note) {
+	const column = document.querySelector(`.pianoroll [data-note="${note}"]`)
+	const rect = column.lastChild
+	if (rect) {
+		rect.className = "released"
+	}
 }
 
 

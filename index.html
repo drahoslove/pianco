@@ -470,6 +470,7 @@ body.idle .close {
 	left: 0 !important; /* to disable transposition in cinema mode */
 	height: 0;
 	padding-bottom: 10%;
+	margin-top: 25vh;
 }
 .cinema .keyboard button {
 	transition-delay: 0s;
@@ -671,27 +672,17 @@ input[type=range]::-ms-thumb {
 
 
 /* Pianoroll */
-
-
-.pianoroll {
+.cinema-only.pianoroll {
 	display: none;
-	flex-direction: row;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 50%;
 }
-.pianoroll>div {
-	height: 100%;
-	justify-content: center;
-	position: relative;
-}
-
 .cinema .cinema-only.pianoroll {
 	display: flex;
+	flex-direction: row;
 }
-
+.pianoroll>div {
+	position: relative;
+}
+/* columns */
 .pianoroll>div[data-note*="F"],
 .pianoroll>div[data-note*="G"],
 .pianoroll>div[data-note*="A"],
@@ -712,32 +703,39 @@ input[type=range]::-ms-thumb {
 .pianoroll>div[data-note*="D#"] {
 	flex: 74235;
 }
-
 .pianoroll>div:first-child {
-	/* (B+A) - (b+a#)  = (126546+126546) - (72156 + 72520 ) */
 	flex: 108416;
 }
 .pianoroll>div:last-child {
-	/* C */
 	flex: 124096;
 }
 
 /* flying rectangle */
 .pianoroll>div>div {
-	min-height: 5rem;
 	width: 100%;
+	min-width: 1px;
 	background-color: hsla(var(--hue), 70%, 50%, 0.9);
 	position: absolute;
-	bottom: 100vh;
+	bottom: 0;
 	border-radius: 3px;
-	animation-name: rise-up;
-	animation-duration: 2s;
-	animation-timing-function: linear;
+}
+.pianoroll>div>div.pressed {
+	animation: grow-up 5s linear 0s 1 normal none running;
+}
+.pianoroll>div>div.released {
+	bottom: 100vh;
+	animation:
+		grow-up 5s linear 0s 1 normal none paused,
+		rise-up 5s linear 0s 1 normal none running;
 }
 
+@keyframes grow-up {
+	0% { height: 0vh; }
+	100% { height: 100vh; }
+}
 
 @keyframes rise-up {
-	0% { bottom: 5vh; }
+	0% { bottom: 0vh; }
 	100% { bottom: 100vh; }
 }
 
@@ -755,8 +753,6 @@ input[type=range]::-ms-thumb {
 		<div class="smoke"></div>
 		<div class="smoke"></div>
 		<div class="smoke"></div>
-	</div>
-	<div class="cinema-only pianoroll">
 	</div>
 	<div class="buttons">
 		<div>
@@ -787,6 +783,7 @@ input[type=range]::-ms-thumb {
 		</div>
 	</div>
 	<div class="keyboard letters">
+		<div class="cinema-only pianoroll"></div>
 		<div class="top-keys"></div>
 		<div class="bottom-keys"></div>
 		<div class="hint" hidden>
