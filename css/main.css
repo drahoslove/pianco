@@ -1,0 +1,746 @@
+@font-face {
+  font-family: Bravura;
+  src: url(/font/Bravura.woff2);
+}
+
+html body *[hidden] {
+	display: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+html, body {
+	display: flex;
+	overflow: hidden;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	width: 100vw;
+	font-family: Arial, Helvetica, sans-serif;
+}
+body {
+	margin: 0 0 2rem;
+	flex-direction: column;
+	background: #aee;
+	/* background-color: #faa499;
+	background-image: linear-gradient(319deg, #faa499 0%, #f7dd85 37%, #ffc55c 100%); */
+	background-color: #aaa;
+	overflow: hidden;
+}
+body.rotated {
+	transform: rotate(90deg);
+	height: 100vw;
+	width: 100vh;
+	overflow: visible;
+}
+
+.buttons {
+	padding: 2rem;
+	display: flex;
+	width: 100%;
+	flex-direction: row;
+	justify-content: space-between;
+	opacity: 1;
+	transition: opacity 0.1s ease 0.2s;
+}
+
+.buttons>div {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	position: relative;
+}
+.buttons>div:first-child {
+	justify-content: flex-start;
+	padding-left: 1.5rem;
+}
+.buttons>div:last-child {
+	justify-content: flex-end;
+	padding-right: 1.5rem;
+}
+
+.buttons>div:first-child:last-child {
+	justify-content: center;
+}
+
+.buttons button,
+.buttons select,
+.buttons label {
+	min-width: 3.5rem;
+	text-align: center;
+	text-align-last: center;
+	display: flex;
+	border: 1px solid #888;
+	outline: none;
+	cursor: pointer;
+	margin: 0;
+	padding: .6rem 1rem 0.4rem;
+	font-size: 110%;
+	-webkit-tap-highlight-color: transparent;
+	border-right-width: 0px;
+	position: relative;
+	background-color: #fff7e2;
+	background-color: #fafafa;
+	justify-content: center;
+	border-radius: 0;
+}
+.buttons div>:first-child {
+	border-top-left-radius: .5rem;
+	border-bottom-left-radius: .5rem;
+}
+.buttons div>:last-child {
+	border-top-right-radius: .5rem;
+	border-bottom-right-radius: .5rem;
+	border-right-width: 1px;
+}
+.buttons button:active {
+	border-color: transparent;
+}
+.buttons button::after {
+	position: absolute;
+	top: -.5rem;
+	left: 0;
+	right: 0;
+}
+.buttons button.on::after {
+	content: '.';
+}
+.buttons button.onon::after {
+	content: '..';
+}
+.buttons button.ononon::after {
+	content: '...';
+}
+
+.buttons select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+.buttons select option {
+	font-size: 90%;
+}
+
+#volume {
+	width: 4rem;
+}
+#volume-icon {
+	width: 1.5rem;
+}
+
+/*  ===============  keboard  =============== */
+
+.keyboard {
+	width: 156rem; /* (7*7+3)*3 */
+	position: relative;
+	height: 17.5rem;
+  transition:
+    left .2s ease-in,
+    width .2s ease-in-out,
+    margin .2s ease-in-out .05s,
+    height .2s ease-in-out .1s,
+    padding .2s ease-in-out .15s;
+	left: 0rem;
+	overflow: visible;
+}
+.keyboard>div {
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+}
+
+.keyboard button {
+	border: 1px solid #888;
+	color: transparent;
+	padding: 1rem 0;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
+	outline: none;
+	transition: color 0s ease .2s;
+}
+.keyboard button[data-note="C4"] {
+	font-weight: bold;
+	font-size: 105%;
+}
+
+.bottom-keys button {
+	border-left-width: .25px;
+	border-right-width: .75px; 
+	height: 100%;
+	text-align: center;
+	/* background-color: #fff7e2; */
+	background-color: #fdfdfd;
+	flex: 1 0;
+	border-bottom-left-radius: 10% 2%;
+	border-bottom-right-radius: 10% 2%;
+	z-index: 1;
+}
+.bottom-keys button.pressed {
+	/* background: #ffeab4; */
+	background-color: #fff;
+	z-index: 2;
+	box-shadow: 0px 0px 20px 3px hsl(calc(var(--hue) * 2), 75%, 85%);
+	background-image: linear-gradient(0deg, hsla(calc(var(--hue) * 2), 70%, 50%, 0.6) 0%, hsla(calc(var(--hue) * 2), 70%, 100%, 0.1) 100%);
+
+}
+.letters .bottom-keys button {
+	color: #666;
+}
+
+.top-keys button {
+	border-bottom-left-radius: 15% 3%;
+	border-bottom-right-radius: 15% 3%;
+	border: none;
+	height: 60%;
+	/* background-color: #461800; */
+	background-color: #212121;
+	position: relative;
+	flex: 1 0;
+}
+.top-keys button.pressed {
+	/* background: #742801; */
+	background-color: #000;
+	box-shadow: 0px 0px 20px 3px hsl(calc(var(--hue) * 2), 75%, 85%);
+	background-image: linear-gradient(180deg, hsla(calc(var(--hue) * 2), 70%, 50%, 0.8) 0%, hsla(calc(var(--hue) * 2), 70%, 50%, 0.1) 100%);
+
+}
+.letters .top-keys button {
+	color: #aaa;
+}
+
+/* correct spacing https://www.mathpages.com/home/kmath043.htm)
+f=g=a=b=72156 units      c=d=e=74606 units  
+f#=g#=a#=72520 units     c#=d#=74235 units  
+F=G=A=B=126546 units     C=D=E=124096 units 
+*/
+.top-keys button[data-note*="F"],
+.top-keys button[data-note*="G"],
+.top-keys button[data-note*="A"],
+.top-keys button[data-note*="B"] {
+	flex: 72156;
+}
+.top-keys button[data-note*="C"],
+.top-keys button[data-note*="D"],
+.top-keys button[data-note*="E"] {
+	flex: 74606;
+}
+.top-keys button[data-note*="F#"],
+.top-keys button[data-note*="G#"],
+.top-keys button[data-note*="A#"] {
+	flex: 72520;
+}
+.top-keys button[data-note*="C#"],
+.top-keys button[data-note*="D#"] {
+	flex: 74235;
+}
+.bottom-keys button[data-note*="F"],
+.bottom-keys button[data-note*="G"],
+.bottom-keys button[data-note*="A"],
+.bottom-keys button[data-note*="B"] {
+	flex: 126546;
+}
+.bottom-keys button[data-note*="C"],
+.bottom-keys button[data-note*="D"],
+.bottom-keys button[data-note*="E"] {
+	flex: 124096;
+}
+
+.top-keys button:first-child {
+	/* (B+A) - (b+a#)  = (126546+126546) - (72156 + 72520 ) */
+	flex: 108416;
+}
+.top-keys button:last-child {
+	/* C */
+	flex: 124096;
+}
+
+/* unhide correct accidentals keys */
+.top-keys button[data-note*="#"] {
+	z-index: 3;
+}
+
+/* =============== */
+
+div.hint {
+	width: 31.75rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: center !important;
+	padding-left: 69rem;
+	position: absolute;
+	top: 0;
+}
+.hint button {
+	background-color: transparent;
+	color: #333;
+	height: 1.75rem;
+	border: none;
+	border-radius: 50%;
+	font-weight: bold;
+	cursor: default;
+	z-index: 3;
+	position: relative;
+	top: 2rem;
+	display: flex;
+	justify-content: center;
+	font-size: 14t;
+}
+.hint button[data-note*="#"] {
+	color: #AAA;
+	top: 0.5rem;
+}
+.hint button[data-note*="F"],
+.hint button[data-note*="G"],
+.hint button[data-note*="A"],
+.hint button[data-note*="B"] {
+	flex: 72156;
+}
+.hint button[data-note*="C"],
+.hint button[data-note*="D"],
+.hint button[data-note*="E"] {
+	flex: 74606;
+}
+.hint button[data-note*="F#"],
+.hint button[data-note*="G#"],
+.hint button[data-note*="A#"] {
+	flex: 72520;
+}
+.hint button[data-note*="C#"],
+.hint button[data-note*="D#"] {
+	flex: 74235;
+}
+
+.hint[style="left: 63rem;"] button:nth-child(14),
+.hint[style="left: 63rem;"] button:nth-child(15),
+.hint[style="left: 63rem;"] button:nth-child(16),
+.hint[style="left: 63rem;"] button:nth-child(17),
+.hint[style="left: 63rem;"] button:nth-child(18) {
+	visibility: hidden;
+}
+
+.footer {
+	opacity: 0.5;
+	font-size: 80%;
+	display: flex;
+	align-items: flex-end;
+}
+
+
+/* =============== staff =============== */
+.staff {
+	font-family: Bravura;
+	position: absolute;
+	font-size: 3.25rem;
+	bottom: -2em;
+}
+.staff>span:first-child {
+	position: relative;
+	left: 0;
+	display: block;
+	color: #666;
+	opacity: 1;
+}
+.staff>span:first-child::first-letter { /* clef */
+	color: #333;
+	position: relative;
+	top: +0.125em;
+	vertical-align: super;
+}
+.staff>span {
+	position: absolute;
+	z-index: 1;
+	opacity: 0;
+	transition: opacity 0.25s ease-in;
+}
+.staff>span[data-note="C4"]::before,
+.staff>span[data-note="C#4"]::before,
+.staff>span[data-note="A5"]::before,
+.staff>span[data-note="A#5"]::before,
+.staff>span[data-note="B5"]::before,
+.staff>span[data-note="C6"]::before {
+	content: '𝄖';
+	position: absolute;
+	top: .5em;
+	right: -0em;
+	color: #666;
+	z-index: -1;
+}
+.staff>span[data-note="B5"]::before {
+	top: .625em;
+	z-index: -1;
+}
+.staff>span[data-note="C6"]::after {
+	content: '𝄖';
+	position: absolute;
+	top: .75em;
+	right: -0em;
+	color: #666;
+}
+
+.staff>span.pressed {
+	position: absolute;
+	opacity: 1;
+	transition: none;
+}
+
+
+/* ============== cinema mode ============== */
+
+.cinema-bar {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	text-align: right;
+}
+.cinema .cinema-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.close, .fullscreen {
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 50%;
+	font-size: 1.5rem;
+	background: #888;
+	border: none;
+	margin: .5rem;
+	cursor: pointer;
+	transition: opacity 0.2s;
+	opacity: .5;
+}
+
+.close:hover, .fullscreen:hover {
+	opacity: 1;
+}
+body.idle .close, body.idle .fullscreen {
+	opacity: 0;
+}
+
+.cinema body {
+	background-color: #222;
+  background-image: none;
+  transition: background-color 0.5s ease;
+}
+
+.cinema body.idle * {
+	cursor: none;
+}
+
+.cinema .buttons {
+	transition-delay: 0s;
+	opacity: 0;
+}
+.cinema .keyboard {
+	width: 100%;
+	left: 0 !important; /* to disable transposition in cinema mode */
+	height: 0;
+	padding-bottom: 10%;
+  margin-top: 25vh;
+}
+.cinema .keyboard button {
+	transition-delay: 0s;
+	color: transparent;
+	font-size: 0;
+}
+.cinema .top-keys button {
+	background: #333;
+}
+.cinema .top-keys button.pressed {
+	background-color: #000;
+	box-shadow: 0px 0px 26px 3px hsl(var(--hue), 57%, 87%);
+	background-image: linear-gradient(180deg, hsla(var(--hue), 70%, 50%, 0.8) 0%, hsla(var(--hue), 70%, 50%, 0.1) 100%);
+}
+
+.cinema .bottom-keys button {
+	background: #ddd;
+}
+.cinema .bottom-keys button.pressed {
+	background-color: #fff;
+	z-index: 2;
+	box-shadow: 0px 0px 26px 3px hsl(var(--hue), 57%, 87%);
+	background-image: linear-gradient(0deg,  hsla(var(--hue), 85%, 45%, 0.45) 0%, hsla(var(--hue), 70%, 100%, 0.1) 100%);
+}
+.background {
+  opacity: 0;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: black;
+  animation: hue-rot 15s linear 0s infinite alternate;
+  transition: opacity 2s ease 0s;
+}
+.cinema .background {
+  opacity: 1;
+  transition: opacity 2s ease 1.5s;
+}
+.background .smoke {
+	opacity: .66;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-image: url('/img/smoke_blur-min.png');
+	background-position: center center;
+	background-repeat: repeat;
+	background-size: contain;
+  animation-iteration-count: infinite;
+	animation-direction: alternate;
+}
+.background .smoke:nth-child(1) {
+	background-image: url('/img/smoke_layer1_blur-min.png');
+	animation: flow-1 38s ease-in-out -10s infinite alternate;
+}
+.background .smoke:nth-child(2) {
+	background-image: url('/img/smoke_layer2_blur-min.png');
+	transform: scale(1, -1);	
+	animation: flow-2 33s ease-in-out -9s infinite alternate;
+}
+.background .smoke:nth-child(3) {
+	background-image: url('/img/smoke_layer3_blur-min.png');
+	transform: scale(-1, 1);
+	animation: flow-3 38s ease-in-out -8s infinite alternate;
+}
+.background .smoke:nth-child(4) {
+	background-image: url('/img/smoke_layer4_blur-min.png');
+	transform: scale(-1, -1);
+	animation: flow-4 31s ease-in-out -2s infinite alternate;
+}
+
+.background .smoke:nth-child(5) {
+	opacity: 0.08;
+	animation: flow-1 37s ease-in-out -30s infinite alternate;
+}
+.background .smoke:nth-child(6) {
+	opacity: 0.08;
+	transform: scale(1, -1);	
+	animation: flow-2 33s ease-in-out -29s infinite alternate;
+}
+.background .smoke:nth-child(7) {
+	opacity: 0.08;
+	transform: scale(-1, 1);
+	animation: flow-3 37s ease-in-out -28s infinite alternate;
+}
+.background .smoke:nth-child(8) {
+	opacity: 0.08;
+	transform: scale(-1, -1);
+	animation: flow-4 30s ease-in-out -27s infinite alternate;
+}
+
+@keyframes hue-rot {
+  0%   {background-color: hsl(0, 100%, 55%)}
+  25%  {background-color: hsl(90, 100%, 55%)}
+  50%  {background-color: hsl(180, 100%, 55%)}
+  75%  {background-color: hsl(240, 100%, 55%)}
+  100% {background-color: hsl(360, 100%, 55%)}
+}
+
+@keyframes flow-1 {
+  from {background-position: -75vw 25vh}
+  to {background-position: 75vw -25vh}
+}
+@keyframes flow-2 {
+  from {background-position: -50vw -50vh}
+  to {background-position: 50vw 50vh}
+}
+@keyframes flow-3 {
+  from {background-position: +75vw -75vh}
+  to {background-position: 25vw 25vh}
+}
+@keyframes flow-4 {
+  from {background-position: -25vw -50vh}
+  to {background-position: 75vw 50vh}
+}
+
+
+
+
+/* range input  */
+
+/* webkit */
+input[type=range]{
+  background: transparent;
+  -webkit-appearance: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 5px;
+  background: #ddd;
+  border: none;
+  border-radius: 3px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: none;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background: #555;
+  margin-top: -4px;
+}
+
+input[type=range]:focus {
+  outline: none;
+}
+
+/* mozilla */
+input[type=range]{
+  width: 100%;
+}
+
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 5px;
+  background: #ddd;
+  border: none;
+  border-radius: 3px;
+}
+
+input[type=range]::-moz-range-thumb {
+  border: none;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background: #555;
+}
+
+/* IE (10+) a Edge */
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 5px;
+  background: transparent;
+  border-color: transparent;
+  border-width: 6px 0;
+  color: transparent;
+}
+
+input[type=range]::-ms-fill-lower,
+input[type=range]::-ms-fill-upper {
+  background: #ddd;
+  border-radius: 10px;
+}
+
+input[type=range]::-ms-thumb {
+  border: none;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background: #555;
+  margin-top: 0px!important;
+}
+
+
+/* ================= Piano roll ================= */
+
+.pianoroll.pianoroll {
+	display: none;
+}
+.cinema .pianoroll {
+	display: flex;
+	flex-direction: row;
+}
+.pianoroll>div {
+	position: relative;
+}
+/* columns */
+.pianoroll>div[data-note*="F"],
+.pianoroll>div[data-note*="G"],
+.pianoroll>div[data-note*="A"],
+.pianoroll>div[data-note*="B"] {
+	flex: 72156;
+}
+.pianoroll>div[data-note*="C"],
+.pianoroll>div[data-note*="D"],
+.pianoroll>div[data-note*="E"] {
+	flex: 74606;
+}
+.pianoroll>div[data-note*="F#"],
+.pianoroll>div[data-note*="G#"],
+.pianoroll>div[data-note*="A#"] {
+	flex: 72520;
+}
+.pianoroll>div[data-note*="C#"],
+.pianoroll>div[data-note*="D#"] {
+	flex: 74235;
+}
+.pianoroll>div:first-child {
+	flex: 108416;
+}
+.pianoroll>div:last-child {
+	flex: 124096;
+}
+
+/* flying rectangle */
+.pianoroll>div>div {
+	width: 100%;
+	min-width: 1px;
+	background-color: hsla(var(--hue), 70%, 50%, 0.9);
+	position: absolute;
+	bottom: 0;
+	height: 100vh;
+	border-radius: 3px;
+}
+.pianoroll>div>div.pressed {
+	animation: grow-up 5s linear 0s 1 normal none running;
+}
+.pianoroll>div>div.released {
+	bottom: 100vh;
+	animation:
+		grow-up 5s linear 0s 1 normal none paused,
+		rise-up 5s linear 0s 1 normal none running;
+}
+
+@keyframes grow-up {
+	0% { height: 0vh; }
+	100% { height: 100vh; }
+}
+
+@keyframes rise-up {
+	0% { bottom: 0vh; }
+	100% { bottom: 100vh; }
+}
+
+
+
+
+/* mobile devides  */
+
+@media screen and (max-height: 500px), (max-width: 500px) {
+	html {
+		font-size: 100%;
+	}
+	body {
+		margin-bottom: 0;
+	}
+	.buttons:first-child {
+		margin-top: 0;
+		padding-top: 0;
+		padding-bottom: 1rem;
+	}
+	.buttons:last-child {
+		margin-bottom: 0;
+		padding-bottom: 0;
+		padding-top: 1rem;
+	}
+	.keyboard {
+		height: 12rem;
+	}
+	.staff {
+		font-size: 2.5em;
+	}
+}

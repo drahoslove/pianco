@@ -151,9 +151,7 @@ function addRect(note) {
 	const column = document.querySelector(`.pianoroll [data-note="${note}"]`)
 	rect.className = "pressed"
   column.appendChild(rect)
-  setTimeout(() => {
-    rect.remove()
-  }, 60*1000)
+  setTimeout(rect.remove.bind(rect), 60*1000)
 }
 function releaseRect(note) {
 	const column = document.querySelector(`.pianoroll [data-note="${note}"]`)

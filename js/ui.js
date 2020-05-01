@@ -1,9 +1,9 @@
 
 // settings
 const defaultSettings = {
-  labels: true,
-  qwerty: false,
-  score: 0,
+  labels: false,
+  qwerty: true,
+  score: 1,
   cinema: false,
 }
 
@@ -22,13 +22,6 @@ const actions = {
   },
   cinema: (val) => {
     document.body.parentElement.classList[val ? 'add' : 'remove']('cinema')
-    if (val) {
-      document.body.requestFullscreen()
-    } else {
-      if (document.fullscreenElement) {
-        document.exitFullscreen()
-      }
-    }
   },
 }
 
@@ -89,13 +82,35 @@ const offCinema = () => {
   actions.cinema(false)
   saveSetting('cinema', false)
   if (document.fullscreenElement !== null) {
-    document.fullscreenElement.exitFullscreen()
+    document.exitFullscreen()
   }
 }
 cinemaOffButton.onclick = offCinema
 window.addEventListener('keydown', (e) => {
   if (e.code === 'Escape') {
     offCinema()
+  }
+})
+
+// fullscreen on
+const fullscreenButton = document.getElementById('fullscreen')
+const toggleFullscreen = async () => {
+  if (document.fullscreenElement) {
+    document.exitFullscreen()
+  } else {
+    if (!loadSetting('cinema')) {
+      actions.cinema(true)
+    }
+    await document.body.requestFullscreen()
+    toggleFullscreen.innerText = document.fullscreenElement !== null
+      ? '🗕'
+      : '🗖'
+  }
+}
+fullscreenButton.onclick = toggleFullscreen
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'KeyM') {
+    toggleFullscreen()
   }
 })
 
