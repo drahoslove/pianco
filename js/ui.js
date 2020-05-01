@@ -27,8 +27,10 @@ const actions = {
     hintBox.hidden = !val
   },
   score: (val) => {
-    const staffBox = document.querySelector('.staff')
-    staffBox.hidden = !val
+    const staff1 = document.querySelector('.staff.treble')
+    const staff2 = document.querySelector('.staff.bass')
+    staff1.hidden = val < 1
+    staff2.hidden = val < 2
   },
   cinema: (val) => {
     document.body.parentElement.classList[val ? 'add' : 'remove']('cinema')
@@ -75,14 +77,26 @@ if (location.hash.includes('m')) {
   saveSetting('cinema', true)
 }
 
+const setOnClass = (el, val) => {
+  el.classList.remove('on', 'onon', 'ononon')
+  if (val) {
+    el.classList.add(Array.from(new Array(val)).fill('on').join(''))
+  }
+}
+
 Object.keys(defaultSettings).forEach(key => {
   const button = document.getElementById(`toggle-${key}`)
   let val = loadSetting(key)
-  button.classList[val ? 'add': 'remove']('on')
+  setOnClass(button, +val)
   actions[key](val)
   button.onclick = function () {
-    val = !loadSetting(key)
-    button.classList[val ? 'add': 'remove']('on')
+    val = loadSetting(key)
+    if (key === 'score') {
+      val = (+val+1)%3
+    } else {
+      val = !val
+    }
+    setOnClass(button, +val)
     actions[key](val)
     saveSetting(key, val)
     this.blur()
@@ -142,33 +156,43 @@ window.addEventListener('keydown', (e) => {
 
 
 // init staff
-const staffBox = document.querySelector('.staff')
-const wholeNote = [...staffBox.children].pop()
-;[
-  'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4',
-  'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5',
-  'C6',
-].forEach((ch, i) => {
-  const hspace = 0.25
-  const hoffset = 3.6
-  const vspace = 0.125
-  const voffset = -0.125
-  const note = wholeNote.cloneNode(true)
-  note.dataset.note = ch
-  note.style.bottom = (i-3) * vspace - voffset  + 'em'
-  note.style.right = i * -hspace + hoffset + 'em'
-  staffBox.appendChild(note)
-
-  if (ch === 'C6') return
-
-  const sharpNote = wholeNote.cloneNode(true)
-  sharpNote.innerHTML = `♯&thinsp;` + sharpNote.innerText
-  sharpNote.dataset.note = ch.split('').join('#')
-  sharpNote.style.bottom = (i-3) * vspace - voffset + 'em'
-  sharpNote.style.right = i * -hspace + hoffset + 'em'
-  staffBox.appendChild(sharpNote)
-});
-wholeNote.remove()
+const staffBoxes = [...document.querySelectorAll('.staff')]
+const notes = [
+  [
+    'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4',
+    'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5',
+    'C6',
+  ],
+  [
+    'C2', 'D2', 'E2', 'F2', 'G2', 'A2', 'B2',
+    'C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3',
+    'C4',
+  ],
+]
+staffBoxes.forEach((staffBox, j) => {
+  const wholeNote = [...staffBox.children].pop()
+  notes[j].forEach((ch, i) => {
+    const hspace = 0.25
+    const hoffset = 3.6
+    const vspace = 0.125
+    const voffset = (j === 0 ? -0.125 : +0.125)
+    const note = wholeNote.cloneNode(true)
+    note.dataset.note = ch
+    note.style.top = (-i+3) * vspace + voffset  + 'em'
+    note.style.right = i * -hspace + hoffset + 'em'
+    staffBox.appendChild(note)
+  
+    if (j === 0 ? ch === 'C6' : ch === "C4") return
+  
+    const sharpNote = wholeNote.cloneNode(true)
+    sharpNote.innerHTML = `♯&thinsp;` + sharpNote.innerText
+    sharpNote.dataset.note = ch.split('').join('#')
+    sharpNote.style.top = (-i+3) * vspace + voffset + 'em'
+    sharpNote.style.right = i * -hspace + hoffset + 'em'
+    staffBox.appendChild(sharpNote)
+  })
+  wholeNote.remove()
+})
 
 
 

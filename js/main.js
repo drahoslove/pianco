@@ -56,10 +56,10 @@ const setTransposition = (n) => {
   keyboard.querySelector('.hint').style.left = `${transposition*21}rem`
   releaseAll()()
   goMidBtn.className = transposition === 0 ? 'on': ''
-  goUpBtn.className = Array.from(new Array(Math.max(transposition+1, 0)))
-    .fill('').join('on')
-  goDownBtn.className = Array.from(new Array(Math.max(-transposition+1, 0)))
-    .fill('').join('on')
+  goUpBtn.className = Array.from(new Array(Math.max(+transposition, 0)))
+    .fill('on').join('')
+  goDownBtn.className = Array.from(new Array(Math.max(-transposition, 0)))
+    .fill('on').join('')
 }
 const goBottom = () => setTransposition(-3)
 const goDown = () => setTransposition(transposition-1)

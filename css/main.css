@@ -337,11 +337,15 @@ div.hint {
 
 
 /* =============== staff =============== */
-.staff {
+.staffs {
 	font-family: Bravura;
 	position: absolute;
 	font-size: 3.25rem;
-	bottom: -2em;
+	bottom: .75em;
+}
+.staff {
+	position: relative;
+	margin-bottom: -2.5em;
 }
 .staff>span:first-child {
 	position: relative;
@@ -350,11 +354,17 @@ div.hint {
 	color: #666;
 	opacity: 1;
 }
-.staff>span:first-child::first-letter { /* clef */
+.staff.treble>span>i:first-child { /* treble clef */
+	font-style: normal;
 	color: #333;
 	position: relative;
-	top: +0.125em;
-	vertical-align: super;
+	top: -.25em;
+}
+.staff.bass>span>i:first-child { /* bass clef */
+	color: #333;
+	font-style: normal;
+	position: relative;
+	top: -.75em;
 }
 .staff>span {
 	position: absolute;
@@ -362,27 +372,47 @@ div.hint {
 	opacity: 0;
 	transition: opacity 0.25s ease-in;
 }
+/* one half tone is 1/8em */
+.staff>span[data-note="C2"]::before,
+.staff>span[data-note="C#2"]::before,
+.staff>span[data-note="D2"]::before,
+.staff>span[data-note="D#2"]::before,
+.staff>span[data-note="D2"]::before,
+.staff>span[data-note="E2"]::before,
 .staff>span[data-note="C4"]::before,
 .staff>span[data-note="C#4"]::before,
 .staff>span[data-note="A5"]::before,
 .staff>span[data-note="A#5"]::before,
 .staff>span[data-note="B5"]::before,
-.staff>span[data-note="C6"]::before {
+.staff>span[data-note="C6"]::before { /* help line */
 	content: '𝄖';
 	position: absolute;
-	top: .5em;
+	top: calc(.125em * 4);
 	right: -0em;
 	color: #666;
 	z-index: -1;
 }
-.staff>span[data-note="B5"]::before {
-	top: .625em;
+.staff>span[data-note="B5"]::before { /* touching help line below */
+	top: calc(.125em * 5);
 	z-index: -1;
 }
-.staff>span[data-note="C6"]::after {
+.staff>span[data-note="D2"]::before,
+.staff>span[data-note="D#2"]::before { /* touching help line above */
+	top: calc(.125em * 3);
+	z-index: -1;
+}
+.staff>span[data-note="C6"]::after { /* another help line below to fill space */
 	content: '𝄖';
 	position: absolute;
-	top: .75em;
+	top: calc(.125em * 6);
+	right: -0em;
+	color: #666;
+}
+.staff>span[data-note="C2"]::after,
+.staff>span[data-note="C#2"]::after { /* another help line above to fill space */
+	content: '𝄖';
+	position: absolute;
+	top: calc(.125em * 2);
 	right: -0em;
 	color: #666;
 }
