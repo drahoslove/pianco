@@ -770,7 +770,7 @@ input[type=range]::-ms-thumb {
 	.keyboard {
 		height: 12rem;
 	}
-	.staff {
+	.staffs {
 		font-size: 2.5em;
 	}
 }
