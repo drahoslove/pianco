@@ -58,6 +58,10 @@ function loadSetting(key) {
   }[key] 
 }
 
+if (location.hash.includes('m')) {
+  saveSetting('cinema', true)
+}
+
 Object.keys(defaultSettings).forEach(key => {
   const button = document.getElementById(`toggle-${key}`)
   let val = loadSetting(key)
@@ -75,9 +79,10 @@ Object.keys(defaultSettings).forEach(key => {
 
 // do not show toggle qwerty hint button on mobile
 const hintButton = document.getElementById('toggle-qwerty')
-// const hintBox = document.querySelector('.hint')
 if (!('ontouchstart' in document.documentElement)) {
   hintButton.hidden = false
+} else {
+  saveSetting('qwerty', false) // to be sure
 }
 
 
@@ -177,9 +182,4 @@ document.body.onmousemove = () => {
   idleTimeout = setTimeout(() => {
     document.body.classList.add('idle')
   }, 2500)
-}
-
-
-if (location.hash.includes('m')) {
-  actions.cinema(true)
 }

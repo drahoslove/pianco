@@ -68,11 +68,8 @@ const goUp = () => setTransposition(transposition+1)
 const goTop = () => setTransposition(+3)
 
 goUpBtn.onmousedown = goUp
-goUpBtn.ontouchstart = goUp
 goDownBtn.onmousedown = goDown
-goDownBtn.ontouchstart = goDown
 goMidBtn.onmousedown = goMid
-goMidBtn.ontouchstart = goMid
 window.addEventListener('keydown', (e) => {
   switch(e.code) {
     case 'ArrowRight':
