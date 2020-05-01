@@ -4,10 +4,10 @@ import { pressNote, releaseNote, releaseAll, instrumentById } from './instrument
 const UID = Math.floor(Math.random()*255) // TODO obtain from backend
 let GID = (parseInt(location.hash.slice(1))) % 256 || 0
 
-window.onhashchange = () => {
+window.addEventListener('hashchange', () => {
   GID = (parseInt(location.hash.slice(1))) % 256 || 0
   console.log(`${UID}@${GID}`)
-}
+})
 
 console.log(`${UID}@${GID}`)
 
@@ -22,6 +22,7 @@ try {
   )
 
 
+  // hanlde incomming notes
   ws.addEventListener('message', async ({ data }) => {
     if (data instanceof Blob) {
       const [gid, uid, on, midiNote, midiVelocity] = new Uint8Array(await data.arrayBuffer())
@@ -43,14 +44,13 @@ try {
 
   ws.onopen = () => {
     console.log('ws open')
-    if (localStorage.DEBUG) {
+    if (localStorage.DEBUG) { // pinpong
       let now
       ws.addEventListener('message', ({ data }) => {
         if (data === 'pong') {
           console.log('ping', Math.floor((performance.now() - now)*100) /100, 'ms')
         }
       })
-      ws.onrea
       ;(function ping() {
         now = performance.now()
         ws.send('ping')
@@ -123,6 +123,6 @@ window.autoplay = (url='/audio/midi/blues.mid') => {
       ws.removeEventListener('message', selectOptions)
       ws.send(`auto! ${url};${selection}`)
     }
-}
+  }
   ws.addEventListener('message', selectOptions)
 }

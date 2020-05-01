@@ -7,6 +7,16 @@ const defaultSettings = {
   cinema: false,
 }
 
+function removeHash () { 
+  history.pushState("", document.title, window.location.pathname + window.location.search)
+}
+
+window.addEventListener('hashchange', () => {
+  if (location.hash === '') {
+    removeHash()
+  }
+})
+
 const actions = {
   labels: (val) => {
     const keyboard = document.querySelector('.keyboard')
@@ -28,6 +38,9 @@ const actions = {
       }
     } else {
       location.hash = location.hash.replace('m', '')
+      if (location.hash === '') {
+        removeHash()
+      }
     }
   },
 }
@@ -113,7 +126,7 @@ const toggleFullscreen = async () => {
     if (!loadSetting('cinema')) {
       actions.cinema(true)
     }
-    await document.body.requestFullscreen()
+    await document.body.parentElement.requestFullscreen()
     toggleFullscreen.innerText = document.fullscreenElement !== null
       ? '🗕'
       : '🗖'
