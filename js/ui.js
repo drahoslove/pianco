@@ -2,7 +2,7 @@
 // settings
 const defaultSettings = {
   labels: false,
-  qwerty: true,
+  qwerty: false,
   score: 1,
   cinema: false,
 }
