@@ -22,6 +22,13 @@ const actions = {
   },
   cinema: (val) => {
     document.body.parentElement.classList[val ? 'add' : 'remove']('cinema')
+    if (val) {
+      if(!location.hash.includes('m')) {
+        location.hash += 'm'
+      }
+    } else {
+      location.hash = location.hash.replace('m', '')
+    }
   },
 }
 
@@ -170,4 +177,9 @@ document.body.onmousemove = () => {
   idleTimeout = setTimeout(() => {
     document.body.classList.add('idle')
   }, 2500)
+}
+
+
+if (location.hash.includes('m')) {
+  actions.cinema(true)
 }

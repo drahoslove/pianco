@@ -2,10 +2,10 @@ import '../lib/Tone.js'
 import { pressNote, releaseNote, releaseAll, instrumentById } from './instrument.js'
 
 const UID = Math.floor(Math.random()*255) // TODO obtain from backend
-let GID = (+location.hash.slice(1)) % 256 || 0
+let GID = (parseInt(location.hash.slice(1))) % 256 || 0
 
 window.onhashchange = () => {
-  GID = (+location.hash.slice(1)) % 256 || 0
+  GID = (parseInt(location.hash.slice(1))) % 256 || 0
   console.log(`${UID}@${GID}`)
 }
 
