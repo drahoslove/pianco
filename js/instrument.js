@@ -1,6 +1,6 @@
 import '../lib/Tone.js'
 
-const playingNotes = {}
+const pressedNotes = {}
 const sustainedNotes = {}
 const sustainState = {}
 
@@ -17,7 +17,7 @@ allNotes.push("A0","A#0","B0")
 allNotes.push('C8')
 
 allNotes.forEach(note => {
-	playingNotes[note] = new Set()
+	pressedNotes[note] = new Set()
 	sustainedNotes[note] = new Set()
 })
 
@@ -114,52 +114,55 @@ volumeSelector.parentElement.onwheel = function (e) {
 }.bind(volumeSelector)
 volumeSelector.onchange = updateVolume
 
-const anotherHas = (set, uid) => {
-	return set.has(uid) ? set.size > 1 : set.size > 0
-}
+
 /* ==== note controll === */
 
-const pressNote = (note, velocity=0.8, uid) => (e) => {
-  if (playingNotes[note].has(uid)) {
-    return console.log('multiple press', note, velocity) // already pressed by you
+const updateNote = (note, velocity, action) => () => {
+	const wasPressed = pressedNotes[note].size > 0
+	const wasSustained = sustainedNotes[note].size > 0
+	action()
+	const isPressed = pressedNotes[note].size > 0
+	const isSustained = sustainedNotes[note].size > 0
+
+	if (!wasPressed && isPressed) {
+		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.add('pressed'))  
+		if (isSustained) { // repressing sustained note
+			releaseRect(note)
+			getInstrument().triggerRelease([note])
+		}
+		addRect(note)
+		getInstrument().triggerAttack([note], undefined, velocity)
 	}
-	playingNotes[note].add(uid)
+	if (wasPressed && !isPressed) {
+		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.remove('pressed'))
+		if (!isSustained) {
+			releaseRect(note)
+			getInstrument().triggerRelease([note])
+		}
+	}
+	if (!wasPressed && !isPressed && wasSustained && !isSustained) {
+		releaseRect(note)
+		getInstrument().triggerRelease([note])
+	}
+}
+
+const pressNote = (note, velocity=0.8, uid) => updateNote(note, velocity, () => {
+	pressedNotes[note].add(uid)
 	if (sustainState[uid]) {
 		sustainedNotes[note].add(uid)
 	}
-  if (anotherHas(playingNotes[note], uid)) {
-    return // already pressed by another 
+})
+
+const releaseNote = (note, uid) => updateNote(note, undefined, () => {
+	pressedNotes[note].delete(uid)
+	if (!sustainState[uid]) {
+		sustainedNotes[note].delete(uid) // unsustain note (if was sustained)
 	}
-	if (sustainedNotes[note].has(uid) || anotherHas(sustainedNotes[note], uid)) {
-		getInstrument().triggerRelease([note])
-		releaseRect(note)
-	}
-  document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.add('pressed'))  
-  addRect(note)
-  getInstrument().triggerAttack([note], undefined, velocity)
-}
-const releaseNote = (note, uid) => (e) => {
-  if (!playingNotes[note].has(uid) && !sustainedNotes[note].has(uid)) {
-    return console.log('multiple release', note) // you are not pressing this
-  }
-	playingNotes[note].delete(uid)
-	if (sustainedNotes[note].has(uid)) {
-		if (sustainState[uid]) { // keep sustaining the note
-			return // console.log('keep playing', note)
-		} else {
-			sustainedNotes[note].delete(uid) // unsustain note
-		}
-	}
-  if (anotherHas(playingNotes[note], uid) || anotherHas(sustainedNotes[note], uid)) {
-    return // still pressed by another
-	}
-  document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.remove('pressed'))
-	releaseRect(note)
-  getInstrument().triggerRelease([note])
-}
+})
+
 const releaseAll = (uid) => () => {
   return allNotes.filter(note => {
-    if (playingNotes[note].has(uid)) {
+    if (pressedNotes[note].has(uid)) {
       releaseNote(note, uid)()
       return true
     }
@@ -174,12 +177,11 @@ const releaseSustain = (uid) => {
 	sustainState[uid] = false
 	console.log('sustain OFF')
 	Object.entries(sustainedNotes).forEach(([note, noteset]) => {
-		if (noteset.has(uid) && !playingNotes[note].has(uid)) {
-			releaseNote(note, uid)()
-		}
+		updateNote(note, undefined, () => {
+			noteset.delete(uid)
+		})()
 	})
 }
-
 
 
 

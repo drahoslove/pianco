@@ -42,7 +42,7 @@ body.rotated {
 	flex-direction: row;
 	justify-content: space-between;
 	opacity: 1;
-	transition: opacity 0.1s ease 0.2s;
+	transition: opacity 0.1s ease 0.2s, display 0 linear 0.3s;
 }
 
 .buttons>div {
@@ -469,7 +469,8 @@ body.idle .close, body.idle .fullscreen {
 
 .cinema .buttons {
 	transition-delay: 0s;
-	opacity: 0;
+  opacity: 0;
+  display: none;
 }
 .cinema .keyboard {
 	width: 100%;
