@@ -1,6 +1,26 @@
 import '../lib/Tone.js'
 
 const playingNotes = {}
+const sustainedNotes = {}
+const sustainState = {}
+
+const allNotes = []
+allNotes.push("A0","A#0","B0")
+;[1,2,3,4,5,6,7].forEach(octave => {
+  "CDEFGAB".split('').forEach(letter => {
+    allNotes.push(`${letter}${octave}`)
+    if (letter !== 'E' && letter !== 'B') {
+      allNotes.push(`${letter}#${octave}`)
+    }
+  })
+})
+allNotes.push('C8')
+
+allNotes.forEach(note => {
+	playingNotes[note] = new Set()
+	sustainedNotes[note] = new Set()
+})
+
 
 const instruments = {
   polySynth: new Tone.PolySynth(16, Tone.Synth, {
@@ -94,25 +114,43 @@ volumeSelector.parentElement.onwheel = function (e) {
 }.bind(volumeSelector)
 volumeSelector.onchange = updateVolume
 
-// note playing 
+const anotherHas = (set, uid) => {
+	return set.has(uid) ? set.size > 1 : set.size > 0
+}
+/* ==== note controll === */
+
 const pressNote = (note, velocity=0.8, uid) => (e) => {
   if (playingNotes[note].has(uid)) {
-    return // already pressed by you
-  }
-  playingNotes[note].add(uid)
-  if (playingNotes[note].size > 1) {
+    return console.log('multiple press', note, velocity) // already pressed by you
+	}
+	playingNotes[note].add(uid)
+	if (sustainState[uid]) {
+		sustainedNotes[note].add(uid)
+	}
+  if (anotherHas(playingNotes[note], uid)) {
     return // already pressed by another 
-  }
+	}
+	if (sustainedNotes[note].has(uid) || anotherHas(sustainedNotes[note], uid)) {
+		getInstrument().triggerRelease([note])
+		releaseRect(note)
+	}
   document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.add('pressed'))  
   addRect(note)
   getInstrument().triggerAttack([note], undefined, velocity)
 }
 const releaseNote = (note, uid) => (e) => {
-  if (!playingNotes[note].has(uid)) {
-    return // you are not pressing this
+  if (!playingNotes[note].has(uid) && !sustainedNotes[note].has(uid)) {
+    return console.log('multiple release', note) // you are not pressing this
   }
-  playingNotes[note].delete(uid)
-  if (playingNotes[note].size > 0) {
+	playingNotes[note].delete(uid)
+	if (sustainedNotes[note].has(uid)) {
+		if (sustainState[uid]) { // keep sustaining the note
+			return // console.log('keep playing', note)
+		} else {
+			sustainedNotes[note].delete(uid) // unsustain note
+		}
+	}
+  if (anotherHas(playingNotes[note], uid) || anotherHas(sustainedNotes[note], uid)) {
     return // still pressed by another
 	}
   document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.remove('pressed'))
@@ -128,22 +166,21 @@ const releaseAll = (uid) => () => {
   })
 }
 
-const allNotes = []
-allNotes.push("A0","A#0","B0")
-;[1,2,3,4,5,6,7].forEach(octave => {
-  "CDEFGAB".split('').forEach(letter => {
-    allNotes.push(`${letter}${octave}`)
-    if (letter !== 'E' && letter !== 'B') {
-      allNotes.push(`${letter}#${octave}`)
-    }
-  })
-})
-allNotes.push('C8')
+const pressSustain = (uid) => {
+	sustainState[uid] = true
+	console.log('sustain ON')
+}
+const releaseSustain = (uid) => {
+	sustainState[uid] = false
+	console.log('sustain OFF')
+	Object.entries(sustainedNotes).forEach(([note, noteset]) => {
+		if (noteset.has(uid) && !playingNotes[note].has(uid)) {
+			releaseNote(note, uid)()
+		}
+	})
+}
 
 
-allNotes.forEach(note => {
-  playingNotes[note] = new Set()
-})
 
 
 function addRect(note) {
@@ -297,6 +334,8 @@ export {
   allNotes,
   pressNote,
   releaseNote,
-  releaseAll,
+	releaseAll,
+	pressSustain,
+	releaseSustain,
   instrumentById,
 }

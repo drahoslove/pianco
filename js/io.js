@@ -1,5 +1,13 @@
 import '../lib/Tone.js'
-import { pressNote, releaseNote, releaseAll, instrumentById } from './instrument.js'
+import {
+  pressNote, releaseNote, releaseAll,
+  pressSustain, releaseSustain,
+  instrumentById,
+} from './instrument.js'
+import {
+  fromCmd, toCmd, fromVal, toVal,
+  CC_SUTAIN,
+} from './midi.js'
 
 const UID = Math.floor(Math.random()*255) // TODO obtain from backend
 let GID = (parseInt(location.hash.slice(1))) % 256 || 0
@@ -25,19 +33,30 @@ try {
   // hanlde incomming notes
   ws.addEventListener('message', async ({ data }) => {
     if (data instanceof Blob) {
-      const [gid, uid, on, midiNote, midiVelocity] = new Uint8Array(await data.arrayBuffer())
+      const [gid, uid, cmd, val1, val2] = new Uint8Array(await data.arrayBuffer())
       if (gid !== GID) { // another group
         return 
       }
       if (uid === UID) { // your notes
         return
       }
-      const note = Tone.Midi(midiNote).toNote()
-      if (on) {
-        const velocity = midiVelocity/127
+      const note = Tone.Midi(val1).toNote()
+      if (fromCmd(cmd) === 1) {
+        const velocity = fromVal(val2)
         pressNote(note, velocity, uid)()
-      } else {
+      } 
+      if (fromCmd(cmd) === 0) {
         releaseNote(note, uid)()
+      }
+      if (fromCmd(cmd) === 3) { // control command
+        if (val1 === CC_SUTAIN) {
+          const sustain = fromVal(val2)
+          if (sustain >= 0.5) {
+            pressSustain(uid)
+          } else {
+            releaseSustain(uid)
+          }
+        }
       }
     }
   })
@@ -76,8 +95,7 @@ const sendNoteOn = (note, velocity=0.8, uid=UID) => (e) => {
     return
   }
   const midiNote = Tone.Midi(note).toMidi()
-  const midiVelocity = Math.floor(velocity*127)
-  ws.send(new Uint8Array([GID, UID, 1, midiNote, midiVelocity]))
+  ws.send(new Uint8Array([GID, UID, toCmd(1), midiNote, toVal(velocity)]))
 }
 
 const sendNoteOff = (note, uid=UID) => (e) => {
@@ -86,17 +104,30 @@ const sendNoteOff = (note, uid=UID) => (e) => {
     return
   }
   const midiNote = Tone.Midi(note).toMidi()
-  ws.send(new Uint8Array([GID, UID, 0, midiNote]))
+  ws.send(new Uint8Array([GID, UID, toCmd(0), midiNote]))
 }
 
 const sendOffAll = (uid=UID) => (e) => {
   releaseAll(uid)().forEach((note) => sendNoteOff(note))
 }
 
+const sendSustain = (value, uid=UID) => {
+  if (ws.readyState !== WebSocket.OPEN) {
+    return
+  }
+  if (value >= 0.5) {
+    pressSustain(uid)
+  } else {
+    releaseSustain(uid)
+  }
+  ws.send(new Uint8Array([GID, UID, toCmd(3), CC_SUTAIN, toVal(value)]))
+}
+
 export {
   sendNoteOn,
   sendNoteOff,
   sendOffAll,
+  sendSustain,
 }
 
 

@@ -1,11 +1,15 @@
 import {
   allNotes,
+  instrumentById,
 } from './instrument.js'
 import {
   sendNoteOn as pressNote,
   sendNoteOff as releaseNote,
   sendOffAll as releaseAll,
+  sendSustain as sustain,
 } from './io.js'
+import { fromCmd, fromVal } from './midi.js'
+
 
 let transposition = 0
 
@@ -39,6 +43,15 @@ allNotes.forEach((note, i, { length }) => {
   column.dataset.note = note
   column.style.setProperty('--hue', hue)
   pianoroll.appendChild(column)
+})
+
+
+// init sustain controll
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && !e.repeat) sustain(1)
+})
+window.addEventListener('keyup', (e) => {
+  if (e.code === 'Space') sustain(0)
 })
 
 // init transpose buttons
@@ -78,7 +91,6 @@ window.addEventListener('keydown', (e) => {
     case 'ArrowLeft':
     case 'KeyV':
       return goDown()
-    case 'Space':
     case 'ArrowUp':
     case 'KeyB':
       return goMid()
@@ -86,7 +98,6 @@ window.addEventListener('keydown', (e) => {
       return goTop()
     case 'PageUp':
       return goBottom()
-    
   }
 })
 
@@ -181,7 +192,7 @@ const keyMap = (n) => ({
   'Quote': `F${n+5}`,
 })
 window.addEventListener('keydown', e => {
-  if (e.shiftKey || e.ctrlKey || e.metaKey) {
+  if (e.shiftKey || e.ctrlKey || e.metaKey || e.repeat) {
     return
   }
   const note = keyMap(transposition)[e.code]
@@ -220,24 +231,45 @@ function onMIDISuccess(midiAccess) {
   }
 }
 
+let bankSelect = [0, 0]
+
 function getMIDIMessage(midiMessage) {
   const { data } = midiMessage
-  const [command, midiNote, midiVelocity = 0] = data
+  const [cmd, val1, val2 = 0] = data
 
-  const note = Tone.Midi(midiNote).toNote()
-  const velocity = midiVelocity/127
+  const note = Tone.Midi(val1).toNote()
 
-  switch (command) {
-    case 144: // noteOn
+  switch (fromCmd(cmd)) {
+    case 1: { // noteOn
+      const velocity = fromVal(val2)
       if (velocity > 0) {
         pressNote(note, velocity)()
       } else {
         releaseNote(note)()
       }
       break;
-    case 128: // noteOff
+    }
+    case 0: // noteOff
       releaseNote(note)()
       break;
+    case 3: {// control change
+      const [_, control, value] = data
+      if (control === 0) { // msb of bank
+        bankSelect[0] = value
+      } else if (control === 32) { // lsb
+        bankSelect[1] =  value
+      } else if (control === 64) { // sustain
+        sustain(fromVal(value))
+      }
+      break;
+    }
+    case 4: {// program (sound) change
+      const [_, programId] = data
+      console.log('program', instrumentById[programId] || programId, 'from bank', bankSelect)
+      break;
+    }
+    default:
+      console.log('unknown midi data', data, fromCmd(cmd))
   }
 }
 

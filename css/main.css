@@ -201,14 +201,12 @@ body.rotated {
 	border-bottom-left-radius: 15% 3%;
 	border-bottom-right-radius: 15% 3%;
 	border: none;
-	height: 60%;
-	/* background-color: #461800; */
+	height: 66%;
 	background-color: #212121;
 	position: relative;
 	flex: 1 0;
 }
 .top-keys button.pressed {
-	/* background: #742801; */
 	background-color: #000;
 	box-shadow: 0px 0px 20px 3px hsl(calc(var(--hue) * 2), 75%, 85%);
 	background-image: linear-gradient(180deg, hsla(calc(var(--hue) * 2), 70%, 50%, 0.8) 0%, hsla(calc(var(--hue) * 2), 70%, 50%, 0.1) 100%);

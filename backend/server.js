@@ -1,8 +1,6 @@
 const { Midi } = require('@tonejs/midi')
 const fetch = require('node-fetch')
-
 const WebSocket = require('ws')
-
 
 const PORT = 11088
 const { SSL_KEY, SSL_CA, SSL_CERT } = process.env
@@ -24,6 +22,14 @@ if (!SSL_KEY || !SSL_CA || !SSL_CERT) { // http
 }
 
 const wss = new WebSocket.Server({ server })
+
+const broadcast = (data) => {
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(new Uint8Array(data))
+    }
+  })
+}
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(message) {
@@ -73,7 +79,6 @@ async function replayMidi(url, client) {
     midis[url] = midi
   }
   askForTracks(midis[url], client)
-
 }
 
 const playTracks = (tracks) => {
@@ -86,26 +91,24 @@ const playTracks = (tracks) => {
       timers.push(setTimeout(sendNoteOn, note.time*1000, note))
       timers.push(setTimeout(sendNoteOff, note.time*1000 + note.duration*1000, note))
     })
+    track.controlChanges.sustain.forEach(cc => {
+      timers.push(setTimeout(sendSustain, cc.time*1000, cc.value))
+    })
     console.log(` - will play ${track.notes.length} ${track.instrument.family} notes`)
   }
 }
 
 
+const sendSustain = (value) => {
+  broadcast([ROOT_GRP, ROOT_USR, toCmd(3), 64, Math.floor(value*127)])
+}
 
 const sendNoteOn = (note) => {
-  wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(new Uint8Array([ROOT_GRP, ROOT_USR, 1, note.midi, Math.floor(note.velocity*127)]))
-    }
-  })
+  broadcast([ROOT_GRP, ROOT_USR, toCmd(1), note.midi, Math.floor(note.velocity*127)])
 }
 
 const sendNoteOff = (note) => {
-  wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(new Uint8Array([ROOT_GRP, ROOT_USR, 0, note.midi]))
-    }
-  })
+  broadcast([ROOT_GRP, ROOT_USR, toCmd(0), note.midi])
 }
 
 const askForTracks = (midi, client) => {
@@ -141,3 +144,15 @@ const getTracks = ({ tracks }) => (
         : nB.length - nA.length // more is better 
     })
 )
+
+
+// TODO move to common file
+const CC_BANK_0 = 0
+const CC_BANK_1 = 32
+const CC_SUTAIN = 64
+
+const toCmd = (x) => (1<<3 | x)<<4
+const fromCmd = (cmd) => (cmd>>4) & 7
+
+const toVal = (x) => Math.round(x*127)
+const fromVal = (val) => val/127
