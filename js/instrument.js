@@ -163,6 +163,7 @@ const releaseNote = (note, uid) => updateNote(note, undefined, () => {
 const releaseAll = (uid) => () => {
   return allNotes.filter(note => {
     if (pressedNotes[note].has(uid)) {
+			console.log('uid', uid)
       releaseNote(note, uid)()
       return true
     }
@@ -183,6 +184,17 @@ const releaseSustain = (uid) => {
 	})
 }
 
+const allOff = () => {
+	Object.keys(sustainState).forEach(uid => {
+		sustainState[uid] = false
+	})
+	allNotes.forEach(note => {
+		updateNote(note, undefined, () => {
+			pressedNotes[note] = new Set()
+			sustainedNotes[note] = new Set()
+		})()
+	})
+}
 
 
 function addRect(note) {
@@ -339,5 +351,6 @@ export {
 	releaseAll,
 	pressSustain,
 	releaseSustain,
-  instrumentById,
+	instrumentById,
+	allOff,
 }

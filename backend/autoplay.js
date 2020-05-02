@@ -25,11 +25,7 @@ class Autoplay {
     this.uid = user
   }
 
-  requestHandler = (ws) => async (message) => {
-    if (typeof message !== 'string' || !message.startsWith('autoplay')) {
-      return
-    }
-    const [_, url] = message.split(' ', 2)
+  requestHandler = (ws) => async (url) => {
     console.log('midi autoplay requested', url)
     if (!(url in Autoplay.midis)) {
       const res = await fetch(url).catch(e => {
@@ -52,7 +48,7 @@ class Autoplay {
   }
 
   playTracks = (tracks) => {
-    while (this.timers.length > 0) {
+    while (this.timers.length > 0) { // empty current timers
       clearTimeout(this.timers.shift())
     }
     for (let track of tracks) {
@@ -74,16 +70,18 @@ class Autoplay {
       .join(';')
     client.send(`auto?instrument ${tracksInfo}`)
     client.once('message', (message) => {
-      if (typeof message === "string") {
-        const [cmd, data] = message.split(' ')
-        if (cmd === 'auto!') {
-          const [url, selection] = data.split(';')
-          const selectedIndexes = selection.split(',').map(Number)
-          const midi = Autoplay.midis[url]
-          const selectedTracks = this.getTracks(midi).filter((_, i) => selectedIndexes.includes(i))
-          this.playTracks(selectedTracks)
-        }
+      if (typeof message !== "string") {
+        return
       }
+      const [cmd, data] = message.split(' ')
+      if (cmd !== 'auto!') {
+        return
+      }
+      const [url, selection] = data.split(';')
+      const selectedIndexes = selection.split(',').map(Number)
+      const midi = Autoplay.midis[url]
+      const selectedTracks = this.getTracks(midi).filter((_, i) => selectedIndexes.includes(i))
+      this.playTracks(selectedTracks)
     })
   }
   

@@ -3,21 +3,24 @@ import {
   pressNote, releaseNote, releaseAll,
   pressSustain, releaseSustain,
   instrumentById,
+  allOff,
 } from './instrument.js'
 import {
   fromCmd, toCmd, fromVal, toVal,
   CC_SUTAIN,
 } from './midi.js'
 
-const UID = Math.floor(Math.random()*255) // TODO obtain from backend
-let GID = (parseInt(location.hash.slice(1))) % 256 || 0
+let UID = 0 // will be changed by backend
+let GID = 0 
 
-window.addEventListener('hashchange', () => {
-  GID = (parseInt(location.hash.slice(1))) % 256 || 0
-  console.log(`${UID}@${GID}`)
+window.addEventListener('hashchange', () => { // chagning group
+  const newGid = (parseInt(location.hash.slice(1))) % 256 || 0
+  sendOffAll() // to mute self for other before leaving
+  sendSustain(0) // to mute self for other efore leaving
+  allOff() // to mute others
+  ws.send(`regroup ${GID} ${UID} ${newGid}`)
+  console.log(`${UID}@${GID} => ?@${newGid} request`)
 })
-
-console.log(`${UID}@${GID}`)
 
 // WS!
 
@@ -28,6 +31,19 @@ try {
       ? 'ws://localhost:11088'
       : 'wss://pianoecho.draho.cz:11088'
   )
+
+  ws.addEventListener('message', async ({ data: message }) => {
+    if (typeof message !== 'string') {
+      return
+    }
+    const [cmd, ...values] = message.split(' ')
+    if (cmd === 'regroup') {
+      const [newGid, newUid] = values.map(Number)
+      GID = newGid
+      UID = newUid
+      console.log(`${UID}@${GID} changed`)
+    }
+  })
 
 
   // hanlde incomming notes
@@ -62,6 +78,9 @@ try {
   })
 
   ws.onopen = () => {
+    const newGid = (parseInt(location.hash.slice(1))) % 256 || 0
+    ws.send(`regroup 0 0 ${newGid}`)
+
     console.log('ws open')
     if (localStorage.DEBUG) { // pinpong
       let now
@@ -89,8 +108,8 @@ try {
 }
 
 
-const sendNoteOn = (note, velocity=0.8, uid=UID) => (e) => {
-  pressNote(note, velocity, uid)(e)
+const sendNoteOn = (note, velocity=0.8,) => (e) => {
+  pressNote(note, velocity, UID)(e)
   if (ws.readyState !== WebSocket.OPEN) {
     return
   }
@@ -98,8 +117,8 @@ const sendNoteOn = (note, velocity=0.8, uid=UID) => (e) => {
   ws.send(new Uint8Array([GID, UID, toCmd(1), midiNote, toVal(velocity)]))
 }
 
-const sendNoteOff = (note, uid=UID) => (e) => {
-  releaseNote(note, uid)(e)
+const sendNoteOff = (note) => (e) => {
+  releaseNote(note, UID)(e)
   if (ws.readyState !== WebSocket.OPEN) {
     return
   }
@@ -107,18 +126,18 @@ const sendNoteOff = (note, uid=UID) => (e) => {
   ws.send(new Uint8Array([GID, UID, toCmd(0), midiNote]))
 }
 
-const sendOffAll = (uid=UID) => (e) => {
-  releaseAll(uid)().forEach((note) => sendNoteOff(note))
+const sendOffAll = () => (e) => {
+  releaseAll(UID)().forEach((note) => sendNoteOff(note))
 }
 
-const sendSustain = (value, uid=UID) => {
+const sendSustain = (value) => {
   if (ws.readyState !== WebSocket.OPEN) {
     return
   }
   if (value >= 0.5) {
-    pressSustain(uid)
+    pressSustain(UID)
   } else {
-    releaseSustain(uid)
+    releaseSustain(UID)
   }
   ws.send(new Uint8Array([GID, UID, toCmd(3), CC_SUTAIN, toVal(value)]))
 }
@@ -135,7 +154,7 @@ window.autoplay = (url='/audio/midi/blues.mid') => {
   if (url.startsWith('/')) {
     url = location.origin + url
   }
-  ws.send(`autoplay ${url}`)
+  ws.send(`autoplay ${GID} ${UID} ${url}`)
   console.log('will play', url, 'soon')
   const selectOptions = ({ data: msg }) => {
     if (typeof msg !== 'string') return;

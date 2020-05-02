@@ -22,16 +22,17 @@ if (!SSL_KEY || !SSL_CA || !SSL_CERT) { // http
 const wss = new WebSocket.Server({ server })
 
 const broadcast = (data) => {
+  const [gid, uid] = data
   wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
+    if (client.gid == gid && client.readyState === WebSocket.OPEN) {
       client.send(new Uint8Array(data))
     }
   })
 }
-
-const echo = (data, sender) => {
+const echo = (data) => {
+  const [gid, uid] = data
   wss.clients.forEach(client => {
-    if (client !== sender && client.readyState === WebSocket.OPEN) {
+    if (client.gid == gid && client.uid !== uid && client.readyState === WebSocket.OPEN) {
       client.send(data)
     }
   })
@@ -40,22 +41,57 @@ const echo = (data, sender) => {
 wss.broadcast = broadcast
 wss.echo = echo
 
+const groups = Array.from({ length: 256 }).map(() => new Set())
+
+// return uid which is not yet in the group
+const genUid = (gid) => {
+  let uid
+  do {
+    uid = Math.floor(Math.random()*256)
+  } while (uid === ROOT_USR || groups[gid].has(uid))
+  return uid
+}
 const Autoplay = require('./autoplay.js')(wss)
-const autoplayer = new Autoplay(ROOT_GRP, ROOT_USR)
+const autoplayers = groups.map((_, gid) => new Autoplay(gid, ROOT_USR)) // init autoplaye for each group
 
 wss.on('connection', function connection(ws) {
-  ws.on('message', autoplayer.requestHandler(ws))
-  ws.on('message', function incoming(message) {
-    if (typeof message === "string") {
-      if (message === 'ping') {
-        ws.send('pong')
-      }
-    } else {
-      echo(message, ws)
-    }
-  })
   console.log('client connected')
   ws.send('connected')
+
+  ws.on('message', function incoming(message) {
+    if (typeof message === "string") {
+      const [cmd, ...values] = message.split(' ')
+      if (cmd === 'ping') {
+        ws.send('pong')
+      }
+      if (cmd === "regroup") {
+        const [oldGid, oldUid, newGid] = values.map(Number)
+        if (groups[newGid].size === 255) {
+          return ws.send(`regroup ${oldGid} ${oldUid}`)
+        }
+        groups[oldGid].delete(oldUid)
+        const newUid = genUid(newGid)
+        groups[newGid].add(newUid)
+        ws.send(`regroup ${newGid} ${newUid}`)
+        ws.gid = newGid
+        ws.uid = newUid
+        console.log(`${oldUid}@${oldGid} => ${newUid}@${newGid}`)
+      }
+      if (cmd === 'autoplay') {
+        const [gid, uid] = values.map(Number)
+        const url= values[2]
+        autoplayers[gid].requestHandler(ws)(url)
+      }
+    } else {
+      echo(message)
+    }
+  })
+
+  ws.on('close', () => {
+    const { gid, uid } = ws
+    groups[gid].delete(uid)
+    console.log(`${uid}@${gid} => close`)
+  })
 })
 
 console.log('listening on port', PORT)
