@@ -57,7 +57,7 @@ class Autoplay {
         this.timers.push(setTimeout(this.sendNoteOn, note.time*1000, note))
         this.timers.push(setTimeout(this.sendNoteOff, note.time*1000 + note.duration*1000, note))
       })
-      track.controlChanges.sustain.forEach(cc => {
+      track.controlChanges.sustain && track.controlChanges.sustain.forEach(cc => {
         this.timers.push(setTimeout(this.sendSustain, cc.time*1000, cc.value))
       })
       console.log(` - will play ${track.notes.length} ${track.instrument.family} notes`)
