@@ -90,6 +90,7 @@ Object.keys(defaultSettings).forEach(key => {
   setOnClass(button, +val)
   actions[key](val)
   button.onclick = function () {
+    this.blur()
     val = loadSetting(key)
     if (key === 'score') {
       val = (+val+1)%3
@@ -116,7 +117,8 @@ if (!('ontouchstart' in document.documentElement)) {
 
 // cinema off
 const cinemaOffButton = document.getElementById('cinema-off')
-const offCinema = () => {
+const offCinema = function () {
+  this.blur()
   document.getElementById('toggle-cinema').classList.remove('on')
   actions.cinema(false)
   saveSetting('cinema', false)
@@ -133,7 +135,8 @@ window.addEventListener('keydown', (e) => {
 
 // fullscreen on
 const fullscreenButton = document.getElementById('fullscreen')
-const toggleFullscreen = async () => {
+const toggleFullscreen = async function () {
+  this.blur()
   if (document.fullscreenElement) {
     document.exitFullscreen()
   } else {
