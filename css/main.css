@@ -123,9 +123,10 @@ body.rotated {
 }
 
 #volume {
-  width: 4rem;
-  display: none;
+  width: 0;
   padding-left: 0.3rem;
+  transition: width 400ms ease-in-out, opacity 400ms ease-in-out;
+  opacity:0;
 }
 #volume-icon {
 	width: 1.5rem;
@@ -134,7 +135,9 @@ body.rotated {
   min-width: 0;
 }
 #volume-label:hover > #volume {
-  display: block;
+  width: 4rem;
+  opacity: 1;
+  transition: width 400ms ease-in-out, opacity 400ms ease-in-out;
 }
 
 /*  ===============  keboard  =============== */
