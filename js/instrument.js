@@ -112,7 +112,7 @@ volumeSelector.parentElement.onwheel = function (e) {
   volumeSelector.value = val
   updateVolume.bind(this)(e)
 }.bind(volumeSelector)
-volumeSelector.onchange = updateVolume
+volumeSelector.oninput = updateVolume
 
 
 /* ==== note controll === */

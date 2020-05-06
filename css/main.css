@@ -123,10 +123,18 @@ body.rotated {
 }
 
 #volume {
-	width: 4rem;
+  width: 4rem;
+  display: none;
+  padding-left: 0.3rem;
 }
 #volume-icon {
 	width: 1.5rem;
+}
+#volume-label {
+  min-width: 0;
+}
+#volume-label:hover > #volume {
+  display: block;
 }
 
 /*  ===============  keboard  =============== */
