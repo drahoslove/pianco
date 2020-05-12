@@ -1,5 +1,7 @@
 import '../lib/Tone.js'
 
+Tone.context.latencyHint = 'fastest' // improve sheduling latency
+
 const pressedNotes = {}
 const sustainedNotes = {}
 const sustainState = {}
