@@ -69,7 +69,7 @@ wss.on('connection', function connection(ws) {
         if (groups[newGid].size === 255) {
           return ws.send(`regroup ${oldGid} ${oldUid}`)
         }
-        groups[oldGid].delete(oldUid)
+        groups[oldGid] && groups[oldGid].delete(oldUid)
         const newUid = genUid(newGid)
         groups[newGid].add(newUid)
         ws.send(`regroup ${newGid} ${newUid}`)

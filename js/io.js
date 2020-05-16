@@ -13,24 +13,28 @@ import {
 let UID = 0 // will be changed by backend
 let GID = 0 
 
-window.addEventListener('hashchange', () => { // chagning group
-  const newGid = (parseInt(location.hash.slice(1))) % 256 || 0
-  sendOffAll() // to mute self for other before leaving
-  sendSustain(0) // to mute self for other efore leaving
-  allOff() // to mute others
-  ws.send(`regroup ${GID} ${UID} ${newGid}`)
-  console.log(`${UID}@${GID} => ?@${newGid} request`)
-})
-
 // WS!
 
-let ws = {}
+let ws
 try {
   ws = new WebSocket(
     location.hostname === 'localhost'
       ? 'ws://localhost:11088'
       : 'wss://pianoecho.draho.cz:11088'
   )
+
+  window.addEventListener('hashchange', () => { // chagning group
+    const newGid = (parseInt(location.hash.slice(1))) % 256 || 0
+    sendOffAll() // to mute self for other before leaving
+    sendSustain(0) // to mute self for other efore leaving
+    allOff() // to mute others
+    if (ws.readyState !== WebSocket.OPEN) {
+      return
+    }
+    ws.send(`regroup ${GID} ${UID} ${newGid}`)
+    console.log(`${UID}@${GID} => ?@${newGid} request`)
+  })
+  
 
   ws.addEventListener('message', async ({ data: message }) => {
     if (typeof message !== 'string') {
