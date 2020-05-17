@@ -13,8 +13,12 @@
 <script type="module" src="/js/rc.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h2>Roland FP-10 Digital piano - remote controller</h2>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+      <h2 class="navbar-brand">Roland Digital Piano - remote controller</h2>
+    </div>
+  </nav>
+  <div class="container mt-3">
     <div class="row">
       <form class="col-md">
         <div class="form-group">
@@ -23,8 +27,25 @@
         </div>
       </form>
       <div class="col-md">
-        MIDI
+        <label>MIDI status</label>
         <div id="midi" class="alert alert-secondary"></div>
+        
+        <div class="form-group">
+          <label>MIDI event log</label>
+          <div class="input-group">
+            <textarea name="log" id="midi-log" cols="30" rows="5" class="form-control" readonly></textarea>
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" id="midi-log-clear">&times;</button>
+            </div>
+          </div>
+        </div>
+
+        <label>Supported devices</label>
+        <ul class="list-group">
+          <li class="list-group-item">FP-10</li>
+          <li class="list-group-item">FP-30</li>
+          <!-- <li class="list-group-item">FP-60</li> -->
+        </ul>
       </div>
     </div>
   </div>

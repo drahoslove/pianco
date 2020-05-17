@@ -1,5 +1,5 @@
 import {
-  toCmd, fromCmd, toVal, fromVal,
+  toCmd, fromCmd, toVal, fromVal, chanFromCmd,
   CMD_NOTE_ON, CMD_NOTE_OFF,
   CMD_PROGRAM, CMD_CONTROL_CHANGE,
   CC_BANK_0, CC_BANK_1, MID_C,
@@ -46,7 +46,7 @@ const instrments = {
     ["Choir 1", 8, 64, 52],     // +
     ["Choir 2", 8, 66, 52],     // +
     ["Choir 3", 8, 68, 52],     // +
-    ["Decay choir", 1, 64, 52], // +
+    ["Decay Choir", 1, 64, 52], // +
     ["Jazz Scat", 0, 65, 54],
     ["Thum Voice", 0, 66, 53], // +
   ],
@@ -92,23 +92,29 @@ const write = (data, timestamp) => {
   devices.output.send(new Uint8Array(data), timestamp)
 }
 
-const playnote = (note) => {
+const playnote = (note, ch) => {
   write([
-    toCmd(CMD_NOTE_ON), note, toVal(.5),
+    toCmd(CMD_NOTE_ON, ch), note, toVal(.5),
   ], performance.now())
   write([
-    toCmd(CMD_NOTE_OFF), note, 0,
+    toCmd(CMD_NOTE_OFF, ch), note, 0,
   ], performance.now() + 250)
 }
 
 const setVolume = (volume) => { // 0 - 1
   write([toCmd(CMD_CONTROL_CHANGE), 7, toVal(volume)])
 }
-
 window.setVolume = setVolume
 
+const identityReq = () => {
+  write([
+    0xF0, 0x7E,, 0x10,, 0x06,, 0x01, 0xF7,
+  ])
+}
+window.identityReq = identityReq
 
-navigator.requestMIDIAccess({ sysex: false })
+
+navigator.requestMIDIAccess({ sysex: true })
   .then((midiAccess) => {
     const input = [...midiAccess.inputs.values()].find(({ name }) => name.includes('Roland Digital Piano'))
     const output = [...midiAccess.outputs.values()].find(({ name }) => name.includes('Roland Digital Piano'))
@@ -137,9 +143,36 @@ navigator.requestMIDIAccess({ sysex: false })
         midiEl.className = 'alert alert-success'
       }
     }
-    input.onmidimessage = (e) => { console.log(e) }
+    input.onmidimessage = (e) => {
+      const logArea = document.getElementById('midi-log')
+      const { type, timeStamp, data: [ cmd, ...rest]} = e
+      logArea.value += `${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\t ${Math.round(timeStamp)}\n`
+      logArea.scrollTop = logArea.scrollHeight
+      console.log(e)
+    }
 
     playnote(MID_C)
   }, () => {
     midiEl.className = 'alert alert-warning'
   })
+
+document.getElementById('midi-log-clear').onclick = () => {
+  document.getElementById('midi-log').value = ''
+}
+
+
+const sleep = async (t) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, t)
+  })
+}
+
+async function test () {
+  for (let ch = 0; ch<16; ch++) {
+    await sleep(2000)
+    playnote(53, ch)
+    console.log('x', ch)
+  }
+}
+
+// test()

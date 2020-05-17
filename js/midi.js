@@ -12,8 +12,9 @@ export const MID_C = 60
 
 const CHANNEL = 3 // this is what roland actually uses
 
-export const toCmd = (x) => (1<<3 | x)<<4 | CHANNEL
+export const toCmd = (x, ch=CHANNEL) => (1<<3 | x)<<4 | ch
 export const fromCmd = (cmd) => (cmd>>4) & 7
+export const chanFromCmd = (cmd) => cmd && 0x0F
 
 export const toVal = (x) => Math.round(x*127)
 export const fromVal = (val) => val/127
