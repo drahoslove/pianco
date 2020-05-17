@@ -8,7 +8,10 @@ import {
   sendOffAll as releaseAll,
   sendSustain as sustain,
 } from './io.js'
-import { fromCmd, fromVal } from './midi.js'
+import {
+  fromCmd, fromVal,
+  CMD_NOTE_ON, CMD_NOTE_OFF, CMD_CONTROL_CHANGE, CMD_PROGRAM,
+} from './midi.js'
 
 
 let transposition = 0
@@ -224,23 +227,23 @@ if (navigator.requestMIDIAccess) {
 }
 
 function onMIDISuccess(midiAccess) {
-  for (var input of midiAccess.inputs.values()) {
+  for (let input of midiAccess.inputs.values()) {
     midiEl.innerText = input.name
-    input.onstatechange = (e) => { }
-    input.onmidimessage = getMIDIMessage
+    input.onstatechange = (e) => { console.log(e) }
+    input.onmidimessage = handleMIDIMessage
   }
 }
 
 let bankSelect = [0, 0]
 
-function getMIDIMessage(midiMessage) {
+function handleMIDIMessage(midiMessage) {
   const { data } = midiMessage
   const [cmd, val1, val2 = 0] = data
 
   const note = Tone.Midi(val1).toNote()
 
   switch (fromCmd(cmd)) {
-    case 1: { // noteOn
+    case CMD_NOTE_ON: { 
       const velocity = fromVal(val2)
       if (velocity > 0) {
         pressNote(note, velocity)()
@@ -249,10 +252,10 @@ function getMIDIMessage(midiMessage) {
       }
       break;
     }
-    case 0: // noteOff
+    case CMD_NOTE_OFF: // noteOff
       releaseNote(note)()
       break;
-    case 3: {// control change
+    case CMD_CONTROL_CHANGE: {// control change
       const [_, control, value] = data
       if (control === 0) { // msb of bank
         bankSelect[0] = value
@@ -263,7 +266,7 @@ function getMIDIMessage(midiMessage) {
       }
       break;
     }
-    case 4: {// program (sound) change
+    case CMD_PROGRAM: {// program (sound) change
       const [_, programId] = data
       console.log('program', instrumentById[programId] || programId, 'from bank', bankSelect)
       break;

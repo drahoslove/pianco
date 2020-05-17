@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pianinous</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<style>
+.select {
+  overflow: hidden;
+}
+</style>
+<script type="module" src="/js/rc.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>Roland FP-10 Digital piano - remote controller</h2>
+    <div class="row">
+      <form class="col-md">
+        <div class="form-group">
+          <label for="instrument-selector">Instrument</label>
+          <select id="instrument-selector" class="form-control select"></select>
+        </div>
+      </form>
+      <div class="col-md">
+        MIDI
+        <div id="midi" class="alert alert-secondary"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
