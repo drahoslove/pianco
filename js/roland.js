@@ -175,11 +175,8 @@ const checkSum = (address, data) => {
   return _H((128 - total % 128) & 0x7F)
 }
 
-const wrap = (mode, address, data) => {
-  // 12 = set data; 11 = request data
-  const message = `F0${PREFIX}${mode}${address}${data}${checkSum(address, data)}F7`
-  strToByteArray(message)
-}
+const wrap = (mode, address, data) =>
+  strToByteArray( `F0${PREFIX}${mode}${address}${data}${checkSum(address, data)}F7`)
 
 const req = (address, size=_H(reqSizes[address]||1)) => 
   wrap("11", address, size)
@@ -188,9 +185,9 @@ const set = (address, data) =>
   wrap("12", address, data)
 
 export const connect = () => [
-  req(addrs.uptime),
   set(addrs.connection, _H(1)), // required for other set commands to work
   set(addrs.applicationMode, _H(0) + _H(1)), // required for responses to be returned
+  req(addrs.uptime),
 ]
 
 export const checkMetronome = () => req(addrs.metronomeStatus)
@@ -199,10 +196,7 @@ export const checkHeadphones = () => req(addrs.headphonesConnection)
 
 export const toggleMetronome = () => set(addrs.metronomeSwToggle, _H(0))
 
-export const setMasterVolume = (val) => {
-  const hexVal = _H(Math.floor(val*127))
-  return set(addrs.masterVolume, hexVal)
-}
+export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
 
 // conversion function
 

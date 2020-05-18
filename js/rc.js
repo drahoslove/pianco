@@ -13,7 +13,7 @@ import {
 } from './midi.js'
 
 
-// init select
+/* init insrument selector */
 const instrumentSelector = document.getElementById('instrument-selector')
 instrumentSelector.size = 1
 Object.entries(instruments).forEach(([groupName, instruments]) => {
@@ -38,15 +38,41 @@ instrumentSelector.onchange = (e) => {
   playnote(MID_C)
 }
 
+/* init volume */
+let volume = 0
+
+const volumeBar = document.getElementById('volume-bar')
+const setVolume = (value) => {
+  volume = Math.max(0, Math.min(value, 100))
+  volumeBar['aria-valuenow'] = volume
+  volumeBar.style.width = `${volume}%`
+  volumeBar.innerText = `${volume}%`
+}
+const volumeDown = () => setVolume(volume-5)
+const volumeUp = () => setVolume(volume+5)
+
+volumeBar.parentElement.parentElement.onwheel = (e) => {
+  const { deltaY } = e
+  if (deltaY < 0) {
+    volumeUp()
+  } else {
+    volumeDown()
+  }
+  send(setMasterVolume(volume))
+}
+
+
+/* init midi */
+
 const midiEl = document.getElementById('midi')
 
 const devices = {
   input: {name: 'none'},
   output: {name: 'none'},
 }
-window.devices = devices
 
 const send = (data, timestamp) => {
+  console.log('send', data)
   devices.output.send(new Uint8Array(data), timestamp)
 }
 
@@ -55,11 +81,15 @@ const playnote = (note, ch) => {
   send([toCmd(CMD_NOTE_OFF, ch), note, 0], performance.now() + 250)
 }
 
-
-const identityReq = () => {
-  write([ 0xF0, 0x7E,, 0x10,, 0x06,, 0x01, 0xF7 ])
+const init = async () => {
+  for (let msg of connect()) {
+    send(msg)
+    await sleep(50)
+  }
+  send(setMasterVolume(100))
+  setVolume(100)
+  playnote(MID_C)
 }
-window.identityReq = identityReq
 
 navigator.requestMIDIAccess({ sysex: true })
   .then((midiAccess) => {
@@ -88,6 +118,7 @@ navigator.requestMIDIAccess({ sysex: true })
         devices[e.port.type] = e.target
         midiEl.innerHTML = `in: ${devices.input.name}<br/> out: ${devices.output.name}`
         midiEl.className = 'alert alert-success'
+        init()
       }
     }
     input.onmidimessage = (e) => {
@@ -100,6 +131,9 @@ navigator.requestMIDIAccess({ sysex: true })
         if (addr === 'toneForSingle') {
           instrumentSelector.value = document.querySelector(`[data-code='${value}']`).value
         }
+        if (addr === 'masterVolume') {
+          setVolume(parseInt(value, 16))
+        }
       } else {
         logArea.value += `${time} ${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\n`
       }
@@ -108,8 +142,9 @@ navigator.requestMIDIAccess({ sysex: true })
     }
 
     // init roland driver
-    connect().forEach(send)
-    playnote(MID_C)
+    init()
+
+    
   }, () => {
     midiEl.className = 'alert alert-warning'
   })
