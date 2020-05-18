@@ -1,4 +1,9 @@
 import {
+  connect,
+  toggleMetronome, setMasterVolume,
+} from "./roland.js"
+
+import {
   toCmd, fromCmd, toVal, fromVal, chanFromCmd,
   CMD_NOTE_ON, CMD_NOTE_OFF,
   CMD_PROGRAM, CMD_CONTROL_CHANGE,
@@ -73,7 +78,7 @@ Object.entries(instrments).forEach(([groupName, instrments]) => {
   instrmentSelector.append(optGroup)
 })
 instrmentSelector.onchange = (e) => {
-  const [bankMSB, bankLSB, program] = e.target.value.split(',')
+  const [bankMSB, bankLSB, program] = e.target.value.split(',').map(Number)
   write([toCmd(CMD_CONTROL_CHANGE), CC_BANK_0, bankMSB])
   write([toCmd(CMD_CONTROL_CHANGE), CC_BANK_1, bankLSB])
   write([toCmd(CMD_PROGRAM), program])
@@ -107,12 +112,19 @@ const setVolume = (volume) => { // 0 - 1
 window.setVolume = setVolume
 
 const identityReq = () => {
-  write([
-    0xF0, 0x7E,, 0x10,, 0x06,, 0x01, 0xF7,
-  ])
+  write([ 0xF0, 0x7E,, 0x10,, 0x06,, 0x01, 0xF7 ])
 }
 window.identityReq = identityReq
 
+const metronome = () => {
+  toggleMetronome()
+}
+window.metronome = metronome
+
+const volume = (val) => {
+  setMasterVolume(val)
+}
+window.volume = volume
 
 navigator.requestMIDIAccess({ sysex: true })
   .then((midiAccess) => {
@@ -145,11 +157,19 @@ navigator.requestMIDIAccess({ sysex: true })
     }
     input.onmidimessage = (e) => {
       const logArea = document.getElementById('midi-log')
-      const { type, timeStamp, data: [ cmd, ...rest]} = e
-      logArea.value += `${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\t ${Math.round(timeStamp)}\n`
+      let { type, timeStamp, data: [ cmd, ...rest ]} = e
+      if (cmd === 240) {
+        type = 'sysex'
+        logArea.value += `${type}\t ${cmd} ${rest.join(' ')}\t ${Math.round(timeStamp)}\n`
+      } else {
+        logArea.value += `${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\t ${Math.round(timeStamp)}\n`
+      }
       logArea.scrollTop = logArea.scrollHeight
       console.log(e)
     }
+
+    // init roland driver
+    connect(write)
 
     playnote(MID_C)
   }, () => {
@@ -167,12 +187,3 @@ const sleep = async (t) => {
   })
 }
 
-async function test () {
-  for (let ch = 0; ch<16; ch++) {
-    await sleep(2000)
-    playnote(53, ch)
-    console.log('x', ch)
-  }
-}
-
-// test()
