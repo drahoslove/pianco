@@ -1,5 +1,7 @@
 import {
+  instruments,
   connect,
+  parseMsg,
   toggleMetronome, setMasterVolume,
 } from "./roland.js"
 
@@ -10,78 +12,29 @@ import {
   CC_BANK_0, CC_BANK_1, MID_C,
 } from './midi.js'
 
-const instrments = {
-  "Pianos": [
-    ["Grand Piano 1", 0, 68, 0],
-    ["Grand Piano 2", 16, 67, 0],
-    ["Grand Piano 3", 4, 64, 0],
-    ["Grand Piano 4", 8, 66, 1],
-    ["Ragtime Piano", 0, 64, 3], // +
-    ["Harpsichord 1", 0, 66, 6],
-    ["Harpsichord 2", 8, 66, 6],
-  ],
-  "E. Pianos": [
-    ["E. Piano 1", 16, 67, 4],
-    ["E. Piano 2", 0, 70, 5],
-    ["E. Piano 3", 24, 65, 4], // +
-    ["Clavinet", 0, 67, 7],   // +
-    ["Vibraphone", 0, 0, 11],
-    ["Celesta", 0, 0, 8], // +
-  ],
-  "Organs": [
-    ["Organ Jazz 1", 0, 70, 18],
-    ["Organ Jazz 2", 0, 69, 18], // +
-    ["Organ Church 1", 0, 66, 19],
-    ["Organ Church 2", 8, 69, 19], // +
-    ["Accordion", 0, 68, 21],      // +
-  ],
-  "Strings": [
-    ["Strings 1", 0, 71, 49],
-    ["Strings 2", 0, 64, 48],
-    ["Decay Strings", 1, 65, 49], // +
-    ["Harp", 0, 68, 46],          // +
 
-    ["Guitar Nylon str.", 0, 0, 24],      // +
-    ["Guitar Steel str.", 0, 0, 25],      // +
-    ["Acoustic Bass", 0, 0, 32],          // +
-    ["Acoustic Bass + Cymbl", 0, 66, 32], // +
-    ["Fingered Bass", 0, 0, 33],          // +
-  ],
-  "Voices": [
-    ["Choir 1", 8, 64, 52],     // +
-    ["Choir 2", 8, 66, 52],     // +
-    ["Choir 3", 8, 68, 52],     // +
-    ["Decay Choir", 1, 64, 52], // +
-    ["Jazz Scat", 0, 65, 54],
-    ["Thum Voice", 0, 66, 53], // +
-  ],
-  "Synths": [
-    ["Synth Pad", 0, 64, 89],
-    ["Decay Choir Pad", 1, 66, 89], // +
-    ["Synth Bell", 0, 68, 98],      // +
-  ],
-}
 // init select
-const instrmentSelector = document.getElementById('instrument-selector')
-instrmentSelector.size = 1
-Object.entries(instrments).forEach(([groupName, instrments]) => {
+const instrumentSelector = document.getElementById('instrument-selector')
+instrumentSelector.size = 1
+Object.entries(instruments).forEach(([groupName, instruments]) => {
   const optGroup = document.createElement('optgroup')
   optGroup.label = groupName
-  instrments.forEach(([name, ...val]) => {
+  instruments.forEach(([name, code, ...val]) => {
     const option = document.createElement('option')
     option.value = val
+    option.dataset.code = code
     option.innerText = name
     optGroup.append(option)
-    instrmentSelector.size++
+    instrumentSelector.size++
   })
-  instrmentSelector.size++
-  instrmentSelector.append(optGroup)
+  instrumentSelector.size++
+  instrumentSelector.append(optGroup)
 })
-instrmentSelector.onchange = (e) => {
+instrumentSelector.onchange = (e) => {
   const [bankMSB, bankLSB, program] = e.target.value.split(',').map(Number)
-  write([toCmd(CMD_CONTROL_CHANGE), CC_BANK_0, bankMSB])
-  write([toCmd(CMD_CONTROL_CHANGE), CC_BANK_1, bankLSB])
-  write([toCmd(CMD_PROGRAM), program])
+  send([toCmd(CMD_CONTROL_CHANGE), CC_BANK_0, bankMSB])
+  send([toCmd(CMD_CONTROL_CHANGE), CC_BANK_1, bankLSB])
+  send([toCmd(CMD_PROGRAM), program])
   playnote(MID_C)
 }
 
@@ -93,38 +46,20 @@ const devices = {
 }
 window.devices = devices
 
-const write = (data, timestamp) => {
+const send = (data, timestamp) => {
   devices.output.send(new Uint8Array(data), timestamp)
 }
 
 const playnote = (note, ch) => {
-  write([
-    toCmd(CMD_NOTE_ON, ch), note, toVal(.5),
-  ], performance.now())
-  write([
-    toCmd(CMD_NOTE_OFF, ch), note, 0,
-  ], performance.now() + 250)
+  send([toCmd(CMD_NOTE_ON, ch), note, toVal(.5)], performance.now())
+  send([toCmd(CMD_NOTE_OFF, ch), note, 0], performance.now() + 250)
 }
 
-const setVolume = (volume) => { // 0 - 1
-  write([toCmd(CMD_CONTROL_CHANGE), 7, toVal(volume)])
-}
-window.setVolume = setVolume
 
 const identityReq = () => {
   write([ 0xF0, 0x7E,, 0x10,, 0x06,, 0x01, 0xF7 ])
 }
 window.identityReq = identityReq
-
-const metronome = () => {
-  toggleMetronome()
-}
-window.metronome = metronome
-
-const volume = (val) => {
-  setMasterVolume(val)
-}
-window.volume = volume
 
 navigator.requestMIDIAccess({ sysex: true })
   .then((midiAccess) => {
@@ -158,19 +93,22 @@ navigator.requestMIDIAccess({ sysex: true })
     input.onmidimessage = (e) => {
       const logArea = document.getElementById('midi-log')
       let { type, timeStamp, data: [ cmd, ...rest ]} = e
-      if (cmd === 240) {
-        type = 'sysex'
-        logArea.value += `${type}\t ${cmd} ${rest.join(' ')}\t ${Math.round(timeStamp)}\n`
+      const time = (new Date(timeStamp)).toISOString().substr(11,12)
+      if (cmd === 240) { // sysex
+        const {addr, mode, value, err} = parseMsg(e.data)
+        logArea.value += `${time} sysex\t ${mode} ${addr} - ${value} ${err}\n`
+        if (addr === 'toneForSingle') {
+          instrumentSelector.value = document.querySelector(`[data-code='${value}']`).value
+        }
       } else {
-        logArea.value += `${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\t ${Math.round(timeStamp)}\n`
+        logArea.value += `${time} ${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\n`
       }
       logArea.scrollTop = logArea.scrollHeight
       console.log(e)
     }
 
     // init roland driver
-    connect(write)
-
+    connect().forEach(send)
     playnote(MID_C)
   }, () => {
     midiEl.className = 'alert alert-warning'

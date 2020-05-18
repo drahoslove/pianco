@@ -1,4 +1,56 @@
-const addresses = {
+export const instruments = {
+  "Pianos": [
+    ["Grand Piano 1", "000000", 0, 68, 0],
+    ["Grand Piano 2", "000001", 16, 67, 0],
+    ["Grand Piano 3", "000002", 4, 64, 0],
+    ["Grand Piano 4", "000003", 8, 66, 1],
+    ["Ragtime Piano", "000004", 0, 64, 3],
+    ["Harpsichord 1", "000005", 0, 66, 6],
+    ["Harpsichord 2", "000006", 8, 66, 6],
+  ],
+  "E. Pianos": [
+    ["E. Piano 1", "010000", 16, 67, 4],
+    ["E. Piano 2", "010001", 0, 70, 5],
+    ["E. Piano 3", "010002", 24, 65, 4],
+    ["Clavinet", "010003", 0, 67, 7],  
+    ["Vibraphone", "010004", 0, 0, 11],
+    ["Celesta", "010005", 0, 0, 8],
+  ],
+  "Organs": [
+    ["Organ Jazz 1", "020003", 0, 70, 18],
+    ["Organ Jazz 2", "020004", 0, 69, 18],
+    ["Organ Church 1", "020005", 0, 66, 19],
+    ["Organ Church 2", "020006", 8, 69, 19],
+    ["Accordion", "020007", 0, 68, 21],     
+  ],
+  "Strings": [
+    ["Strings 1", "020000", 0, 71, 49],
+    ["Strings 2", "020001", 0, 64, 48],
+    ["Decay Strings", "02000F", 1, 65, 49],
+    ["Harp", "020002", 0, 68, 46],         
+
+    ["Guitar Nylon str.", "02000D", 0, 0, 24],     
+    ["Guitar Steel str.", "02000E", 0, 0, 25],     
+    ["Acoustic Bass", "020012", 0, 0, 32],         
+    ["Acoustic Bass + Cymbl", "020013", 0, 66, 32],
+    ["Fingered Bass", "020014", 0, 0, 33],         
+  ],
+  "Voices": [
+    ["Choir 1", "020008", 8, 64, 52],    
+    ["Choir 2", "02000A", 8, 66, 52],    
+    ["Choir 3", "02000B", 8, 68, 52],    
+    ["Decay Choir", "020010", 1, 64, 52],
+    ["Jazz Scat", "020009", 0, 65, 54],
+    ["Thum Voice", "020015", 0, 66, 53],
+  ],
+  "Synths": [
+    ["Synth Pad", "02000C", 0, 64, 89],
+    ["Decay Choir Pad", "020011", 1, 66, 89],
+    ["Synth Bell", "010006", 0, 68, 98],     
+  ],
+}
+
+const addrs = {
   // 010000xx
   serverSetupFileName:            "01000000",
   // 010001xx
@@ -80,81 +132,86 @@ const addresses = {
 }
 
 const reqSizes = {
-  [addresses.serverSetupFileName]: 32,
+  [addrs.serverSetupFileName]: 32,
   // 010001xx
-  [addresses.sequencerMeasure]: 2,
-  [addresses.sequencerTempoRO]: 2,
+  [addrs.sequencerMeasure]: 2,
+  [addrs.sequencerTempoRO]: 2,
   // 010002xx
-  [addresses.toneForSingle]: 3,
-  [addresses.toneForSplit]: 3,
-  [addresses.toneForDual]: 3,
-  [addresses.songNumber]: 3,
-  [addresses.masterTuning]: 2,
+  [addrs.toneForSingle]: 3,
+  [addrs.toneForSplit]: 3,
+  [addrs.toneForDual]: 3,
+  [addrs.songNumber]: 3,
+  [addrs.masterTuning]: 2,
   // 010003xx
-  [addresses.arrangerPedalFunction]: 2,
-  [addresses.sequencerTempoWO]: 2,
+  [addrs.arrangerPedalFunction]: 2,
+  [addrs.sequencerTempoWO]: 2,
   // 010007xx
-  [addresses.uptime]: 8,
+  [addrs.uptime]: 8,
 }
 
+const PREFIX = "411000000028"
 
-let send = null
+export const parseMsg = (data) => {
+  const match = byteArrayToStr(data).match(/^F0411000000028([0-9A-F]{2})([0-9A-F]{8})([0-9A-F]*)([0-9A-F]{2})F7$/)
+  if (!match) {
+    return {err: 'not a valid roland syses msg'} // not valid roland sysex msg
+  }
 
-const _H = (intData, length=2) =>
-  (Array(length).join("0") + intData.toString(16)).slice(-length).toUpperCase()
+  const [ _, mode, addr, value, checksum ] = match
+  
+  const addrPair = Object.entries(addrs).find(([name, a]) => a === addr)
+  const res =  {
+    addr: addrPair ? addrPair[0] : addr,
+    mode: {'11': 'req', '12': 'set'}[mode],
+    value,
+    checksum,
+    err: '',
+  }
+  return res
+}
 
 const checkSum = (address, data) => {
   let total = strToByteArray(address + data).reduce((sum, byte) => (sum + byte), 0)
   return _H((128 - total % 128) & 0x7F)
 }
 
-
-const _write = (mode, address, data) => {
-  if (!send) return
+const wrap = (mode, address, data) => {
   // 12 = set data; 11 = request data
-  const message = `F0411000000028${mode}${address}${data}${checkSum(address, data)}F7`
-  send(strToByteArray(message))
+  const message = `F0${PREFIX}${mode}${address}${data}${checkSum(address, data)}F7`
+  strToByteArray(message)
 }
 
-const req = (address, size=_H(reqSizes[address]||1)) => {
-  _write("11", address, size)
-}
-const set = (address, data) => {
-  _write("12", address, data)
-}
+const req = (address, size=_H(reqSizes[address]||1)) => 
+  wrap("11", address, size)
 
-export const connect = (sender) => {
-  if (send) return
-  send = sender
-  req(addresses.uptime)
-  set(addresses.connection, _H(1)) // required for other set commands to work
-  set(addresses.applicationMode, _H(0) + _H(1)) // required for responses to be returned
-}
+const set = (address, data) => 
+  wrap("12", address, data)
 
-export const checkMetronome = () => {
-  req(addresses.metronomeStatus)
-}
+export const connect = () => [
+  req(addrs.uptime),
+  set(addrs.connection, _H(1)), // required for other set commands to work
+  set(addrs.applicationMode, _H(0) + _H(1)), // required for responses to be returned
+]
 
-export const checkHeadphones = () => {
-  req(addresses.headphonesConnection)
-}
+export const checkMetronome = () => req(addrs.metronomeStatus)
 
-export const toggleMetronome = () => {
-  set(addresses.metronomeSwToggle, _H(0))
-}
-window.checkHeadphones = checkHeadphones
+export const checkHeadphones = () => req(addrs.headphonesConnection)
+
+export const toggleMetronome = () => set(addrs.metronomeSwToggle, _H(0))
 
 export const setMasterVolume = (val) => {
   const hexVal = _H(Math.floor(val*127))
-  console.log('volumeval', hexVal)
-  set(addresses.masterVolume, hexVal)
+  return set(addrs.masterVolume, hexVal)
 }
 
 // conversion function
 
+const _H = (intData, length=2) =>
+  (Array(length).join("0") + intData.toString(16)).slice(-length).toUpperCase()
+
 // "0001" => [0, 1]
 const strToByteArray = (str) => {
-  return new Uint8Array(str.split('').reduce((acc, char, i, arr) => {
+  return new Uint8Array(str.split('').reduce((acc, _, i, arr) => {
     if (i % 2 === 0) {
       const h = parseInt(arr[i], 16)
       const l = parseInt(arr[i+1], 16)
@@ -166,7 +223,7 @@ const strToByteArray = (str) => {
 
 // [0, 1] => "0001" 
 const byteArrayToStr = (array) => {
-  return [...array].map(_H).join('')
+  return [...array].map(i => _H(i)).join('')
 }
 
 
