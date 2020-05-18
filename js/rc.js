@@ -2,7 +2,7 @@ import {
   instruments,
   connect,
   parseMsg,
-  toggleMetronome, setMasterVolume,
+  toggleMetronome, setMasterVolume, checkMetronome,
 } from "./roland.js"
 
 import {
@@ -61,6 +61,22 @@ volumeBar.parentElement.parentElement.onwheel = (e) => {
   send(setMasterVolume(volume))
 }
 
+/* init metronome */
+let metronomeOn = false
+const metronomeButton = document.getElementById('metronome-toggle')
+const setMetronome = (on) => {
+  metronomeOn = on
+  if (on) {
+    metronomeButton.classList.add('active')
+  } else {
+    metronomeButton.classList.remove('active')
+  }
+}
+metronomeButton.onclick = () => {
+  send(toggleMetronome())
+  // send(checkMetronome())
+}
+
 
 /* init midi */
 
@@ -86,8 +102,6 @@ const init = async () => {
     send(msg)
     await sleep(50)
   }
-  send(setMasterVolume(100))
-  setVolume(100)
   playnote(MID_C)
 }
 
@@ -118,7 +132,6 @@ navigator.requestMIDIAccess({ sysex: true })
         devices[e.port.type] = e.target
         midiEl.innerHTML = `in: ${devices.input.name}<br/> out: ${devices.output.name}`
         midiEl.className = 'alert alert-success'
-        init()
       }
     }
     input.onmidimessage = (e) => {
@@ -134,6 +147,9 @@ navigator.requestMIDIAccess({ sysex: true })
         if (addr === 'masterVolume') {
           setVolume(parseInt(value, 16))
         }
+        if (addr === 'metronomeStatus') {
+          setMetronome(Boolean(parseInt(value, 16)))
+        }
       } else {
         logArea.value += `${time} ${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\n`
       }
@@ -143,7 +159,6 @@ navigator.requestMIDIAccess({ sysex: true })
 
     // init roland driver
     init()
-
     
   }, () => {
     midiEl.className = 'alert alert-warning'

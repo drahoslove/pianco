@@ -178,16 +178,19 @@ const checkSum = (address, data) => {
 const wrap = (mode, address, data) =>
   strToByteArray( `F0${PREFIX}${mode}${address}${data}${checkSum(address, data)}F7`)
 
-const req = (address, size=_H(reqSizes[address]||1)) => 
-  wrap("11", address, size)
+const req = (address, size=reqSizes[address]||1) => 
+  wrap("11", address, _H(size, 8))
 
 const set = (address, data) => 
   wrap("12", address, data)
 
 export const connect = () => [
+  req(addrs.uptime),
   set(addrs.connection, _H(1)), // required for other set commands to work
   set(addrs.applicationMode, _H(0) + _H(1)), // required for responses to be returned
-  req(addrs.uptime),
+  req(addrs.addressMapVersion),
+  req(addrs.masterVolume),
+  req(addrs.metronomeStatus),
 ]
 
 export const checkMetronome = () => req(addrs.metronomeStatus)
