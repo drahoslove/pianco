@@ -193,20 +193,21 @@ export const connect = () => [
   req(addrs.addressMapVersion),
   req(addrs.masterVolume),
   req(addrs.metronomeStatus),
-  // req(addrs.metronomeBeat),
-  // req(addrs.sequencerStatus),
   req(addrs.sequencerTempoRO),
+  req(addrs.keyTouch),
 ]
 
 export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
 export const checkHeadphones = () => req(addrs.headphonesConnection)
 
 
+export const toggleMetronome = () => set(addrs.metronomeSwToggle, _H(0))
 export const checkMetronome = () => req(addrs.metronomeStatus)
 
-export const toggleMetronome = () => set(addrs.metronomeSwToggle, _H(0))
-
 export const setMetronomeTempo = (val) => set(addrs.sequencerTempoWO, _H(val, 2))
+
+export const setKeyPressure = (val) => set(addrs.keyTouch, _H(val))
+export const checkKeyPressure = () => req(addrs.keyTouch)
 
 // conversion function
 

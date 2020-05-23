@@ -90,6 +90,28 @@ metronomeTempoInput.onchange = (e) => {
   }
 })
 
+/* init pressure */
+let pressure = 0
+const pressureButtons = [...document.querySelectorAll('input[name="pressure"]')]
+const setPressure = (value) => {
+  pressure = value
+  pressureButtons.forEach(button => {
+    button.checked = false
+    button.parentElement.classList.remove('active')
+  })
+  const button = pressureButtons.find(button => +button.value === value)
+  if (button) {
+    button.checked = true
+    button.parentElement.classList.add('active')
+  }
+}
+pressureButtons.forEach(button => {
+  button.onchange = () => {
+    send(R.setKeyPressure(+button.value))
+    send(R.checkKeyPressure())
+  }
+})
+
 
 /* init midi */
 
@@ -113,7 +135,7 @@ const playnote = (note, ch) => {
 const init = async () => {
   for (let msg of R.connect()) {
     send(msg)
-    await sleep(50)
+    await sleep(25)
   }
   playnote(MID_C)
 }
@@ -165,6 +187,9 @@ navigator.requestMIDIAccess({ sysex: true })
         }
         if (addr === 'sequencerTempoRO') {
           setMetronomeTempo(value)
+        }
+        if (addr === 'keyTouch') {
+          setPressure(value)
         }
       } else {
         logArea.value += `${time} ${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\n`
