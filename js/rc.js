@@ -1,9 +1,6 @@
-import {
-  instruments,
-  connect,
-  parseMsg,
-  toggleMetronome, setMasterVolume, checkMetronome,
-} from "./roland.js"
+import * as R from "./roland.js"
+
+const { instruments } = R
 
 import {
   toCmd, fromCmd, toVal, fromVal, chanFromCmd,
@@ -58,7 +55,7 @@ volumeBar.parentElement.parentElement.onwheel = (e) => {
   } else {
     volumeDown()
   }
-  send(setMasterVolume(volume))
+  send(R.setMasterVolume(volume))
 }
 
 /* init metronome */
@@ -73,9 +70,25 @@ const setMetronome = (on) => {
   }
 }
 metronomeButton.onclick = () => {
-  send(toggleMetronome())
-  // send(checkMetronome())
+  send(R.toggleMetronome())
 }
+
+let metronomeTempo = 0
+const metronomeTempoInput = document.getElementById('metronome-tempo')
+const setMetronomeTempo = (tempo) => {
+  tempo = Math.max(10, Math.min(tempo, 400))
+  metronomeTempo = tempo
+  metronomeTempoInput.value = tempo
+}
+metronomeTempoInput.onchange = (e) => {
+  const { value } = e.target
+  send(R.setMetronomeTempo(+value))
+}
+[...document.querySelectorAll('[data-tempo]')].forEach(button => {
+  button.onclick = () => {
+    send(R.setMetronomeTempo(+button.dataset.tempo))
+  }
+})
 
 
 /* init midi */
@@ -98,7 +111,7 @@ const playnote = (note, ch) => {
 }
 
 const init = async () => {
-  for (let msg of connect()) {
+  for (let msg of R.connect()) {
     send(msg)
     await sleep(50)
   }
@@ -139,16 +152,19 @@ navigator.requestMIDIAccess({ sysex: true })
       let { type, timeStamp, data: [ cmd, ...rest ]} = e
       const time = (new Date(timeStamp)).toISOString().substr(11,12)
       if (cmd === 240) { // sysex
-        const {addr, mode, value, err} = parseMsg(e.data)
+        const {addr, mode, value, hexval, err} = R.parseMsg(e.data)
         logArea.value += `${time} sysex\t ${mode} ${addr} - ${value} ${err}\n`
         if (addr === 'toneForSingle') {
-          instrumentSelector.value = document.querySelector(`[data-code='${value}']`).value
+          instrumentSelector.value = document.querySelector(`[data-code='${hexval}']`).value
         }
         if (addr === 'masterVolume') {
-          setVolume(parseInt(value, 16))
+          setVolume(value)
         }
         if (addr === 'metronomeStatus') {
-          setMetronome(Boolean(parseInt(value, 16)))
+          setMetronome(Boolean(value))
+        }
+        if (addr === 'sequencerTempoRO') {
+          setMetronomeTempo(value)
         }
       } else {
         logArea.value += `${time} ${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\n`

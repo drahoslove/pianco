@@ -157,12 +157,14 @@ export const parseMsg = (data) => {
     return {err: 'not a valid roland syses msg'} // not valid roland sysex msg
   }
 
-  const [ _, mode, addr, value, checksum ] = match
-  
+  const [ _, mode, addr, hexval, checksum ] = match
+  const value = _V(hexval)  
+
   const addrPair = Object.entries(addrs).find(([name, a]) => a === addr)
   const res =  {
     addr: addrPair ? addrPair[0] : addr,
     mode: {'11': 'req', '12': 'set'}[mode],
+    hexval,
     value,
     checksum,
     err: '',
@@ -179,7 +181,7 @@ const wrap = (mode, address, data) =>
   strToByteArray( `F0${PREFIX}${mode}${address}${data}${checkSum(address, data)}F7`)
 
 const req = (address, size=reqSizes[address]||1) => 
-  wrap("11", address, _H(size, 8))
+  wrap("11", address, _H(size, 4))
 
 const set = (address, data) => 
   wrap("12", address, data)
@@ -191,20 +193,38 @@ export const connect = () => [
   req(addrs.addressMapVersion),
   req(addrs.masterVolume),
   req(addrs.metronomeStatus),
+  // req(addrs.metronomeBeat),
+  // req(addrs.sequencerStatus),
+  req(addrs.sequencerTempoRO),
 ]
+
+export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
+export const checkHeadphones = () => req(addrs.headphonesConnection)
+
 
 export const checkMetronome = () => req(addrs.metronomeStatus)
 
-export const checkHeadphones = () => req(addrs.headphonesConnection)
-
 export const toggleMetronome = () => set(addrs.metronomeSwToggle, _H(0))
 
-export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
+export const setMetronomeTempo = (val) => set(addrs.sequencerTempoWO, _H(val, 2))
 
 // conversion function
 
-const _H = (intData, length=2) =>
-  (Array(length).join("0") + intData.toString(16)).slice(-length).toUpperCase()
+
+const _H = (number, bytes=1, bit8) => {
+  const parts = [] // split by 7 (or 8) bits
+  do {
+    parts.unshift(number & (bit8 ? 255 : 127))
+    number >>= (bit8 ? 8 : 7)
+  } while (number > 0)
+  const hex = parts.map(part => (part > 15 ? '' : '0') + part.toString(16)).join('')
+  return (Array(bytes*2).join("0") + hex).slice(-bytes*2).toUpperCase()
+}
+
+const _V = (hex) => {
+  const bytearray = strToByteArray(hex)
+  return bytearray.reduce((val, part) => val * 128 + part, 0)
+}
 
 // "0001" => [0, 1]
 const strToByteArray = (str) => {
@@ -220,7 +240,7 @@ const strToByteArray = (str) => {
 
 // [0, 1] => "0001" 
 const byteArrayToStr = (array) => {
-  return [...array].map(i => _H(i)).join('')
+  return [...array].map(i => _H(i, 1, true)).join('')
 }
 
 

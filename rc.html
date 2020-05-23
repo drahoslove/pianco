@@ -41,6 +41,21 @@
           <div class="input-group">
             <button id="metronome-toggle" type="button" class="btn btn-outline-secondary"><span class="mdi mdi-metronome-tick"></span></button>
           </div>
+          <label for="metronome-tempo">Tempo</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <button class="btn btn-outline-secondary" type="button" data-tempo="30">30</button>
+              <button class="btn btn-outline-secondary" type="button" data-tempo="60">60</button>
+              <button class="btn btn-outline-secondary" type="button" data-tempo="90">90</button>
+              <button class="btn btn-outline-secondary" type="button" data-tempo="120">120</button>
+              <button class="btn btn-outline-secondary" type="button" data-tempo="180">180</button>
+              <button class="btn btn-outline-secondary" type="button" data-tempo="240">240</button>
+            </div>
+            <input id="metronome-tempo" type="number" class="form-control" value="0" min="20" max="500">
+            <div class="input-group-append">
+              <span class="input-group-text">bpm</span>
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
