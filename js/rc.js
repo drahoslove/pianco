@@ -87,14 +87,17 @@ const [ setMasterVolume, setMetronomeVolume ] = ['master', 'metronome'].map((var
 let metronomeOn = false
 const metronomeButton = document.getElementById('metronome-toggle')
 const metronomeTextState = document.getElementById('metronome-text-state')
+const metronomeVolumeBar = document.getElementById('metronome-volume-bar')
 const setMetronome = (on) => {
   metronomeOn = on
   if (on) {
     metronomeButton.classList.add('active')
     metronomeTextState.innerText = "ON"
+    metronomeVolumeBar.classList.remove('bg-secondary')
   } else {
     metronomeButton.classList.remove('active')
     metronomeTextState.innerText = "OFF"
+    metronomeVolumeBar.classList.add('bg-secondary')
   }
 }
 metronomeButton.onclick = () => {

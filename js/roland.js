@@ -190,12 +190,14 @@ export const connect = () => [
   req(addrs.uptime),
   set(addrs.connection, _H(1)), // required for other set commands to work
   set(addrs.applicationMode, _H(0) + _H(1)), // required for responses to be returned
+  
   req(addrs.addressMapVersion),
   req(addrs.masterVolume),
   req(addrs.metronomeVolume),
   req(addrs.metronomeStatus),
   req(addrs.sequencerTempoRO),
   req(addrs.keyTouch),
+  req(addrs.toneForSingle),
 ]
 
 export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
