@@ -49,6 +49,7 @@ const volumeDown = () => setVolume(volume-5)
 const volumeUp = () => setVolume(volume+5)
 
 volumeBar.parentElement.parentElement.onwheel = (e) => {
+  e.preventDefault()
   const { deltaY } = e
   if (deltaY < 0) {
     volumeUp()
@@ -57,6 +58,14 @@ volumeBar.parentElement.parentElement.onwheel = (e) => {
   }
   send(R.setMasterVolume(volume))
 }
+volumeBar.parentElement.onclick = (e) => {
+  const { offsetX } = e
+  const volume = Math.round(100/5 * offsetX/volumeBar.parentElement.offsetWidth)*5
+  setVolume(volume)
+  send(R.setMasterVolume(volume))
+}
+document.getElementById('volume-up').onclick = volumeUp
+document.getElementById('volume-down').onclick = volumeDown
 
 /* init metronome */
 let metronomeOn = false

@@ -31,8 +31,14 @@
 
         <div class="form-group">
           <label>Master volume</label>
-          <div class="progress" style="height: 2em;">
-            <div id="volume-bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+          <div class="btn-toolbar d-flex align-items-stretch">
+            <div class="btn-group btn-group-sm mr-2">
+              <button class="btn btn-outline-secondary w-50" id="volume-down"> ➖ </button>
+              <button class="btn btn-outline-secondary w-50" id="volume-up"> ➕ </button>
+            </div>
+            <div class="progress flex-fill h-auto">
+              <div id="volume-bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+            </div>
           </div>
         </div>
 
@@ -63,25 +69,29 @@
 
         <div class="form-group">
           <label>Pressure</label>
-          <div class="input-group btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-secondary">
-              <input type="radio" name="pressure" value="0"> Fixed
-            </label>
-            <label class="btn btn-secondary">
-              <input type="radio" name="pressure" value="1"> Super Light
-            </label>
-            <label class="btn btn-secondary">
-              <input type="radio" name="pressure" value="2"> Light
-            </label>
-            <label class="btn btn-secondary">
-              <input type="radio" name="pressure" value="3"> Meidum
-            </label>
-            <label class="btn btn-secondary">
-              <input type="radio" name="pressure" value="4"> Heavy
-            </label>
-            <label class="btn btn-secondary">
-              <input type="radio" name="pressure" value="5"> Super Heavy
-            </label>
+          <div class="btn-toolbar">
+            <div class="btn-group btn-group-toggle mr-2">
+              <label class="btn btn-secondary">
+                <input type="radio" name="pressure" value="0"> Fixed
+              </label>
+            </div>
+            <div class="btn-group btn-group-toggle flex-fill">
+              <label class="btn btn-secondary">
+                <input type="radio" name="pressure" value="1"> Super Light
+              </label>
+              <label class="btn btn-secondary">
+                <input type="radio" name="pressure" value="2"> Light
+              </label>
+              <label class="btn btn-secondary">
+                <input type="radio" name="pressure" value="3"> Meidum
+              </label>
+              <label class="btn btn-secondary">
+                <input type="radio" name="pressure" value="4"> Heavy
+              </label>
+              <label class="btn btn-secondary">
+                <input type="radio" name="pressure" value="5"> Super Heavy
+              </label>
+            </div>
           </div>
         </div>
 
