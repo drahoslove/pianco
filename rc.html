@@ -32,20 +32,38 @@
         <div class="form-group">
           <label>Master volume</label>
           <div class="btn-toolbar d-flex align-items-stretch">
-            <div class="btn-group btn-group-sm mr-2">
-              <button class="btn btn-outline-secondary w-50" id="volume-down"> ➖ </button>
-              <button class="btn btn-outline-secondary w-50" id="volume-up"> ➕ </button>
-            </div>
             <div class="progress flex-fill h-auto">
-              <div id="volume-bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+              <div id="master-volume-bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+            </div>
+            <div class="btn-group btn-group-sm ml-2">
+              <button class="btn btn-outline-secondary w-50" id="master-volume-down"> ➖ </button>
+              <button class="btn btn-outline-secondary w-50" id="master-volume-up"> ➕ </button>
             </div>
           </div>
         </div>
 
         <div class="form-group">
           <label>Metronome</label>
-          <div class="input-group">
-            <button id="metronome-toggle" type="button" class="btn btn-outline-secondary"><span class="mdi mdi-metronome-tick"></span></button>
+          <div class="btn-toolbar d-flex align-items-stretch">
+            <div class="input-group d-flex input-group-sm mr-2" style="width: 7em;">
+              <div class="input-group-prepend w-50">
+                <button id="metronome-toggle" type="button" class="btn btn-outline-secondary w-100">
+                  <span class="mdi mdi-metronome-tick"></span>
+                </button>
+              </div>
+              <div class="input-group-append w-50">
+                <div class="input-group-text w-100 d-block text-center" id="metronome-text-state">
+                  OFF
+                </div>
+              </div>
+            </div>
+            <div class="progress flex-fill h-auto">
+              <div id="metronome-volume-bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+            </div>
+            <div class="btn-group btn-group-sm ml-2">
+              <button class="btn btn-outline-secondary w-50" id="metronome-volume-down"> ➖ </button>
+              <button class="btn btn-outline-secondary w-50" id="metronome-volume-up"> ➕ </button>
+            </div>
           </div>
         </div>
 

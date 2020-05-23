@@ -36,46 +36,65 @@ instrumentSelector.onchange = (e) => {
 }
 
 /* init volume */
-let volume = 0
+const [ setMasterVolume, setMetronomeVolume ] = ['master', 'metronome'].map((variant) => {
+  let volume = 0 // 0-100 or 0-10
+  let max = variant === 'master' ? 100 : 6
+  let step = variant === 'master' ? 5 : 1
+  const toPercent = x => variant === 'metronome' ? x * 10 : x
 
-const volumeBar = document.getElementById('volume-bar')
-const setVolume = (value) => {
-  volume = Math.max(0, Math.min(value, 100))
-  volumeBar['aria-valuenow'] = volume
-  volumeBar.style.width = `${volume}%`
-  volumeBar.innerText = `${volume}%`
-}
-const volumeDown = () => setVolume(volume-5)
-const volumeUp = () => setVolume(volume+5)
-
-volumeBar.parentElement.parentElement.onwheel = (e) => {
-  e.preventDefault()
-  const { deltaY } = e
-  if (deltaY < 0) {
-    volumeUp()
-  } else {
-    volumeDown()
+  const volumeBar = document.getElementById(`${variant}-volume-bar`)
+  const setVolume = (value) => {
+    console.log('setvolume', value)
+    volume = Math.max(0, Math.min(value, max))
+    volumeBar['aria-valuenow'] = volume
+    volumeBar.style.width = `${toPercent(volume)}%`
+    volumeBar.innerText = `${toPercent(volume)}%`
   }
-  send(R.setMasterVolume(volume))
-}
-volumeBar.parentElement.onclick = (e) => {
-  const { offsetX } = e
-  const volume = Math.round(100/5 * offsetX/volumeBar.parentElement.offsetWidth)*5
-  setVolume(volume)
-  send(R.setMasterVolume(volume))
-}
-document.getElementById('volume-up').onclick = volumeUp
-document.getElementById('volume-down').onclick = volumeDown
+  const volumeDown = () => setVolume(volume-step)
+  const volumeUp = () => setVolume(volume+step)
+  
+  volumeBar.parentElement.parentElement.onwheel = (e) => {
+    e.preventDefault()
+    const { deltaY } = e
+    if (deltaY < 0) {
+      volumeUp()
+    } else {
+      volumeDown()
+    }
+    send({
+      master: R.setMasterVolume(volume),
+      metronome: R.setMetronomeVolume(volume),
+    }[variant])
+  }
+  volumeBar.parentElement.onclick = (e) => {
+    const { offsetX } = e
+    let val = Math.round(100/5 * offsetX/volumeBar.parentElement.offsetWidth)*5
+    if (variant === 'metronome') {
+      val /= 10
+    }
+    setVolume(val)
+    send({
+      master: R.setMasterVolume(volume),
+      metronome: R.setMetronomeVolume(volume),
+    }[variant])
+  }
+  document.getElementById(`${variant}-volume-up`).onclick = volumeUp
+  document.getElementById(`${variant}-volume-down`).onclick = volumeDown
+  return setVolume
+})
 
 /* init metronome */
 let metronomeOn = false
 const metronomeButton = document.getElementById('metronome-toggle')
+const metronomeTextState = document.getElementById('metronome-text-state')
 const setMetronome = (on) => {
   metronomeOn = on
   if (on) {
     metronomeButton.classList.add('active')
+    metronomeTextState.innerText = "ON"
   } else {
     metronomeButton.classList.remove('active')
+    metronomeTextState.innerText = "OFF"
   }
 }
 metronomeButton.onclick = () => {
@@ -189,7 +208,10 @@ navigator.requestMIDIAccess({ sysex: true })
           instrumentSelector.value = document.querySelector(`[data-code='${hexval}']`).value
         }
         if (addr === 'masterVolume') {
-          setVolume(value)
+          setMasterVolume(value)
+        }
+        if (addr === 'metronomeVolume') {
+          setMetronomeVolume(value)
         }
         if (addr === 'metronomeStatus') {
           setMetronome(Boolean(value))
