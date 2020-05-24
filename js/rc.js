@@ -48,19 +48,17 @@ const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single'
   })
   instrumentSelector.onchange = async (e) => {
     const { value: hexcode } = e.target
-
+    
+    const option = instrumentSelector.querySelector(`[value='${hexcode}']`)
     const msg = R.setToneFor(variant)(hexcode)
     send(msg)
-    
-    // this is only for preview will not change thenote permanenty, because it is on channel 0 not 3
-    const option = instrumentSelector.querySelector(`[value='${hexcode}']`)
-    if (option && mode === 0) {
+    if (option) {
+      // this is only for preview will not change the note of 'single', because it is on channel 0 not 3
+      const ch = 0
       const [bankMSB, bankLSB, program] = option.dataset.midival.split(',').map(Number)
-      const ch = 3
       send([toCmd(CMD_CONTROL_CHANGE, ch), CC_BANK_0, bankMSB])
       send([toCmd(CMD_CONTROL_CHANGE, ch), CC_BANK_1, bankLSB])
-      send([toCmd(CMD_PROGRAM), program])
-      // await sleep(200)
+      send([toCmd(CMD_PROGRAM, ch), program])
       playnote(MID_C, ch)
     }
   }
@@ -193,7 +191,7 @@ const send = (data, timestamp) => {
 
 const playnote = (note, ch) => {
   send([toCmd(CMD_NOTE_ON, ch), note, toVal(.5)], performance.now())
-  send([toCmd(CMD_NOTE_OFF, ch), note, 0], performance.now() + 250)
+  send([toCmd(CMD_NOTE_OFF, ch), note, toVal(.2)], performance.now() + 500)
 }
 
 const init = async () => {

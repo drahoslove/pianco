@@ -14,7 +14,8 @@
 :root {
   --hue: 200;
   --c1: hsla(var(--hue), 50%, 65%, 1);
-  --c2: hsla(calc(var(--hue) + 180), 50%, 65%, 1);
+  --c2: hsla(calc(var(--hue) + 120), 50%, 65%, 1);
+  --c3: hsla(calc(var(--hue) - 120), 50%, 65%, 1);
 }
   
 .select {
@@ -49,11 +50,14 @@
 .c2 {
   background-color: var(--c2);
 }
+.c3 {
+  background-color: var(--c3);
+}
 .c1c2 {
   background: linear-gradient(180deg, var(--c1) 0%, var(--c1) 50%, var(--c2) 50%, var(--c2) 100%);
 }
 
-.bc1, .bc2 {
+.bc1, .bc2, .bc3 {
   border-width: 1.5px;
   outline: none !important;
   box-shadow:  none !important;
@@ -63,6 +67,9 @@
 }
 .bc2 {
   border-color: var(--c2) !important;
+}
+.bc3 {
+  border-color: var(--c3) !important;
 }
 
 a.nav-link {
@@ -90,7 +97,7 @@ a.nav-link {
           </li>
           <li class="nav-item" role="presentation">
             <a class="nav-link" data-toggle="tab" id="split-tab" href="#split" role="tab">
-              Split <b class="lh c2"></b><b class="rh c1"></b>
+              Split <b class="lh c3"></b><b class="rh c1"></b>
             </a>
           </li>
           <li class="nav-item" role="presentation">
@@ -104,14 +111,14 @@ a.nav-link {
             </a>
           </li>
         </ul>
-        <div class="tab-content row pt-2"> <!-- missing .tab-pane intentional here-->
+        <div class="tab-content row pt-2">
           <div class="col-md tab-pane" role="tabpanel" id="split" aria-labelledby="split-tab">
             <div class="form-group">
               <label for="split-instrument-selector">Second-hand Instrument</label>
-              <select id="split-instrument-selector" class="form-control select bc2"></select>
+              <select id="split-instrument-selector" class="form-control select bc3"></select>
             </div>
           </div>
-          <div class="col-md" role="tabpanel" id="single">
+          <div class="col-md active" role="tabpanel" id="single"> <!-- missing .tab-pane intentional here-->
             <div class="form-group">
               <label for="single-instrument-selector">Instrument</label>
               <select id="single-instrument-selector" class="form-control select bc1"></select>
