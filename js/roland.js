@@ -198,6 +198,9 @@ export const connect = () => [
   req(addrs.sequencerTempoRO),
   req(addrs.keyTouch),
   req(addrs.toneForSingle),
+  req(addrs.toneForDual),
+  req(addrs.toneForSplit),
+  req(addrs.keyBoardMode),
 ]
 
 export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
@@ -214,8 +217,18 @@ export const setMetronomeTempo = (val) => set(addrs.sequencerTempoWO, _H(val, 2)
 export const setKeyPressure = (val) => set(addrs.keyTouch, _H(val))
 export const checkKeyPressure = () => req(addrs.keyTouch)
 
-// conversion function
+export const setKeyboardMode = (mode) => set(addrs.keyBoardMode, _H(mode))
+export const checkKeyboardMode = () => req(addrs.keyBoardMode)
 
+
+export const setToneFor = (variant) => (tonecode) => set({
+  single: addrs.toneForSingle,
+  dual: addrs.toneForDual,
+  split: addrs.toneForSplit,
+}[variant], tonecode)
+
+
+// conversion function
 
 const _H = (number, bytes=1, bit8) => {
   const parts = [] // split by 7 (or 8) bits

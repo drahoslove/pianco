@@ -9,31 +9,65 @@ import {
   CC_BANK_0, CC_BANK_1, MID_C,
 } from './midi.js'
 
+/* init keybaord mode selector */
+const tabs = [
+  document.getElementById('single-tab'),
+  document.getElementById('split-tab'),
+  document.getElementById('dual-tab'),
+  document.getElementById('twin-tab'),
+]
+
+tabs.forEach((tab, i) => {
+  const mode = i
+  tab.onclick = () => {
+    send(R.setKeyboardMode(mode))
+  }
+})
+
+const selectKeyboardMode = (mode) => {
+  $(tabs[mode]).tab('show')
+}
 
 /* init insrument selector */
-const instrumentSelector = document.getElementById('instrument-selector')
-instrumentSelector.size = 1
-Object.entries(instruments).forEach(([groupName, instruments]) => {
-  const optGroup = document.createElement('optgroup')
-  optGroup.label = groupName
-  instruments.forEach(([name, code, ...val]) => {
-    const option = document.createElement('option')
-    option.value = val
-    option.dataset.code = code
-    option.innerText = name
-    optGroup.append(option)
+const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single', 'dual', 'split'].map((variant, mode) => {
+  const instrumentSelector = document.getElementById(`${variant}-instrument-selector`)
+  instrumentSelector.size = 1
+  Object.entries(instruments).forEach(([groupName, instruments]) => {
+    const optGroup = document.createElement('optgroup')
+    optGroup.label = groupName
+    instruments.forEach(([name, code, ...val]) => {
+      const option = document.createElement('option')
+      option.value = code
+      option.dataset.midival = val
+      option.innerText = `${name} (${code})`
+      optGroup.append(option)
+      instrumentSelector.size++
+    })
     instrumentSelector.size++
+    instrumentSelector.append(optGroup)
   })
-  instrumentSelector.size++
-  instrumentSelector.append(optGroup)
+  instrumentSelector.onchange = async (e) => {
+    const { value: hexcode } = e.target
+
+    const msg = R.setToneFor(variant)(hexcode)
+    send(msg)
+    
+    // this is only for preview will not change thenote permanenty, because it is on channel 0 not 3
+    const option = instrumentSelector.querySelector(`[value='${hexcode}']`)
+    if (option && mode === 0) {
+      const [bankMSB, bankLSB, program] = option.dataset.midival.split(',').map(Number)
+      const ch = 3
+      send([toCmd(CMD_CONTROL_CHANGE, ch), CC_BANK_0, bankMSB])
+      send([toCmd(CMD_CONTROL_CHANGE, ch), CC_BANK_1, bankLSB])
+      send([toCmd(CMD_PROGRAM), program])
+      // await sleep(200)
+      playnote(MID_C, ch)
+    }
+  }
+  return (hexcode) => {
+    instrumentSelector.value = instrumentSelector.querySelector(`[value='${hexcode}']`).value
+  }
 })
-instrumentSelector.onchange = (e) => {
-  const [bankMSB, bankLSB, program] = e.target.value.split(',').map(Number)
-  send([toCmd(CMD_CONTROL_CHANGE), CC_BANK_0, bankMSB])
-  send([toCmd(CMD_CONTROL_CHANGE), CC_BANK_1, bankLSB])
-  send([toCmd(CMD_PROGRAM), program])
-  playnote(MID_C)
-}
 
 /* init volume */
 const [ setMasterVolume, setMetronomeVolume ] = ['master', 'metronome'].map((variant) => {
@@ -154,7 +188,6 @@ const devices = {
 }
 
 const send = (data, timestamp) => {
-  console.log('send', data)
   devices.output.send(new Uint8Array(data), timestamp)
 }
 
@@ -206,9 +239,15 @@ navigator.requestMIDIAccess({ sysex: true })
       const time = (new Date(timeStamp)).toISOString().substr(11,12)
       if (cmd === 240) { // sysex
         const {addr, mode, value, hexval, err} = R.parseMsg(e.data)
-        logArea.value += `${time} sysex\t ${mode} ${addr} - ${value} ${err}\n`
+        logArea.value += `${time} sysex\t ${mode} ${addr} - ${value} (${hexval}) ${err}\n`
         if (addr === 'toneForSingle') {
-          instrumentSelector.value = document.querySelector(`[data-code='${hexval}']`).value
+          setSingleInstrument(hexval.substr(0,6))
+        }
+        if (addr === 'toneForDual') {
+          setDualInstrument(hexval.substr(0,6))
+        }
+        if (addr === 'toneForSplit') {
+          setSplitInstrument(hexval.substr(0,6))
         }
         if (addr === 'masterVolume') {
           setMasterVolume(value)
@@ -224,6 +263,16 @@ navigator.requestMIDIAccess({ sysex: true })
         }
         if (addr === 'keyTouch') {
           setPressure(value)
+        }
+        if (addr === 'keyBoardMode') {
+          const mode = parseInt(hexval.substr(0,2), 16)
+          const singleInstrument = (hexval.substr(14,6))
+          const splitInstrument = (hexval.substr(20,6))
+          const dualInstrument = (hexval.substr(26,6))
+          selectKeyboardMode(mode)
+          setSingleInstrument(singleInstrument)
+          setSplitInstrument(splitInstrument)
+          setDualInstrument(dualInstrument)
         }
       } else {
         logArea.value += `${time} ${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\n`
@@ -250,3 +299,7 @@ const sleep = async (t) => {
   })
 }
 
+
+window.checkKeyboardMode = () => {
+  send(R.checkKeyboardMode())
+}
