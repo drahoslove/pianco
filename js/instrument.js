@@ -1,4 +1,10 @@
 import '../lib/Tone.js'
+import {
+	toCmd,
+	toVal,
+	CMD_NOTE_ON,
+	CMD_NOTE_OFF,
+} from './midi.js'
 
 Tone.context.latencyHint = 'fastest' // improve sheduling latency
 Tone.context.lookAhead = 0.025
@@ -68,16 +74,43 @@ const instruments = {
   }, {
     release: 1,
     onload: () => {
-      console.log('piano samples loaded')
-      instrumentSelector.value = 'piano'
+			console.log('piano samples loaded')
+			if (instrumentSelector.value === 'none') {
+				instrumentSelector.value = 'piano'
+			}
     },
     baseUrl : "/audio/salamander/",
   }).toMaster(),
   none: {
     triggerAttack: Tone.noOp,
     triggerRelease: Tone.noOp,
-  }
+	},
+	midiout: {
+		triggerAttack: ([note], _, velocity) => {
+			send([toCmd(CMD_NOTE_ON), Tone.Midi(note).toMidi(), toVal(velocity*0.75)])
+		},
+		triggerRelease: ([note]) => {
+			send([toCmd(CMD_NOTE_OFF), Tone.Midi(note).toMidi(), 0])
+		},
+	}
 }
+
+// init midi output device
+let output = null
+const send = (data) => {
+	output && output.send(new Uint8Array(data))
+}
+navigator.requestMIDIAccess && navigator.requestMIDIAccess().then((midiAccess) => {
+	for (let out of midiAccess.outputs.values()) {
+		output = out
+		console.log('MIDI out available:', out.name)
+		instrumentSelector.value = 'midiout'
+		const option = [...instrumentSelector.options].find(({ value }) => value === 'midiout')
+		if (option) {
+			option.hidden = false
+		}
+	}
+})
 
 // instrument selector
 const instrumentSelector = document.getElementById('instrument')
@@ -149,7 +182,7 @@ const updateNote = (note, velocity, action) => () => {
 	}
 }
 
-const pressNote = (note, velocity=0.8, uid) => updateNote(note, velocity, () => {
+const pressNote = (note, velocity=0.75, uid) => updateNote(note, velocity, () => {
 	pressedNotes[note].add(uid)
 	if (sustainState[uid]) {
 		sustainedNotes[note].add(uid)

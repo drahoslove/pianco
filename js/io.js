@@ -135,13 +135,13 @@ const sendOffAll = () => (e) => {
 }
 
 const sendSustain = (value) => {
-  if (ws.readyState !== WebSocket.OPEN) {
-    return
-  }
   if (value >= 0.5) {
     pressSustain(UID)
   } else {
     releaseSustain(UID)
+  }
+  if (ws.readyState !== WebSocket.OPEN) {
+    return
   }
   ws.send(new Uint8Array([GID, UID, toCmd(3), CC_SUTAIN, toVal(value)]))
 }

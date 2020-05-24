@@ -240,6 +240,8 @@ function handleMIDIMessage(midiMessage) {
   const { data } = midiMessage
   const [cmd, val1, val2 = 0] = data
 
+  console.log('midi in', val1)
+
   const note = Tone.Midi(val1).toNote()
 
   switch (fromCmd(cmd)) {
