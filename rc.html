@@ -148,76 +148,107 @@ a.nav-link {
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Metronome</label>
-          <div class="btn-toolbar d-flex align-items-stretch">
-            <div class="input-group d-flex input-group-sm mr-2" style="width: 7em;">
-              <div class="input-group-prepend w-50">
-                <button id="metronome-toggle" type="button" class="btn btn-outline-secondary w-100">
-                  <span class="mdi mdi-metronome-tick"></span>
-                </button>
-              </div>
-              <div class="input-group-append w-50">
-                <div class="input-group-text w-100 d-block text-center" id="metronome-text-state">
-                  OFF
+        <div class="card my-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Metronome</span>
+            <div class="btn-toolbar d-flex align-items-stretch">
+              <div class="input-group d-flex input-group-sm" style="width: 7em;">
+                <div class="input-group-prepend w-50">
+                  <button id="metronome-toggle" type="button" class="btn btn-outline-primary w-100">
+                    <span class="mdi mdi-metronome-tick"></span>
+                  </button>
+                </div>
+                <div class="input-group-append w-50">
+                  <div class="input-group-text w-100 d-block text-center" id="metronome-text-state">
+                    OFF
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="progress flex-fill h-auto">
-              <div id="metronome-volume-bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Volume</label>
+              <div class="input-group">
+                <div class="progress flex-fill h-auto">
+                  <div id="metronome-volume-bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
+                <div class="btn-group btn-group-sm ml-2">
+                  <button class="btn btn-outline-secondary w-50" id="metronome-volume-down"> ➖ </button>
+                  <button class="btn btn-outline-secondary w-50" id="metronome-volume-up"> ➕ </button>
+                </div>
+              </div>
             </div>
-            <div class="btn-group btn-group-sm ml-2">
-              <button class="btn btn-outline-secondary w-50" id="metronome-volume-down"> ➖ </button>
-              <button class="btn btn-outline-secondary w-50" id="metronome-volume-up"> ➕ </button>
+    
+            <div class="form-group">
+              <label for="metronome-tempo">Tempo</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <button class="btn btn-outline-secondary" type="button" data-tempo="30">30</button>
+                  <button class="btn btn-outline-secondary" type="button" data-tempo="60">60</button>
+                  <button class="btn btn-outline-secondary" type="button" data-tempo="90">90</button>
+                  <button class="btn btn-outline-secondary" type="button" data-tempo="120">120</button>
+                  <button class="btn btn-outline-secondary" type="button" data-tempo="180">180</button>
+                  <button class="btn btn-outline-secondary" type="button" data-tempo="240">240</button>
+                </div>
+                <input id="metronome-tempo" type="number" class="form-control text-right" value="0" min="20" max="500">
+                <div class="input-group-append">
+                  <span class="input-group-text">bpm</span>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+    
+        <div class="card mt-1 my-4">
+          <div class="card-header"> Tunes </div>
+          <div class="card-body">
+
+            <div class="form-group">
+              <label>Pressure</label>
+              <div class="btn-toolbar">
+                <div class="btn-group btn-group-sm btn-group-toggle mr-2">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="pressure" value="0"> Fixed
+                  </label>
+                </div>
+                <div class="btn-group btn-group-sm btn-group-toggle flex-fill">
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="pressure" value="1"> Super Light
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="pressure" value="2"> Light
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="pressure" value="3"> Medium
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="pressure" value="4"> Heavy
+                  </label>
+                  <label class="btn btn-secondary">
+                    <input type="radio" name="pressure" value="5"> Super Heavy
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="master-tune">Pitch</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <button class="btn btn-outline-secondary" type="button" data-pitch="440">440</button>
+                  <button class="btn btn-outline-secondary" type="button" data-pitch="442">442</button>
+                </div>
+                <input id="master-tune" type="number" class="form-control text-right" value="440" min="400" max="480" step="0.1">
+                <div class="input-group-append">
+                  <span class="input-group-text">Hz</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <div class="form-group">
-          <label for="metronome-tempo">Tempo</label>
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <button class="btn btn-outline-secondary" type="button" data-tempo="30">30</button>
-              <button class="btn btn-outline-secondary" type="button" data-tempo="60">60</button>
-              <button class="btn btn-outline-secondary" type="button" data-tempo="90">90</button>
-              <button class="btn btn-outline-secondary" type="button" data-tempo="120">120</button>
-              <button class="btn btn-outline-secondary" type="button" data-tempo="180">180</button>
-              <button class="btn btn-outline-secondary" type="button" data-tempo="240">240</button>
-            </div>
-            <input id="metronome-tempo" type="number" class="form-control" value="0" min="20" max="500">
-            <div class="input-group-append">
-              <span class="input-group-text">bpm</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Pressure</label>
-          <div class="btn-toolbar">
-            <div class="btn-group btn-group-toggle mr-2">
-              <label class="btn btn-secondary">
-                <input type="radio" name="pressure" value="0"> Fixed
-              </label>
-            </div>
-            <div class="btn-group btn-group-toggle flex-fill">
-              <label class="btn btn-secondary">
-                <input type="radio" name="pressure" value="1"> Super Light
-              </label>
-              <label class="btn btn-secondary">
-                <input type="radio" name="pressure" value="2"> Light
-              </label>
-              <label class="btn btn-secondary">
-                <input type="radio" name="pressure" value="3"> Medium
-              </label>
-              <label class="btn btn-secondary">
-                <input type="radio" name="pressure" value="4"> Heavy
-              </label>
-              <label class="btn btn-secondary">
-                <input type="radio" name="pressure" value="5"> Super Heavy
-              </label>
-            </div>
-          </div>
-        </div>
 
         <div class="form-group">
           <label>MIDI event log</label>

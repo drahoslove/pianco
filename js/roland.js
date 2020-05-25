@@ -201,6 +201,7 @@ export const connect = () => [
   req(addrs.toneForDual),
   req(addrs.toneForSplit),
   req(addrs.keyBoardMode),
+  req(addrs.masterTuning),
 ]
 
 export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
@@ -219,6 +220,9 @@ export const checkKeyPressure = () => req(addrs.keyTouch)
 
 export const setKeyboardMode = (mode) => set(addrs.keyBoardMode, _H(mode))
 export const checkKeyboardMode = () => req(addrs.keyBoardMode)
+
+export const setMasterTune = (value) => set(addrs.masterTuning, _H(value, 2))
+export const checkMasterTune = () => req(addrs.masterTuning)
 
 
 export const setToneFor = (variant) => (tonecode) => set({

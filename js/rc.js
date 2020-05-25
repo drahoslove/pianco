@@ -76,7 +76,6 @@ const [ setMasterVolume, setMetronomeVolume ] = ['master', 'metronome'].map((var
 
   const volumeBar = document.getElementById(`${variant}-volume-bar`)
   const setVolume = (value) => {
-    console.log('setvolume', value)
     volume = Math.max(0, Math.min(value, max))
     volumeBar['aria-valuenow'] = volume
     volumeBar.style.width = `${toPercent(volume)}%`
@@ -153,6 +152,37 @@ metronomeTempoInput.onchange = (e) => {
   }
 })
 
+/* init master tune */
+const toPitch = (h) => (h-256)/10 + 440
+const fromPitch = (p) => (+p - 440)*10 + 256
+let masterTunePitch = 256
+const mastterTunePitchInput = document.getElementById('master-tune')
+const setMasterTunePitch = (value) => {
+  if (toPitch(value) === 440 || toPitch(value) === 442) {
+
+  } else if (value > masterTunePitch) {
+    value = masterTunePitch + 1
+  } else if (value < masterTunePitch) {
+    value = masterTunePitch - 1
+  }
+  masterTunePitch = Math.max(10, Math.min(value, 512-1))
+  const pitch = Math.max(toPitch(10), Math.min(toPitch(value), toPitch(512-1)))
+  mastterTunePitchInput.value = pitch
+}
+mastterTunePitchInput.onchange = (e) => {
+  const { value } = e.target
+  setMasterTunePitch(fromPitch(value))
+  send(R.setMasterTune(masterTunePitch))
+  send(R.checkMasterTune())
+}
+[...document.querySelectorAll('[data-pitch]')].forEach(button => {
+  button.onclick = () => {
+    setMasterTunePitch(fromPitch(button.dataset.pitch))
+    send(R.setMasterTune(masterTunePitch))
+    send(R.checkMasterTune())
+  }
+})
+
 /* init pressure */
 let pressure = 0
 const pressureButtons = [...document.querySelectorAll('input[name="pressure"]')]
@@ -199,7 +229,7 @@ const init = async () => {
     send(msg)
     await sleep(25)
   }
-  playnote(MID_C)
+  // playnote(MID_C)
 }
 
 navigator.requestMIDIAccess({ sysex: true })
@@ -262,15 +292,18 @@ navigator.requestMIDIAccess({ sysex: true })
         if (addr === 'keyTouch') {
           setPressure(value)
         }
+        if (addr === 'masterTuning') {
+          setMasterTunePitch(value)
+        }
         if (addr === 'keyBoardMode') {
           const mode = parseInt(hexval.substr(0,2), 16)
           const singleInstrument = (hexval.substr(14,6))
           const splitInstrument = (hexval.substr(20,6))
           const dualInstrument = (hexval.substr(26,6))
           selectKeyboardMode(mode)
-          setSingleInstrument(singleInstrument)
-          setSplitInstrument(splitInstrument)
-          setDualInstrument(dualInstrument)
+          singleInstrument && setSingleInstrument(singleInstrument)
+          splitInstrument && setSplitInstrument(splitInstrument)
+          dualInstrument && setDualInstrument(dualInstrument)
         }
       } else {
         logArea.value += `${time} ${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\n`
