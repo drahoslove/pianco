@@ -196,12 +196,16 @@ export const connect = () => [
   req(addrs.metronomeVolume),
   req(addrs.metronomeStatus),
   req(addrs.sequencerTempoRO),
+  
   req(addrs.keyTouch),
+  req(addrs.ambience),
+  req(addrs.brilliance),
+  req(addrs.masterTuning),
+
+  req(addrs.keyBoardMode),
   req(addrs.toneForSingle),
   req(addrs.toneForDual),
   req(addrs.toneForSplit),
-  req(addrs.keyBoardMode),
-  req(addrs.masterTuning),
 ]
 
 export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
@@ -223,6 +227,9 @@ export const checkKeyboardMode = () => req(addrs.keyBoardMode)
 
 export const setMasterTune = (value) => set(addrs.masterTuning, _H(value, 2))
 export const checkMasterTune = () => req(addrs.masterTuning)
+
+export const setAmbience = (value) => set(addrs.ambience, _H(value))
+export const setBrilliance = (value) => set(addrs.brilliance, _H(value))
 
 
 export const setToneFor = (variant) => (tonecode) => set({

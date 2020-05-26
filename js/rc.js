@@ -117,23 +117,20 @@ const [ setMasterVolume, setMetronomeVolume ] = ['master', 'metronome'].map((var
 /* init metronome */
 let metronomeOn = false
 const metronomeButton = document.getElementById('metronome-toggle')
-const metronomeTextState = document.getElementById('metronome-text-state')
 const metronomeVolumeBar = document.getElementById('metronome-volume-bar')
 const setMetronome = (on) => {
   metronomeOn = on
   if (on) {
-    metronomeButton.classList.add('active')
-    metronomeTextState.innerText = "ON"
-    metronomeVolumeBar.classList.remove('bg-secondary')
+    $(metronomeButton).bootstrapToggle('on', true)
+    metronomeVolumeBar.classList.add('bg-info')
   } else {
-    metronomeButton.classList.remove('active')
-    metronomeTextState.innerText = "OFF"
-    metronomeVolumeBar.classList.add('bg-secondary')
+    $(metronomeButton).bootstrapToggle('off', true)
+    metronomeVolumeBar.classList.remove('bg-info')
   }
 }
-metronomeButton.onclick = () => {
+$(metronomeButton).change(() => {
   send(R.toggleMetronome())
-}
+})
 
 let metronomeTempo = 0
 const metronomeTempoInput = document.getElementById('metronome-tempo')
@@ -205,6 +202,28 @@ pressureButtons.forEach(button => {
   }
 })
 
+/* init ambience / brilliance */
+const ambienceSlider = new Slider('#ambience-slider')
+const brillianceSlider = new Slider('#brilliance-slider')
+const setAmbience = (value) => {
+  ambienceSlider.setValue(value)
+}
+const setBrilliance = (value) => {
+  brillianceSlider.setValue(value)
+}
+// const ambienceSlider = document.getElementById('ambience-slider')
+// const brillianceSlider = document.getElementById('brilliance-slider')
+ambienceSlider.on('change', ({ newValue }) => {
+  console.log('a', newValue)
+  send(R.setAmbience(+newValue))
+  playnote(MID_C)
+})
+brillianceSlider.on('change', ({ newValue }) => {
+  console.log('b', newValue)
+  send(R.setBrilliance(+newValue))
+  playnote(MID_C)
+})
+
 
 /* init midi */
 
@@ -224,11 +243,13 @@ const playnote = (note, ch) => {
   send([toCmd(CMD_NOTE_OFF, ch), note, toVal(.2)], performance.now() + 500)
 }
 
-const init = async () => {
-  for (let msg of R.connect()) {
-    send(msg)
-    await sleep(25)
-  }
+const init = () => {
+  $(async () => {
+    for (let msg of R.connect()) {
+      send(msg)
+      await sleep(25)
+    }
+  })
   // playnote(MID_C)
 }
 
@@ -294,6 +315,12 @@ navigator.requestMIDIAccess({ sysex: true })
         }
         if (addr === 'masterTuning') {
           setMasterTunePitch(value)
+        }
+        if (addr === 'ambience') {
+          setAmbience(value)
+        }
+        if (addr === 'brilliance') {
+          setBrilliance(value)
         }
         if (addr === 'keyBoardMode') {
           const mode = parseInt(hexval.substr(0,2), 16)

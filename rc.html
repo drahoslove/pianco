@@ -9,13 +9,21 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/whiskyechobravo/bootstrap-slider@bs4/dist/css/bootstrap-slider.min.css">
+<script src="https://cdn.jsdelivr.net/gh/whiskyechobravo/bootstrap-slider@bs4/dist/bootstrap-slider.min.js"></script>
 <style>
 
 :root {
-  --hue: 200;
+  --hue: 188;
   --c1: hsla(var(--hue), 50%, 65%, 1);
   --c2: hsla(calc(var(--hue) + 120), 50%, 65%, 1);
   --c3: hsla(calc(var(--hue) - 120), 50%, 65%, 1);
+
+  --c1: hsla(var(--hue), 78%, 41%, 1);
+  --c2: hsla(calc(var(--hue) + 120), 78%, 41%, 1);
+  --c3: hsla(calc(var(--hue) - 120), 78%, 41%, 1);
 }
   
 .select {
@@ -76,6 +84,46 @@ a.nav-link {
   color: var(--gray);
 }
 
+.slider {
+  width: 100% !important;
+}
+.slider .slider-tick.in-selection,
+.slider .slider-selection {
+  background: #a2a9ae; /* var(--gray);*/
+  transition: all 0.15s ease;
+}
+.slider .slider-handle {
+  background: var(--info);
+  transition: all 0.15s ease;
+}
+
+input[type="number"] {
+  color: var(--info);
+  font-weight: 500;
+}
+
+.btn-group-toggle .btn.btn-secondary.active {
+  background: var(--info);
+  border-color: var(--info);
+}
+
+select#single-instrument-selector:-internal-list-box option:checked,
+select#dual-instrument-selector:-internal-list-box option:checked,
+select#split-instrument-selector:-internal-list-box option:checked
+{
+  color: var(--light) !important;
+}
+#single-instrument-selector option:checked {
+  background: var(--c1) linear-gradient(0deg, var(--c1) 0%, var(--c1) 100%);
+}
+
+#dual-instrument-selector option:checked {
+  background: var(--c2) linear-gradient(0deg, var(--c2) 0%, var(--c2) 100%);
+}
+
+#split-instrument-selector option:checked {
+  background: var(--c3) linear-gradient(0deg, var(--c3) 0%, var(--c3) 100%);
+}
 </style>
 <script type="module" src="/js/rc.js"></script>
 </head>
@@ -139,7 +187,7 @@ a.nav-link {
           <label>Master volume</label>
           <div class="btn-toolbar d-flex align-items-stretch">
             <div class="progress flex-fill h-auto">
-              <div id="master-volume-bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+              <div id="master-volume-bar" class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
             </div>
             <div class="btn-group btn-group-sm ml-2">
               <button class="btn btn-outline-secondary w-50" id="master-volume-down"> ➖ </button>
@@ -150,20 +198,12 @@ a.nav-link {
 
         <div class="card my-4">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <span>Metronome</span>
-            <div class="btn-toolbar d-flex align-items-stretch">
-              <div class="input-group d-flex input-group-sm" style="width: 7em;">
-                <div class="input-group-prepend w-50">
-                  <button id="metronome-toggle" type="button" class="btn btn-outline-primary w-100">
-                    <span class="mdi mdi-metronome-tick"></span>
-                  </button>
-                </div>
-                <div class="input-group-append w-50">
-                  <div class="input-group-text w-100 d-block text-center" id="metronome-text-state">
-                    OFF
-                  </div>
-                </div>
-              </div>
+            <div>
+              <span class="mdi mdi-metronome-tick"></span>
+              <span>Metronome</span>
+            </div>
+            <div>
+              <input type="checkbox" data-toggle="toggle" id="metronome-toggle" data-onstyle="info"  data-offstyle="outline-dark">
             </div>
           </div>
           <div class="card-body">
@@ -171,7 +211,7 @@ a.nav-link {
               <label>Volume</label>
               <div class="input-group">
                 <div class="progress flex-fill h-auto">
-                  <div id="metronome-volume-bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                  <div id="metronome-volume-bar" class="progress-bar bg-secondary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                 </div>
                 <div class="btn-group btn-group-sm ml-2">
                   <button class="btn btn-outline-secondary w-50" id="metronome-volume-down"> ➖ </button>
@@ -205,7 +245,7 @@ a.nav-link {
           <div class="card-body">
 
             <div class="form-group">
-              <label>Pressure</label>
+              <label>Key touch</label>
               <div class="btn-toolbar">
                 <div class="btn-group btn-group-sm btn-group-toggle mr-2">
                   <label class="btn btn-secondary">
@@ -232,6 +272,47 @@ a.nav-link {
               </div>
             </div>
 
+            <div class="form-group my-4">
+              <label for="">Ambience (reverb)</label>
+              <div class="mx-2 text-center">
+                <input
+                  id="ambience-slider"
+                  type="range"
+                  name="ambience"
+                  -data-provide="slider"
+                  data-slider-min="0"
+                  data-slider-value="0"
+                  data-slider-max="10"
+                  data-slider-step="1"
+                  data-slider-tooltip="hide"
+                  data-slider-ticks="[0, 2, 10]"
+                  data-slider-ticks-positions="[0, 20, 100]"
+                  data-slider-ticks-labels='["0", "2", "10"]'
+                  data-slider-ticks-snap-bounds="0"
+                >
+              </div>
+            </div>
+            
+            <div class="form-group my-4">
+              <label for="">Brilliance (brightness)</label>
+              <div class="mx-2 text-center">
+                <input
+                  id="brilliance-slider"
+                  type="range"
+                  name="brilliance"
+                  -data-provide="slider"
+                  data-slider-min="54"
+                  data-slider-value="0"
+                  data-slider-max="74"
+                  data-slider-step="1"
+                  data-slider-tooltip="hide"
+                  data-slider-ticks="[54, 64, 74]"
+                  data-slider-ticks-labels='["-10", "0", "+10"]'
+                  data-slider-ticks-snap-bounds="0"
+                >
+              </div>
+            </div>
+
             <div class="form-group">
               <label for="master-tune">Pitch</label>
               <div class="input-group">
@@ -245,6 +326,7 @@ a.nav-link {
                 </div>
               </div>
             </div>
+
           </div>
 
         </div>
