@@ -152,7 +152,7 @@ select#split-instrument-selector:-internal-list-box option:checked
   <div class="container mt-3">
     <div class="row">
 
-      <div class="col-md">
+      <div class="col-md d-flex flex-column justify-content-between">
         <ul class="nav nav-tabs" id="keyboard-mode-tabs" role="tablist">
           <li class="nav-item" role="presentation">
             <a class="nav-link active" data-toggle="tab" id="single-tab" href="#single" role="tab">
@@ -215,6 +215,18 @@ select#split-instrument-selector:-internal-list-box option:checked
             <div class="form-group">
               <label for="single-instrument-selector">Instrument</label>
               <select id="single-instrument-selector" class="form-control select bc1"></select>
+            </div>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="form-group mt-3 d-flex flex-column flex-grow-1">
+          <label>MIDI event log</label>
+          <div class="input-group flex-grow-1">
+            <textarea name="log" id="midi-log" cols="30" rows="7" class="form-control" readonly></textarea>
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" id="midi-log-clear">&times;</button>
             </div>
           </div>
         </div>
@@ -368,20 +380,7 @@ select#split-instrument-selector:-internal-list-box option:checked
           </div>
 
         </div>
-
-
-        <div class="form-group">
-          <label>MIDI event log</label>
-          <div class="input-group">
-            <textarea name="log" id="midi-log" cols="30" rows="7" class="form-control" readonly></textarea>
-            <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button" id="midi-log-clear">&times;</button>
-            </div>
-          </div>
-        </div>
-
-        
-        
+       
       </div>
     </div>
     

@@ -259,7 +259,7 @@ navigator.requestMIDIAccess({ sysex: true })
     devices.input = input
     devices.output = output
 
-    midiEl.innerHTML = `in: ${input.name}<br/> out: ${output.name}`
+    midiEl.innerHTML = `in: ${input.name} | out: ${output.name}`
     midiEl.className = 'alert alert-success'
     
     input.onstatechange = output.onstatechange = (e) => {
@@ -267,12 +267,12 @@ navigator.requestMIDIAccess({ sysex: true })
       const { state } = e.target
       if (state === 'disconnected') {
         devices[e.port.type] = { name: 'Disconnected' }
-        midiEl.innerHTML = `in: ${devices.input.name}<br/> out: ${devices.output.name}`
+        midiEl.innerHTML = `in: ${devices.input.name} | out: ${devices.output.name}`
         midiEl.className = 'alert alert-warning'
       }
       if (state === 'connected') {
         devices[e.port.type] = e.target
-        midiEl.innerHTML = `in: ${devices.input.name}<br/> out: ${devices.output.name}`
+        midiEl.innerHTML = `in: ${devices.input.name} | out: ${devices.output.name}`
         midiEl.className = 'alert alert-success'
       }
     }
