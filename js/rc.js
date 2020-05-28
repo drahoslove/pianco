@@ -39,11 +39,11 @@ const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single'
       const option = document.createElement('option')
       option.value = code
       option.dataset.midival = val
-      option.innerText = `${name} (${code})`
+      option.innerText = `${name}`
       optGroup.append(option)
-      instrumentSelector.size++
+      // instrumentSelector.size++
     })
-    instrumentSelector.size++
+    // instrumentSelector.size++
     instrumentSelector.append(optGroup)
   })
   instrumentSelector.onchange = async (e) => {
@@ -203,27 +203,21 @@ pressureButtons.forEach(button => {
 })
 
 /* init ambience / brilliance */
-const ambienceSlider = new Slider('#ambience-slider')
-const brillianceSlider = new Slider('#brilliance-slider')
-const setAmbience = (value) => {
-  ambienceSlider.setValue(value)
-}
-const setBrilliance = (value) => {
-  brillianceSlider.setValue(value)
-}
-// const ambienceSlider = document.getElementById('ambience-slider')
-// const brillianceSlider = document.getElementById('brilliance-slider')
-ambienceSlider.on('change', ({ newValue }) => {
-  console.log('a', newValue)
-  send(R.setAmbience(+newValue))
-  playnote(MID_C)
+const [ setAmbience, setBrilliance, setSplitPoint ] = ['ambience', 'brilliance', 'split-point'].map(variant => {
+  const slider = new Slider(`#${variant}-slider`)
+  const setValue = (value) => {
+    slider.setValue(value)
+  }
+  slider.on('change', ({ newValue }) => {
+    send({
+      'ambience': R.setAmbience,
+      'brilliance': R.setBrilliance,
+      'split-point': R.setSplitPoint,
+    }[variant](+newValue))
+    // playnote(MID_C)
+  })
+  return setValue
 })
-brillianceSlider.on('change', ({ newValue }) => {
-  console.log('b', newValue)
-  send(R.setBrilliance(+newValue))
-  playnote(MID_C)
-})
-
 
 /* init midi */
 
@@ -321,6 +315,9 @@ navigator.requestMIDIAccess({ sysex: true })
         }
         if (addr === 'brilliance') {
           setBrilliance(value)
+        }
+        if (addr === 'splitPoint') {
+          setSplitPoint(value)
         }
         if (addr === 'keyBoardMode') {
           const mode = parseInt(hexval.substr(0,2), 16)

@@ -196,7 +196,7 @@ export const connect = () => [
   req(addrs.metronomeVolume),
   req(addrs.metronomeStatus),
   req(addrs.sequencerTempoRO),
-  
+
   req(addrs.keyTouch),
   req(addrs.ambience),
   req(addrs.brilliance),
@@ -206,6 +206,8 @@ export const connect = () => [
   req(addrs.toneForSingle),
   req(addrs.toneForDual),
   req(addrs.toneForSplit),
+
+  req(addrs.splitPoint),
 ]
 
 export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
@@ -230,6 +232,8 @@ export const checkMasterTune = () => req(addrs.masterTuning)
 
 export const setAmbience = (value) => set(addrs.ambience, _H(value))
 export const setBrilliance = (value) => set(addrs.brilliance, _H(value))
+
+export const setSplitPoint = (value) => set(addrs.splitPoint, _H(value))
 
 
 export const setToneFor = (variant) => (tonecode) => set({
