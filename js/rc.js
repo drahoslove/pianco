@@ -1,4 +1,5 @@
 import * as R from "./roland.js"
+import '../lib/Tone.js'
 
 const { instruments } = R
 
@@ -31,7 +32,7 @@ const selectKeyboardMode = (mode) => {
 /* init insrument selector */
 const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single', 'dual', 'split'].map((variant, mode) => {
   const instrumentSelector = document.getElementById(`${variant}-instrument-selector`)
-  instrumentSelector.size = 1
+  instrumentSelector.size = 0
   Object.entries(instruments).forEach(([groupName, instruments]) => {
     const optGroup = document.createElement('optgroup')
     optGroup.label = groupName
@@ -41,9 +42,9 @@ const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single'
       option.dataset.midival = val
       option.innerText = `${name}`
       optGroup.append(option)
-      // instrumentSelector.size++
+      instrumentSelector.size++
     })
-    // instrumentSelector.size++
+    instrumentSelector.size++
     instrumentSelector.append(optGroup)
   })
   instrumentSelector.onchange = async (e) => {
@@ -204,7 +205,13 @@ pressureButtons.forEach(button => {
 
 /* init ambience / brilliance */
 const [ setAmbience, setBrilliance, setSplitPoint ] = ['ambience', 'brilliance', 'split-point'].map(variant => {
-  const slider = new Slider(`#${variant}-slider`)
+  let formatter = x => x
+  if (variant === 'brilliance')
+    formatter = x => x-64
+  if (variant ===  'split-point')
+    formatter = x => Tone.Midi(x+1).toNote()
+
+  const slider = new Slider(`#${variant}-slider`, { tooltip: true, formatter })
   const setValue = (value) => {
     slider.setValue(value)
   }
