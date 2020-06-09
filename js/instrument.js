@@ -115,7 +115,9 @@ navigator.requestMIDIAccess && navigator.requestMIDIAccess().then((midiAccess) =
 // instrument selector
 const instrumentSelector = document.getElementById('instrument')
 instrumentSelector.onchange = function () { this.blur() }
-const getInstrument = () => instruments[instrumentSelector.value]
+const getInstrument = (source) => (source !== 'midiin' || instrumentSelector.value !== 'midiout') // if source is midi, we don't want to send play the note twice
+	? instruments[instrumentSelector.value]
+	: instruments.none
 
 // volume controller
 const volumeIcon = document.getElementById('volume-icon')
@@ -153,7 +155,7 @@ volumeSelector.oninput = updateVolume
 
 /* ==== note controll === */
 
-const updateNote = (note, velocity, action) => () => {
+const updateNote = (note, velocity, action) => (source) => {
 	const wasPressed = pressedNotes[note].size > 0
 	const wasSustained = sustainedNotes[note].size > 0
 	action()
@@ -164,21 +166,21 @@ const updateNote = (note, velocity, action) => () => {
 		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.add('pressed'))  
 		if (isSustained) { // repressing sustained note
 			releaseRect(note)
-			getInstrument().triggerRelease([note])
+			getInstrument(source).triggerRelease([note])
 		}
 		addRect(note)
-		getInstrument().triggerAttack([note], undefined, velocity)
+		getInstrument(source).triggerAttack([note], undefined, velocity)
 	}
 	if (wasPressed && !isPressed) {
 		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.remove('pressed'))
 		if (!isSustained) {
 			releaseRect(note)
-			getInstrument().triggerRelease([note])
+			getInstrument(source).triggerRelease([note])
 		}
 	}
 	if (!wasPressed && !isPressed && wasSustained && !isSustained) {
 		releaseRect(note)
-		getInstrument().triggerRelease([note])
+		getInstrument(source).triggerRelease([note])
 	}
 }
 
@@ -210,13 +212,13 @@ const pressSustain = (uid) => {
 	sustainState[uid] = true
 	console.log('sustain ON')
 }
-const releaseSustain = (uid) => {
+const releaseSustain = (uid, source) => {
 	sustainState[uid] = false
 	console.log('sustain OFF')
 	Object.entries(sustainedNotes).forEach(([note, noteset]) => {
 		updateNote(note, undefined, () => {
 			noteset.delete(uid)
-		})()
+		})(source)
 	})
 }
 

@@ -246,14 +246,14 @@ function handleMIDIMessage(midiMessage) {
     case CMD_NOTE_ON: { 
       const velocity = fromVal(val2)
       if (velocity > 0) {
-        pressNote(note, velocity)()
+        pressNote(note, velocity)("midiin")
       } else {
-        releaseNote(note)()
+        releaseNote(note)("midiin")
       }
       break;
     }
     case CMD_NOTE_OFF: // noteOff
-      releaseNote(note)()
+      releaseNote(note)("midiin")
       break;
     case CMD_CONTROL_CHANGE: {// control change
       const [_, control, value] = data
@@ -262,7 +262,7 @@ function handleMIDIMessage(midiMessage) {
       } else if (control === 32) { // lsb
         bankSelect[1] =  value
       } else if (control === 64) { // sustain
-        sustain(fromVal(value))
+        sustain(fromVal(value), "midiin")
       }
       break;
     }

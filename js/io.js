@@ -112,8 +112,8 @@ try {
 }
 
 
-const sendNoteOn = (note, velocity=0.8,) => (e) => {
-  pressNote(note, velocity, UID)(e)
+const sendNoteOn = (note, velocity=0.8,) => (source) => {
+  pressNote(note, velocity, UID)(source)
   if (ws.readyState !== WebSocket.OPEN) {
     return
   }
@@ -121,8 +121,8 @@ const sendNoteOn = (note, velocity=0.8,) => (e) => {
   ws.send(new Uint8Array([GID, UID, toCmd(1), midiNote, toVal(velocity)]))
 }
 
-const sendNoteOff = (note) => (e) => {
-  releaseNote(note, UID)(e)
+const sendNoteOff = (note) => (source) => {
+  releaseNote(note, UID)(source)
   if (ws.readyState !== WebSocket.OPEN) {
     return
   }
@@ -134,11 +134,11 @@ const sendOffAll = () => (e) => {
   releaseAll(UID)().forEach((note) => sendNoteOff(note))
 }
 
-const sendSustain = (value) => {
+const sendSustain = (value, source) => {
   if (value >= 0.5) {
-    pressSustain(UID)
+    pressSustain(UID, source)
   } else {
-    releaseSustain(UID)
+    releaseSustain(UID, source)
   }
   if (ws.readyState !== WebSocket.OPEN) {
     return
