@@ -112,7 +112,7 @@ try {
 }
 
 
-const sendNoteOn = (note, velocity=0.8,) => (source) => {
+const sendNoteOn = (note, velocity=0.6,) => (source) => {
   pressNote(note, velocity, UID)(source)
   if (ws.readyState !== WebSocket.OPEN) {
     return
