@@ -123,27 +123,31 @@ const getInstrument = (source) => (source !== 'midiin' || instrumentSelector.val
 const volumeIcon = document.getElementById('volume-icon')
 const volumeSelector = document.getElementById('volume')
 
+const valToIcon = (value) =>
+	(Tone.Master.mute && 'mdi mdi-volume-mute') ||
+	(value > -15 && 'mdi mdi-volume-high') ||
+	(value > -30 && 'mdi mdi-volume-medium') ||
+	'mdi mdi-volume-low'
+
 function updateVolume() {
   const value = +this.value
-  volumeIcon.innerText = value >= -15 ? '🔊' : '🔉'
   Tone.Master.volume.value = value
   if (value === +this.min) {
-    Tone.Master.mute = true
-    volumeIcon.innerText = '🔈'
+		Tone.Master.mute = true
   } else {
-    Tone.Master.mute = false
+		Tone.Master.mute = false
   }
+	volumeIcon.className = valToIcon(value)
 }
 volumeIcon.onclick = () => {
   if (Tone.Master.mute) {
     Tone.Master.mute = false
-    volumeIcon.innerText = +volumeSelector.value >= -15 ? '🔊' : '🔉'
     volumeSelector.disabled = false
   } else {
-    volumeIcon.innerText = '🔈'
     Tone.Master.mute = true
     volumeSelector.disabled = true
   }
+	volumeIcon.className = valToIcon(+volumeSelector.value)
 }
 volumeSelector.parentElement.onwheel = function (e) {
   const val =  Math.max(+this.min, Math.min(Math.sign(-e.deltaY) * +this.step + +this.value, +this.max))

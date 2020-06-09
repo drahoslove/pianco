@@ -45,6 +45,7 @@ body.rotated {
 	transition: opacity 0.1s ease 0.2s, display 0 linear 0.3s;
 }
 
+
 .buttons>div {
 	flex: 1;
 	display: flex;
@@ -53,11 +54,9 @@ body.rotated {
 }
 .buttons>div:first-child {
 	justify-content: flex-start;
-	padding-left: 1.5rem;
 }
 .buttons>div:last-child {
 	justify-content: flex-end;
-	padding-right: 1.5rem;
 }
 
 .buttons>div:first-child:last-child {
@@ -120,6 +119,15 @@ body.rotated {
 }
 .buttons select option {
 	font-size: 90%;
+}
+
+.buttons button .mdi {
+	font-size: 20px;
+	line-height: 28px;
+}
+.buttons label .mdi {
+	font-size: 22px;
+	line-height: 28px;
 }
 
 #volume {
@@ -285,7 +293,7 @@ div.hint {
 	display: flex;
 	flex-direction: row;
 	justify-content: center !important;
-	padding-left: 69rem;
+	margin-left: 69rem;
 	position: absolute;
 	top: 0;
 }
@@ -302,7 +310,7 @@ div.hint {
 	top: 2rem;
 	display: flex;
 	justify-content: center;
-	font-size: 14t;
+	font-size: 12pt;
 }
 .hint button[data-note*="#"] {
 	color: #AAA;
@@ -351,10 +359,10 @@ div.hint {
 	position: absolute;
 	font-size: 3.25rem;
 	bottom: .75em;
+	margin-bottom: -1.5em;
 }
 .staff {
 	position: relative;
-	margin-bottom: -2.5em;
 }
 .staff>span:first-child {
 	position: relative;
@@ -448,7 +456,7 @@ div.hint {
   flex-direction: row;
   justify-content: flex-end;
 }
-.close, .fullscreen {
+.cinema-bar button {
 	width: 2.25rem;
 	height: 2.25rem;
 	border-radius: 50%;
@@ -461,10 +469,10 @@ div.hint {
 	opacity: .5;
 }
 
-.close:hover, .fullscreen:hover {
+.cinema-bar button:hover {
 	opacity: 1;
 }
-body.idle .close, body.idle .fullscreen {
+body.idle .cinema-bar button {
 	opacity: 0;
 }
 

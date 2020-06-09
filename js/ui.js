@@ -138,15 +138,19 @@ const fullscreenButton = document.getElementById('fullscreen')
 const toggleFullscreen = async function () {
   this.blur()
   if (document.fullscreenElement) {
-    document.exitFullscreen()
+    await document.exitFullscreen()
   } else {
     if (!loadSetting('cinema')) {
       actions.cinema(true)
     }
     await document.body.parentElement.requestFullscreen()
-    toggleFullscreen.innerText = document.fullscreenElement !== null
-      ? '🗕'
-      : '🗖'
+  }
+  if (document.fullscreenElement !== null){
+    fullscreenButton.classList.remove('mdi-fullscreen')
+    fullscreenButton.classList.add('mdi-fullscreen-exit')
+  } else {
+    fullscreenButton.classList.remove('mdi-fullscreen-exit')
+    fullscreenButton.classList.add('mdi-fullscreen')
   }
 }
 fullscreenButton.onclick = toggleFullscreen
@@ -223,3 +227,7 @@ document.body.onmousemove = () => {
     document.body.classList.add('idle')
   }, 2500)
 }
+
+
+// tooltips
+$('[title]').tooltip({ delay: { "show": 500, "hide": 100 }})

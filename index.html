@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pianinous</title>
+<!-- bootstrap -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.2.45/css/materialdesignicons.min.css">
 <link rel="stylesheet" href="/css/main.css" />
 <script type="module" src="js/main.js"></script>
 <script defer src="js/ui.js"></script>
@@ -22,16 +29,16 @@
 	</div>
 	<div class="buttons">
 		<div>
-			<select name="instrument" id="instrument">
-				<option value="piano">🎹 piano</option>
-				<option value="polySynth">↭ synth</option>
+			<select name="instrument" id="instrument"  title="output voice">
+				<option value="piano" class="mdi mdi-piano"> piano</option>
+				<option value="polySynth" class="mid mid-waveform"> synth</option>
 				<option value="midiout" hidden>MIDI out</option>
 				<option value="none" selected hidden>...</option>
 				<!-- <option value="AMSynth">AM synth</option>
 				<option value="FMSynth">FM synt</option> -->
 			</select>
-			<label id="volume-label">
-				<span id="volume-icon">🔊</span>
+			<label id="volume-label" title="volume">
+				<span id="volume-icon" class="mdi mdi-volume-high"></span>
 				<input id="volume" type="range" min="-40" value="0" max="0" step="2.5" />
 			</label>
 		</div>
@@ -48,10 +55,18 @@
 			</div>
 		</div>
 		<div>
-			<button id="toggle-score" >🎼</button>
-			<button id="toggle-qwerty" hidden>⌨️</button>
-			<button id="toggle-labels">📝</button>
-			<button id="toggle-cinema">🕶</button>
+			<button id="toggle-score"  title="toggle staff" >
+				<span class="mdi mdi-music-clef-treble"></span>
+			</button>
+			<button id="toggle-qwerty" hidden  title="toggle kayboard mapping">
+				<span class="mdi mdi-keyboard-outline"></span>
+			</button>
+			<button id="toggle-labels"  title="toggle note labels">
+				<span class="mdi mdi-label-outline"></span>
+			</button>
+			<button id="toggle-cinema"  title="cinema mode">
+				<span class="mdi mdi-television-clean"></span>
+			</button>
 		</div>
 	</div>
 	<div class="keyboard letters">
@@ -84,17 +99,17 @@
 			<span><b style="font-size: 110%">MIDI in</b>: <span id="midi"></span></span>
 		</div>
 		<div>
-			<button id="go-down">◁</button>
-			<button id="go-mid">⦿</button>
-			<button id="go-up">▷</button>
+			<button id="go-down" title="shift left"><span class="mdi mdi-chevron-left"></span></button>
+			<button id="go-mid" title="shift to middle"><span class="mdi mdi-chevron-up"></span></button>
+			<button id="go-up" title="shift right"><span class="mdi mdi-chevron-right"></span></button>
 		</div>
 		<div class="footer">
 			<b></b>	
 		</div>
 	</div>
 	<div class="cinema-bar">
-		<button id="fullscreen" class="fullscreen">▭</button>
-		<button id="cinema-off" class="close">&times;</button>
+		<button id="fullscreen" class="mdi mdi-fullscreen" title="toggle fullscreen" data-placement="bottom"></button>
+		<button id="cinema-off" class="mdi mdi-close" title="close cinema mode" data-placement="bottom"></button>
 	</div>
 </body>
 </html>
