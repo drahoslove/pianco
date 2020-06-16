@@ -252,7 +252,7 @@ const devices = {
 }
 
 const send = (data, timestamp) => {
-  if (!data.output) { return }
+  if (!devices.output) { return }
   devices.output.send(new Uint8Array(data), timestamp)
 }
 
