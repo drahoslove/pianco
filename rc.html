@@ -101,6 +101,9 @@ a.nav-link {
   background: var(--info);
   transition: all 0.15s ease;
 }
+.slider .slider-track-high {
+  transition: all 0.15s ease;
+}
 
 #split .slider-selection {
   background: var(--c3);
@@ -129,6 +132,11 @@ a.nav-link {
 #dual .slider-tick.in-selection {
   background: var(--c2);
 }
+
+.balance .slider .slider-handle {
+  background: #a2a9ae; /* var(--gray);*/
+}
+
 
 
 
@@ -219,7 +227,7 @@ select#split-instrument-selector:-internal-list-box option:checked
             </div>
             <div class="form-group my-4">
               <label for="">Volume balance</label>
-              <div class="mx-2 text-center">
+              <div class="mx-2 text-center balance">
                 <input
                   id="split-balance-slider"
                   type="range"
@@ -243,7 +251,7 @@ select#split-instrument-selector:-internal-list-box option:checked
           <div class="col-md-12 tab-pane" role="tabpanel" id="dual" aria-labelledby="dual-tab">
             <div class="form-group my-4">
               <label for="">Volume balance</label>
-              <div class="mx-2 text-center">
+              <div class="mx-2 text-center balance">
                 <input
                   id="dual-balance-slider"
                   type="range"
