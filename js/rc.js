@@ -22,6 +22,11 @@ tabs.forEach((tab, i) => {
   const mode = i
   tab.onclick = () => {
     send(R.setKeyboardMode(mode))
+    sliders.forEach(slider => {
+      setTimeout(() => {
+        slider.refresh({ useCurrentValue: true })
+      })
+    })
   }
 })
 
@@ -204,6 +209,7 @@ pressureButtons.forEach(button => {
 })
 
 /* init sliders */
+const sliders = []
 const [
   setAmbience,
   setBrilliance,
@@ -239,6 +245,7 @@ const [
     }[variant](+newValue))
     // playnote(MID_C)
   })
+  sliders.push(slider)
   return setValue
 })
 
@@ -252,7 +259,7 @@ const devices = {
 }
 
 const send = (data, timestamp) => {
-  if (!devices.output) { return }
+  if (!devices.output.send) { return }
   devices.output.send(new Uint8Array(data), timestamp)
 }
 
