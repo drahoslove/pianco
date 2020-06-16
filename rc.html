@@ -116,6 +116,21 @@ a.nav-link {
   background: var(--c3);
 }
 
+#dual .slider-selection {
+  background: var(--c2);
+}
+#dual .slider-track-high {
+  background: var(--c1);
+}
+#dual .slider-tick {
+  background: var(--c1);
+  opacity: 1;
+}
+#dual .slider-tick.in-selection {
+  background: var(--c2);
+}
+
+
 
 input[type="number"] {
   color: var(--info);
@@ -190,8 +205,6 @@ select#split-instrument-selector:-internal-list-box option:checked
                 <input
                   id="split-point-slider"
                   type="range"
-                  name="ambience"
-                  -data-provide="slider"
                   data-slider-min="35"
                   data-slider-value="59"
                   data-slider-max="95"
@@ -204,12 +217,48 @@ select#split-instrument-selector:-internal-list-box option:checked
                 >
               </div>
             </div>
+            <div class="form-group my-4">
+              <label for="">Volume balance</label>
+              <div class="mx-2 text-center">
+                <input
+                  id="split-balance-slider"
+                  type="range"
+                  data-slider-min="56"
+                  data-slider-value="64"
+                  data-slider-max="72"
+                  data-slider-step="1"
+                  data-slider-tooltip="hide"
+                  data-slider-ticks="[56, 64, 72]"
+                  data-slider-ticks-positions="[0, 50, 100]"
+                  data-slider-ticks-labels='["lefth hand", "balanced", "right hand"]'
+                  data-slider-ticks-snap-bounds="0"
+                >
+              </div>
+            </div>
             <div class="form-group">
-              <label for="split-instrument-selector">Second-hand Instrument</label>
+              <label for="split-instrument-selector">Left-hand Instrument</label>
               <select id="split-instrument-selector" class="form-control select bc3"></select>
             </div>
           </div>
           <div class="col-md-12 tab-pane" role="tabpanel" id="dual" aria-labelledby="dual-tab">
+            <div class="form-group my-4">
+              <label for="">Volume balance</label>
+              <div class="mx-2 text-center">
+                <input
+                  id="dual-balance-slider"
+                  type="range"
+                  data-slider-min="56"
+                  data-slider-value="64"
+                  data-slider-max="72"
+                  data-slider-step="1"
+                  data-slider-tooltip="hide"
+                  data-slider-ticks="[56, 64, 72]"
+                  data-slider-ticks-positions="[0, 50, 100]"
+                  data-slider-ticks-labels='["First layer", "balanced", "Second layer"]'
+                  data-slider-ticks-snap-bounds="0"
+                >
+              </div>
+            </div>
             <div class="form-group">
               <label for="dual-instrument-selector">Second-layer Instrument</label>
               <select id="dual-instrument-selector" class="form-control select bc2"></select>
@@ -333,16 +382,14 @@ select#split-instrument-selector:-internal-list-box option:checked
                 <input
                   id="ambience-slider"
                   type="range"
-                  name="ambience"
-                  -data-provide="slider"
                   data-slider-min="0"
-                  data-slider-value="0"
+                  data-slider-value="2"
                   data-slider-max="10"
                   data-slider-step="1"
                   data-slider-tooltip="hide"
                   data-slider-ticks="[0, 2, 10]"
                   data-slider-ticks-positions="[0, 20, 100]"
-                  data-slider-ticks-labels='["0", "2", "10"]'
+                  data-slider-ticks-labels='["min", "default", "max"]'
                   data-slider-ticks-snap-bounds="0"
                 >
               </div>
@@ -354,15 +401,13 @@ select#split-instrument-selector:-internal-list-box option:checked
                 <input
                   id="brilliance-slider"
                   type="range"
-                  name="brilliance"
-                  -data-provide="slider"
                   data-slider-min="54"
-                  data-slider-value="0"
+                  data-slider-value="64"
                   data-slider-max="74"
                   data-slider-step="1"
                   data-slider-tooltip="hide"
                   data-slider-ticks="[54, 64, 74]"
-                  data-slider-ticks-labels='["-10", "0", "+10"]'
+                  data-slider-ticks-labels='["min", "default", "max"]'
                   data-slider-ticks-snap-bounds="0"
                 >
               </div>

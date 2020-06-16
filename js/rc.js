@@ -203,13 +203,27 @@ pressureButtons.forEach(button => {
   }
 })
 
-/* init ambience / brilliance */
-const [ setAmbience, setBrilliance, setSplitPoint ] = ['ambience', 'brilliance', 'split-point'].map(variant => {
+/* init sliders */
+const [
+  setAmbience,
+  setBrilliance,
+  setSplitPoint,
+  setSplitBalance,
+  setDualBalance,
+] = [
+  'ambience',
+  'brilliance',
+  'split-point',
+  'split-balance',
+  'dual-balance',
+].map(variant => {
   let formatter = x => x
   if (variant === 'brilliance')
     formatter = x => x-64
   if (variant ===  'split-point')
     formatter = x => Tone.Midi(x+1).toNote()
+  if (variant === 'split-balance' || variant === 'dual-balance')
+    formatter = x => (x-=64, x < 0 ? `9:${9+x}` : `${9-x}:9`)
 
   const slider = new Slider(`#${variant}-slider`, { tooltip: true, formatter })
   const setValue = (value) => {
@@ -220,6 +234,8 @@ const [ setAmbience, setBrilliance, setSplitPoint ] = ['ambience', 'brilliance',
       'ambience': R.setAmbience,
       'brilliance': R.setBrilliance,
       'split-point': R.setSplitPoint,
+      'split-balance': R.setSplitBalance,
+      'dual-balance': R.setDualBalance,
     }[variant](+newValue))
     // playnote(MID_C)
   })
@@ -236,6 +252,7 @@ const devices = {
 }
 
 const send = (data, timestamp) => {
+  if (!data.output) { return }
   devices.output.send(new Uint8Array(data), timestamp)
 }
 
@@ -325,6 +342,12 @@ navigator.requestMIDIAccess({ sysex: true })
         }
         if (addr === 'splitPoint') {
           setSplitPoint(value)
+        }
+        if (addr === 'splitBalance') {
+          setSplitBalance(value)
+        }
+        if (addr === 'dualBalance') {
+          setDualBalance(value)
         }
         if (addr === 'keyBoardMode') {
           const mode = parseInt(hexval.substr(0,2), 16)

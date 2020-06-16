@@ -1,9 +1,9 @@
 export const instruments = {
   "Pianos": [
-    ["Grand Piano 1", "000000", 0, 68, 0],
-    ["Grand Piano 2", "000001", 16, 67, 0],
-    ["Grand Piano 3", "000002", 4, 64, 0],
-    ["Grand Piano 4", "000003", 8, 66, 1],
+    ["Grand Piano 1 (Concert)", "000000", 0, 68, 0],
+    ["Grand Piano 2 (Ballad)", "000001", 16, 67, 0],
+    ["Grand Piano 3 (Mellow)", "000002", 4, 64, 0],
+    ["Grand Piano 4 (Bright)", "000003", 8, 66, 1],
     ["Ragtime Piano", "000004", 0, 64, 3],
     ["Harpsichord 1", "000005", 0, 66, 6],
     ["Harpsichord 2", "000006", 8, 66, 6],
@@ -60,7 +60,7 @@ const addrs = {
   sequencerStatus:                "01000103",
   sequencerMeasure:               "01000105",
   sequencerTempoNotation:         "01000107",
-  sequencerTempoRO:               "01000108",
+  sequencerTempoRO:               "01000108", //
   sequencerBeatNumerator:         "0100010A",
   sequencerBeatDenominator:       "0100010B",
   sequencerPartSwAccomp:          "0100010C",
@@ -69,39 +69,39 @@ const addrs = {
   metronomeStatus:                "0100010F",
   headphonesConnection:           "01000110",
   // 010002xx
-  keyBoardMode:                   "01000200",
-  splitPoint:                     "01000201",
+  keyBoardMode:                   "01000200", //
+  splitPoint:                     "01000201", //
   splitOctaveShift:               "01000202",
-  splitBalance:                   "01000203",
-  dualOctaveShift:                "01000204", // layers
-  dualBalance:                    "01000205",
+  splitBalance:                   "01000203", //
+  dualOctaveShift:                "01000204", 
+  dualBalance:                    "01000205", //
   twinPianoMode:                  "01000206",
-  toneForSingle:                  "01000207",
-  toneForSplit:                   "0100020A",
-  toneForDual:                    "0100020D",
-  songNumber:                     "01000210",
-  masterVolume:                   "01000213",
+  toneForSingle:                  "01000207", //
+  toneForSplit:                   "0100020A", //
+  toneForDual:                    "0100020D", //
+  songNumber:                     "01000210", 
+  masterVolume:                   "01000213", //
   masterVolumeLimit:              "01000214",
   allSongPlayMode:                "01000215",
   splitRightOctaveShift:          "01000216",
   dualTone1OctaveShift:           "01000217",
-  masterTuning:                   "01000218",
-  ambience:                       "0100021A",
+  masterTuning:                   "01000218", //
+  ambience:                       "0100021A", //
   headphones3DAmbience:           "0100021B",
-  brilliance:                     "0100021C",
-  keyTouch:                       "0100021D",
+  brilliance:                     "0100021C", //
+  keyTouch:                       "0100021D", //
   transposeMode:                  "0100021E",
   metronomeBeat:                  "0100021F",
   metronomePattern:               "01000220",
-  metronomeVolume:                "01000221",
+  metronomeVolume:                "01000221", //
   metronomeTone:                  "01000222",
   metronomeDownBeat:              "01000223",
   // 010003xx
-  applicationMode:                "01000300",
+  applicationMode:                "01000300", //
   scorePageTurn:                  "01000302",
   arrangerPedalFunction:          "01000303",
   arrangerBalance:                "01000305",
-  connection:                     "01000306",
+  connection:                     "01000306", //
   keyTransposeWO:                 "01000307",
   songTransposeWO:                "01000308",
   sequencerTempoWO:               "01000309",
@@ -234,6 +234,8 @@ export const setAmbience = (value) => set(addrs.ambience, _H(value))
 export const setBrilliance = (value) => set(addrs.brilliance, _H(value))
 
 export const setSplitPoint = (value) => set(addrs.splitPoint, _H(value))
+export const setSplitBalance = (value) => set(addrs.splitPoint, _H(value))
+export const setDualBalance = (value) => set(addrs.splitPoint, _H(value))
 
 
 export const setToneFor = (variant) => (tonecode) => set({
