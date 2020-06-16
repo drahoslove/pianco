@@ -234,8 +234,8 @@ export const setAmbience = (value) => set(addrs.ambience, _H(value))
 export const setBrilliance = (value) => set(addrs.brilliance, _H(value))
 
 export const setSplitPoint = (value) => set(addrs.splitPoint, _H(value))
-export const setSplitBalance = (value) => set(addrs.splitPoint, _H(value))
-export const setDualBalance = (value) => set(addrs.splitPoint, _H(value))
+export const setSplitBalance = (value) => set(addrs.splitBalance, _H(value))
+export const setDualBalance = (value) => set(addrs.dualBalance, _H(value))
 
 
 export const setToneFor = (variant) => (tonecode) => set({
