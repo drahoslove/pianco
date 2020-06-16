@@ -98,7 +98,7 @@ body.rotated {
 }
 .buttons button::after {
 	position: absolute;
-	top: -.5rem;
+	top: -.6rem;
 	left: 0;
 	right: 0;
 }
@@ -121,12 +121,9 @@ body.rotated {
 	font-size: 90%;
 }
 
-.buttons button .mdi {
-	font-size: 20px;
-	line-height: 28px;
-}
+.buttons button .mdi,
 .buttons label .mdi {
-	font-size: 22px;
+	font-size: 24px;
 	line-height: 28px;
 }
 
