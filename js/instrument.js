@@ -80,7 +80,7 @@ const instruments = {
 				instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
 			}
     },
-    baseUrl : "/audio/salamander/",
+    baseUrl: "/audio/salamander/",
   }).toMaster(),
   none: {
     triggerAttack: Tone.noOp,
@@ -179,18 +179,20 @@ const updateNote = (note, velocity, action) => (source) => {
 			getInstrument(source).triggerRelease([note])
 		}
 		addRect(note)
-		getInstrument(source).triggerAttack([note], undefined, velocity)
+		console.log('triggerAttack', note, performance.now())
+		getInstrument(source).triggerAttack(note, "+0", velocity)
 	}
 	if (wasPressed && !isPressed) {
 		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.remove('pressed'))
 		if (!isSustained) {
 			releaseRect(note)
-			getInstrument(source).triggerRelease([note])
+			console.log('triggerRelease', note, performance.now())
+			getInstrument(source).triggerRelease(note, "+0.001")
 		}
 	}
-	if (!wasPressed && !isPressed && wasSustained && !isSustained) {
+	if (wasSustained && !isSustained && !wasPressed && !isPressed) {
 		releaseRect(note)
-		getInstrument(source).triggerRelease([note])
+		getInstrument(source).triggerRelease(note, "+0.001")
 	}
 }
 

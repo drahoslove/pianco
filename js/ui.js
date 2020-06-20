@@ -244,7 +244,6 @@ export const updateTooltip = (el, title) => {
     })
   const timer = setTimeout(() => {
     $(el).tooltip('hide')
-    console.log('hide')
   }, 3000)
 }
 
