@@ -230,7 +230,10 @@ document.body.onmousemove = () => {
 
 
 // tooltips
-$('[title]').tooltip({ delay: { "show": 500, "hide": 100 }})
+$('[title]').tooltip({
+  delay: { 'show': 500, 'hide': 100},
+  trigger : 'hover',
+})
 
 export const updateTooltip = (el, title) => {
   $(el)

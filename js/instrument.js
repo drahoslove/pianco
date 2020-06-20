@@ -211,7 +211,6 @@ const releaseNote = (note, uid) => updateNote(note, undefined, () => {
 const releaseAll = (uid) => () => {
   return allNotes.filter(note => {
     if (pressedNotes[note].has(uid)) {
-			console.log('uid', uid)
       releaseNote(note, uid)()
       return true
     }
