@@ -238,3 +238,29 @@ export const updateTooltip = (el, title) => {
     .tooltip('dispose')
     .tooltip({ title })
 }
+
+// instrument
+$('#instrument').on('change', (e) => {
+  const { value } = e.target
+  $('#out-icon').attr('class', {
+    'piano': 'mdi mdi-piano',
+    'polySynth': 'mdi mdi-waveform',
+    'midiout': 'mdi mdi-midi',
+  }[value] || 'mdi')
+})
+
+$('#instrument-label').on('mouseup', (e) => {
+  const currVal = $('#instrument').val()
+  if([... $('#instrument').get().pop().options].find(({ value }) => value === 'midiout')) { // midi not enabled
+    $('#instrument').val({
+      'piano': 'polySynth',
+      'polySynth': 'piano',
+    }[currVal]).change()
+  } else { // midi enabled
+    $('#instrument').val({
+      'piano': 'polySynth',
+      'polySynth': 'midiout',
+      'midiout': 'piano'
+    }[currVal]).change()
+  }
+})

@@ -28,17 +28,20 @@
 	</div>
 	<div class="buttons">
 		<div>
-		 <button id="midi" title="midi input">
+			<button id="midi" title="midi input">
 				<span class="mdi mdi-midi"></span>
-		 </button>
-			<select name="instrument" id="instrument"  title="output voice">
-				<option value="piano" class="mdi mdi-piano"> piano</option>
-				<option value="polySynth" class="mid mid-waveform"> synth</option>
-				<option value="midiout" hidden>MIDI out</option>
-				<option value="none" selected hidden>...</option>
-				<!-- <option value="AMSynth">AM synth</option>
-				<option value="FMSynth">FM synt</option> -->
-			</select>
+			</button>
+			<label for="instrument" id="instrument-label" title="output voice">
+				<span id="out-icon" class="mdi mdi-dots-horizontal"></span>
+				<select name="instrument" id="instrument" hidden>
+					<option value="piano"> piano</option>
+					<option value="polySynth" class="mid mid-waveform"> synth</option>
+					<option value="midiout" hidden>MIDI out</option>
+					<option value="none" selected hidden>...</option>
+					<!-- <option value="AMSynth">AM synth</option>
+					<option value="FMSynth">FM synt</option> -->
+				</select>
+			</label>
 			<label id="volume-label" title="volume">
 				<span id="volume-icon" class="mdi mdi-volume-high"></span>
 				<input id="volume" type="range" min="-40" value="0" max="0" step="2.5" />

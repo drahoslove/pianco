@@ -221,13 +221,13 @@ const reloadMidi = () => {
     updateTooltip(midiEl, 'MIDI input supported')
     midiEl.className="unknown"
     navigator.requestMIDIAccess()
-      .then(onMIDISuccess, () => {
-        console.log('Could not access your MIDI devices.')
+      .then(onMIDISuccess, (err) => {
+        console.error(`Could not access your MIDI devices. ${err}`)
         updateTooltip(midiEl, 'MIDI failed')
         midiEl.className="err"
       })
   } else {
-    console.log('WebMIDI is not supported in this browser.')
+    console.warn('WebMIDI is not supported in this browser.')
     updateTooltip(midiEl, 'MIDI input not supported')
     midiEl.className="err"
   }
@@ -236,19 +236,17 @@ midiEl.onclick = reloadMidi
 reloadMidi()
 
 function onMIDISuccess(midiAccess) {
-  console.log('midi accessed')
   const reconnectInputs = () => {
     updateTooltip(midiEl, 'MIDI input none')
     const inputs = [...midiAccess.inputs.values()].filter(input => input.state === 'connected')
     for (let input of inputs) {
-      updateTooltip(midiEl, `input connected: ${input.name}`)
+      updateTooltip(midiEl, `in: ${input.name}`)
       input.onmidimessage = handleMIDIMessage
     }
     midiEl.className = inputs.length > 0 ? "on" : "none"
-    console.log('connecting midi in', inputs)
   }
   midiAccess.onstatechange = reconnectInputs
-  reconnectInputs()
+  setTimeout(reconnectInputs, 100)
 }
 
 let bankSelect = [0, 0]

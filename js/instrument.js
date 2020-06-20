@@ -77,6 +77,7 @@ const instruments = {
 			console.log('piano samples loaded')
 			if (instrumentSelector.value === 'none') {
 				instrumentSelector.value = 'piano'
+				instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
 			}
     },
     baseUrl : "/audio/salamander/",
@@ -101,15 +102,20 @@ const send = (data) => {
 	output && output.send(new Uint8Array(data))
 }
 navigator.requestMIDIAccess && navigator.requestMIDIAccess().then((midiAccess) => {
-	for (let out of midiAccess.outputs.values()) {
-		output = out
-		console.log('MIDI out available:', out.name)
-		instrumentSelector.value = 'midiout'
-		const option = [...instrumentSelector.options].find(({ value }) => value === 'midiout')
-		if (option) {
-			option.hidden = false
+  const reconnectOutputs = () => {
+		for (let out of midiAccess.outputs.values()) {
+			output = out
+			console.log('MIDI out available:', out.name)
+			instrumentSelector.value = 'midiout'
+			instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
+			const option = [...instrumentSelector.options].find(({ value }) => value === 'midiout')
+			if (option) {
+				option.hidden = false
+			}
 		}
-	}
+  }
+  midiAccess.onstatechange = reconnectOutputs
+  setTimeout(reconnectOutputs, 100)
 })
 
 // instrument selector
