@@ -13,7 +13,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.2.45/css/materialdesignicons.min.css">
 <link rel="stylesheet" href="/css/main.css" />
 <script type="module" src="js/main.js"></script>
-<script defer src="js/ui.js"></script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎹</text></svg>">
 </head>
 <body>
@@ -29,6 +28,9 @@
 	</div>
 	<div class="buttons">
 		<div>
+		 <button id="midi" title="midi input">
+				<span class="mdi mdi-midi"></span>
+		 </button>
 			<select name="instrument" id="instrument"  title="output voice">
 				<option value="piano" class="mdi mdi-piano"> piano</option>
 				<option value="polySynth" class="mid mid-waveform"> synth</option>
@@ -96,7 +98,6 @@
 	</div>
 	<div class="buttons">
 		<div class="footer">
-			<span><b style="font-size: 110%">MIDI in</b>: <span id="midi"></span></span>
 		</div>
 		<div>
 			<button id="go-down" title="shift left"><span class="mdi mdi-chevron-left"></span></button>

@@ -12,7 +12,9 @@ import {
   fromCmd, fromVal,
   CMD_NOTE_ON, CMD_NOTE_OFF, CMD_CONTROL_CHANGE, CMD_PROGRAM,
 } from './midi.js'
-
+import {
+  updateTooltip
+} from './ui.js'
 
 let transposition = 0
 
@@ -213,25 +215,40 @@ window.addEventListener('keyup', e => {
 
 // init MIDI input
 const midiEl = document.getElementById('midi')
-if (navigator.requestMIDIAccess) {
-  console.log('This browser supports WebMIDI!')
-  midiEl.innerText = 'supported'
-  navigator.requestMIDIAccess()
-    .then(onMIDISuccess, () => {
-      console.log('Could not access your MIDI devices.')
-      midiEl.innerText = 'access failed'
-    })
-} else {
-  console.log('WebMIDI is not supported in this browser.')
-  midiEl.innerText = 'not supported'
+const reloadMidi = () => {
+  if (navigator.requestMIDIAccess) {
+    console.log('This browser supports Web MIDI!')
+    updateTooltip(midiEl, 'MIDI input supported')
+    midiEl.className="unknown"
+    navigator.requestMIDIAccess()
+      .then(onMIDISuccess, () => {
+        console.log('Could not access your MIDI devices.')
+        updateTooltip(midiEl, 'MIDI failed')
+        midiEl.className="err"
+      })
+  } else {
+    console.log('WebMIDI is not supported in this browser.')
+    updateTooltip(midiEl, 'MIDI input not supported')
+    midiEl.className="err"
+  }
 }
+midiEl.onclick = reloadMidi
+reloadMidi()
 
 function onMIDISuccess(midiAccess) {
-  for (let input of midiAccess.inputs.values()) {
-    midiEl.innerText = input.name
-    input.onstatechange = (e) => { console.log(e) }
-    input.onmidimessage = handleMIDIMessage
+  console.log('midi accessed')
+  const reconnectInputs = () => {
+    updateTooltip(midiEl, 'MIDI input none')
+    const inputs = [...midiAccess.inputs.values()].filter(input => input.state === 'connected')
+    for (let input of inputs) {
+      updateTooltip(midiEl, `input connected: ${input.name}`)
+      input.onmidimessage = handleMIDIMessage
+    }
+    midiEl.className = inputs.length > 0 ? "on" : "none"
+    console.log('connecting midi in', inputs)
   }
+  midiAccess.onstatechange = reconnectInputs
+  reconnectInputs()
 }
 
 let bankSelect = [0, 0]

@@ -111,6 +111,16 @@ body.rotated {
 .buttons button.ononon::after {
 	content: '...';
 }
+.buttons button.unknown::after {
+	content: '﹖';
+}
+.buttons button.none::after {
+	content: '_';
+}
+.buttons button.err::after {
+	content: '×';
+}
+
 
 .buttons select {
 	-webkit-appearance: none;
