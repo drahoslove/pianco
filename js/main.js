@@ -122,7 +122,11 @@ if (!('ontouchstart' in document.documentElement)) { // only for nontouch device
     key.onselect = _()
     key.onselectstart = _()
   })
-  keyboard.addEventListener('mouseover', releaseAll())
+  keyboard.addEventListener('mouseout', e => {
+    if (e.target === keyboard) {
+      releaseAll()(e)
+    }
+  })
 }
 
 // init touch input 
