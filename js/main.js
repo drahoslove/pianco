@@ -215,15 +215,15 @@ window.addEventListener('keyup', e => {
 
 // init MIDI input
 const midiEl = document.getElementById('midi')
-const reloadMidi = () => {
+const reloadMidi = (isFrist) => {
   if (navigator.requestMIDIAccess) {
     console.log('This browser supports Web MIDI!')
-    updateTooltip(midiEl, 'MIDI in: supported')
+    updateTooltip(midiEl, 'MIDI in: supported', isFrist !== true)
     midiEl.className="unknown"
     navigator.requestMIDIAccess()
-      .then(onMIDISuccess, (err) => {
+      .then(onMIDISuccess(isFrist === true), (err) => {
         console.error(`Could not access your MIDI devices. ${err}`)
-        updateTooltip(midiEl, 'MIDI in: failed')
+        updateTooltip(midiEl, 'MIDI in: failed', true)
         midiEl.className="err"
       })
   } else {
@@ -233,20 +233,24 @@ const reloadMidi = () => {
   }
 }
 midiEl.onclick = reloadMidi
-reloadMidi()
+reloadMidi(true)
 
-function onMIDISuccess(midiAccess) {
-  const reconnectInputs = () => {
-    updateTooltip(midiEl, 'MIDI in: none')
-    const inputs = [...midiAccess.inputs.values()].filter(input => input.state === 'connected')
-    for (let input of inputs) {
-      updateTooltip(midiEl, `MIDI in: ${input.name}`)
-      input.onmidimessage = handleMIDIMessage
+function onMIDISuccess(isFrist) {
+  return (midiAccess) => {
+    const reconnectInputs = (e) => {
+      const inputs = [...midiAccess.inputs.values()].filter(input => input.state === 'connected')
+      if (inputs.length === 0) {
+        midiEl.className =  "none"
+        updateTooltip(midiEl, 'MIDI in: none', !isFrist)
+      } else {
+        inputs[0].onmidimessage = handleMIDIMessage
+        updateTooltip(midiEl, `MIDI in: ${input.name}`, true)
+        midiEl.className = "on"
+      }
     }
-    midiEl.className = inputs.length > 0 ? "on" : "none"
+    midiAccess.onstatechange = reconnectInputs
+    setTimeout(reconnectInputs, 100)
   }
-  midiAccess.onstatechange = reconnectInputs
-  setTimeout(reconnectInputs, 100)
 }
 
 let bankSelect = [0, 0]

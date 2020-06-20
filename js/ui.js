@@ -235,16 +235,18 @@ $('[title]').tooltip({
   html: true,
 })
 
-export const updateTooltip = (el, title) => {
+export const updateTooltip = (el, title, show) => {
   $(el)
     .attr('data-original-title', title)
-    .tooltip('show')
+  if (show) {
+    $(el).tooltip('show')
     .one('hide.bs.tooltip', () => {
       clearTimeout(timer)
     })
   const timer = setTimeout(() => {
     $(el).tooltip('hide')
   }, 3000)
+  }
 }
 
 // instrument
@@ -257,7 +259,7 @@ instrumentSelector.onchange = (e) => {
     'polySynth': 'mdi mdi-sine-wave',
     'midiout': 'mdi mdi-midi',
   }[value] || 'mdi'
-  updateTooltip(instrumentLabel, `out: ${instrumentSelector.value}`)
+  updateTooltip(instrumentLabel, `out: ${instrumentSelector.value}`, true)
 }
 
 instrumentLabel.onmouseup = (e) => {
