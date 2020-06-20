@@ -773,7 +773,7 @@ input[type=range]::-ms-thumb {
 
 
 
-/* mobile devides  */
+/* mobile devices  */
 
 @media screen and (max-height: 500px), (max-width: 500px) {
 	html {
@@ -797,5 +797,11 @@ input[type=range]::-ms-thumb {
 	}
 	.staffs {
 		font-size: 2.5em;
+	}
+}
+
+@media(hover: none) {
+	.tooltip {
+		display: none;
 	}
 }
