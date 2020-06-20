@@ -3,6 +3,10 @@
   src: url(/font/Bravura.woff2);
 }
 
+*, ::after, ::before {
+	box-sizing: border-box;
+}
+
 html body *[hidden] {
 	display: none;
 	-webkit-user-select: none;
@@ -366,9 +370,10 @@ div.hint {
 	position: absolute;
 	font-size: 3.25rem;
 	bottom: .75em;
-	margin-bottom: -1.5em;
+	margin-bottom: -.25em;
 }
 .staff {
+	margin-bottom: -2.5em;
 	position: relative;
 }
 .staff>span:first-child {
@@ -801,7 +806,7 @@ input[type=range]::-ms-thumb {
 }
 
 @media(hover: none) {
-	.tooltip {
+	[data-tippy-root] {
 		display: none;
 	}
 }

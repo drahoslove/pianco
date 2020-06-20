@@ -227,25 +227,33 @@ document.body.onmousemove = () => {
   }, 2500)
 }
 
-
-// tooltips
-$('[title]').tooltip({
-  delay: { 'show': 500, 'hide': 100},
-  trigger : 'hover',
-  html: true,
+;[...document.querySelectorAll('[title]')].forEach(el => {
+  tippy(el, {
+    content: el.title,
+    delay: [500, 100],
+    trigger: 'mouseenter',
+    hideOnClick: false
+  })
+  el.dataset.title = el.title
+  el.title=''
 })
 
 export const updateTooltip = (el, title, show) => {
-  $(el)
-    .attr('data-original-title', title)
+  const { _tippy } = el
+  if(!_tippy) {
+    return console.log('no tippy', el)
+  }
+  _tippy.setContent(title)
   if (show) {
-    $(el).tooltip('show')
-    .one('hide.bs.tooltip', () => {
-      clearTimeout(timer)
-    })
-    const timer = setTimeout(() => {
-      $(el).tooltip('hide')
-    }, 3000)
+    _tippy.show()
+    _tippy
+    setTimeout(() => {
+      try {
+        _tippy.hideWithInteractivity()
+      } catch (e) {
+        _tippy.hide()
+      }
+    }, 1200)
   }
 }
 
