@@ -233,13 +233,20 @@ document.body.onmousemove = () => {
 $('[title]').tooltip({
   delay: { 'show': 500, 'hide': 100},
   trigger : 'hover',
+  html: true,
 })
 
 export const updateTooltip = (el, title) => {
   $(el)
-    .attr('title', title)
-    .tooltip('dispose')
-    .tooltip({ title })
+    .attr('data-original-title', title)
+    .tooltip('show')
+    .one('hide.bs.tooltip', () => {
+      clearTimeout(timer)
+    })
+  const timer = setTimeout(() => {
+    $(el).tooltip('hide')
+    console.log('hide')
+  }, 3000)
 }
 
 // instrument
@@ -257,7 +264,7 @@ instrumentSelector.onchange = (e) => {
 
 instrumentLabel.onmouseup = (e) => {
   const currentValue = instrumentSelector.value
-  if([... $('#instrument').get().pop().options].find(({ value }) => value === 'midiout')) { // midi not enabled
+  if([...instrumentSelector.options].find(({ value }) => value === 'midiout')) { // midi not enabled
     instrumentSelector.value = {
       'piano': 'polySynth',
       'polySynth': 'piano',
