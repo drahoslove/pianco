@@ -242,12 +242,12 @@ reloadMidi(true)
 function onMIDISuccess(isFrist) {
   return (midiAccess) => {
     const reconnectInputs = (e) => {
-      const inputs = [...midiAccess.inputs.values()].filter(input => input.state === 'connected')
-      if (inputs.length === 0) {
+      const input = [...midiAccess.inputs.values()].find(input => input.state === 'connected')
+      if (!input) {
         midiEl.className =  "none"
         updateTooltip(midiEl, 'MIDI in: none', !isFrist)
       } else {
-        inputs[0].onmidimessage = handleMIDIMessage
+        input.onmidimessage = handleMIDIMessage
         updateTooltip(midiEl, `MIDI in: ${input.name}`, true)
         midiEl.className = "on"
       }

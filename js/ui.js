@@ -264,7 +264,7 @@ instrumentSelector.onchange = (e) => {
 
 instrumentLabel.onmouseup = (e) => {
   const currentValue = instrumentSelector.value
-  if([...instrumentSelector.options].find(({ value }) => value === 'midiout')) { // midi not enabled
+  if([...instrumentSelector.options].some(({ value, hidden }) => value === 'midiout' && hidden)) { // midi not enabled
     instrumentSelector.value = {
       'piano': 'polySynth',
       'polySynth': 'piano',

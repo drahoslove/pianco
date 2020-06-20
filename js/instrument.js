@@ -179,14 +179,12 @@ const updateNote = (note, velocity, action) => (source) => {
 			getInstrument(source).triggerRelease([note])
 		}
 		addRect(note)
-		console.log('triggerAttack', note, performance.now())
 		getInstrument(source).triggerAttack(note, "+0", velocity)
 	}
 	if (wasPressed && !isPressed) {
 		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.remove('pressed'))
 		if (!isSustained) {
 			releaseRect(note)
-			console.log('triggerRelease', note, performance.now())
 			getInstrument(source).triggerRelease(note, "+0.001")
 		}
 	}
