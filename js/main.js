@@ -131,7 +131,7 @@ if (!('ontouchstart' in document.documentElement)) { // only for nontouch device
 
 // init touch input 
 if ('ontouchstart' in document.documentElement) { // only for touch devices
-  const touchedKeys = []
+  const keysByTouches = {}
   const keyFromTouchPoint = ({ clientX: x, clientY: y}) => {
     let key = document.elementFromPoint(x, y)
     while (key && !key.dataset.note) {
@@ -140,39 +140,41 @@ if ('ontouchstart' in document.documentElement) { // only for touch devices
     return key
   }
   keyboard.addEventListener('touchstart', _((e) => {
-    ;[...e.targetTouches].forEach((touch, i) => {
+    ;[...e.targetTouches].forEach((touch) => {
       let key = keyFromTouchPoint(touch)
       if (key) {
         const { note } = key.dataset
         pressNote(note)(e)
-        touchedKeys[i] = key
+        keysByTouches[touch.identifier] = key
       }
     })
   }))
   keyboard.addEventListener('touchmove', _((e) => {
-    ;[...e.targetTouches].forEach((touch, i) => {
+    ;[...e.targetTouches].forEach((touch) => {
+      const id = touch.identifier
       const key = keyFromTouchPoint(touch)
       if (key) {
         const { note } = key.dataset
         pressNote(note)(e)
       }
-      if (touchedKeys[i] && key !== touchedKeys[i]) {
-        const { note } = touchedKeys[i].dataset
+      if (keysByTouches[id] && key !== keysByTouches[id]) {
+        const { note } = keysByTouches[id].dataset
         releaseNote(note)(e)
       }
       if (key) {
-        touchedKeys[i] = key
+        keysByTouches[id] = key
       }
     })
   }))
   keyboard.addEventListener('touchend', _((e) => {
     ;[...e.changedTouches].forEach((touch, i) => {
+      const id = touch.identifier
       const key = keyFromTouchPoint(touch)
-      if (touchedKeys[i]) {
-        const { note } = touchedKeys[i].dataset
+      if (keysByTouches[id]) {
+        const { note } = keysByTouches[id].dataset
         releaseNote(note)(e)
       }
-      touchedKeys[i] = null
+      keysByTouches[id] = null
     })
   }))
   keyboard.addEventListener('touchcancel', releaseAll())

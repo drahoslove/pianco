@@ -243,9 +243,9 @@ export const updateTooltip = (el, title, show) => {
     .one('hide.bs.tooltip', () => {
       clearTimeout(timer)
     })
-  const timer = setTimeout(() => {
-    $(el).tooltip('hide')
-  }, 3000)
+    const timer = setTimeout(() => {
+      $(el).tooltip('hide')
+    }, 3000)
   }
 }
 
@@ -268,13 +268,13 @@ instrumentLabel.onmouseup = (e) => {
     instrumentSelector.value = {
       'piano': 'polySynth',
       'polySynth': 'piano',
-    }[currentValue]
+    }[currentValue] || 'none'
   } else { // midi enabled
     instrumentSelector.value ={
       'piano': 'polySynth',
       'polySynth': 'midiout',
       'midiout': 'piano'
-    }[currentValue]
+    }[currentValue] || 'none'
   }
   instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
 }
