@@ -124,6 +124,7 @@ const offCinema = function () {
   saveSetting('cinema', false)
   if (document.fullscreenElement !== null) {
     document.exitFullscreen()
+    fullscreenButton.className = 'mdi mdi-fullscreen'
   }
 }
 cinemaOffButton.onclick = offCinema
@@ -146,11 +147,9 @@ const toggleFullscreen = async function () {
     await document.body.parentElement.requestFullscreen()
   }
   if (document.fullscreenElement !== null){
-    fullscreenButton.classList.remove('mdi-fullscreen')
-    fullscreenButton.classList.add('mdi-fullscreen-exit')
+    fullscreenButton.className = 'mdi mdi-fullscreen-exit'
   } else {
-    fullscreenButton.classList.remove('mdi-fullscreen-exit')
-    fullscreenButton.classList.add('mdi-fullscreen')
+    fullscreenButton.className = 'mdi mdi-fullscreen'
   }
 }
 fullscreenButton.onclick = toggleFullscreen
