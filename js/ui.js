@@ -240,27 +240,31 @@ export const updateTooltip = (el, title) => {
 }
 
 // instrument
-$('#instrument').on('change', (e) => {
+const instrumentLabel = document.querySelector('#instrument-label')
+const instrumentSelector = document.querySelector('#instrument')
+instrumentSelector.onchange = (e) => {
   const { value } = e.target
-  $('#out-icon').attr('class', {
+  document.querySelector('#out-icon').className = {
     'piano': 'mdi mdi-piano',
-    'polySynth': 'mdi mdi-waveform',
+    'polySynth': 'mdi mdi-sine-wave',
     'midiout': 'mdi mdi-midi',
-  }[value] || 'mdi')
-})
+  }[value] || 'mdi'
+  updateTooltip(instrumentLabel, `out: ${instrumentSelector.value}`)
+}
 
-$('#instrument-label').on('mouseup', (e) => {
-  const currVal = $('#instrument').val()
+instrumentLabel.onmouseup = (e) => {
+  const currentValue = instrumentSelector.value
   if([... $('#instrument').get().pop().options].find(({ value }) => value === 'midiout')) { // midi not enabled
-    $('#instrument').val({
+    instrumentSelector.value = {
       'piano': 'polySynth',
       'polySynth': 'piano',
-    }[currVal]).change()
+    }[currentValue]
   } else { // midi enabled
-    $('#instrument').val({
+    instrumentSelector.value ={
       'piano': 'polySynth',
       'polySynth': 'midiout',
       'midiout': 'piano'
-    }[currVal]).change()
+    }[currentValue]
   }
-})
+  instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
+}

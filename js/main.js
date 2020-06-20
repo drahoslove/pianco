@@ -218,17 +218,17 @@ const midiEl = document.getElementById('midi')
 const reloadMidi = () => {
   if (navigator.requestMIDIAccess) {
     console.log('This browser supports Web MIDI!')
-    updateTooltip(midiEl, 'MIDI input supported')
+    updateTooltip(midiEl, 'MIDI in: supported')
     midiEl.className="unknown"
     navigator.requestMIDIAccess()
       .then(onMIDISuccess, (err) => {
         console.error(`Could not access your MIDI devices. ${err}`)
-        updateTooltip(midiEl, 'MIDI failed')
+        updateTooltip(midiEl, 'MIDI in: failed')
         midiEl.className="err"
       })
   } else {
     console.warn('WebMIDI is not supported in this browser.')
-    updateTooltip(midiEl, 'MIDI input not supported')
+    updateTooltip(midiEl, 'MIDI in: not supported')
     midiEl.className="err"
   }
 }
@@ -237,10 +237,10 @@ reloadMidi()
 
 function onMIDISuccess(midiAccess) {
   const reconnectInputs = () => {
-    updateTooltip(midiEl, 'MIDI input none')
+    updateTooltip(midiEl, 'MIDI in: none')
     const inputs = [...midiAccess.inputs.values()].filter(input => input.state === 'connected')
     for (let input of inputs) {
-      updateTooltip(midiEl, `in: ${input.name}`)
+      updateTooltip(midiEl, `MIDI in: ${input.name}`)
       input.onmidimessage = handleMIDIMessage
     }
     midiEl.className = inputs.length > 0 ? "on" : "none"
