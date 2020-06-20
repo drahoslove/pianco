@@ -87,10 +87,10 @@ const instruments = {
     triggerRelease: Tone.noOp,
 	},
 	midiout: {
-		triggerAttack: ([note], _, velocity) => {
+		triggerAttack: (note, _, velocity) => {
 			send([toCmd(CMD_NOTE_ON), Tone.Midi(note).toMidi(), toVal(velocity*0.75)])
 		},
-		triggerRelease: ([note]) => {
+		triggerRelease: (note) => {
 			send([toCmd(CMD_NOTE_OFF), Tone.Midi(note).toMidi(), 0])
 		},
 	}
