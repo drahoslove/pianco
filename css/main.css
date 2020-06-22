@@ -753,10 +753,15 @@ input[type=range]::-ms-thumb {
 	position: absolute;
 	bottom: 0;
 	height: 100vh;
-	border-radius: 3px;
+  border-radius: 3px;
+  box-shadow:
+    0 0 5px hsla(var(--hue), 70%, 50%, 0.9),
+    0 0 10px hsla(var(--hue), 70%, 50%, 0.8),
+    0 0 20px hsla(var(--hue), 70%, 50%, 0.7),
+    0 0 30px hsla(var(--hue), 70%, 50%, 0.5);
 }
 .pianoroll>div>div.pressed {
-	animation: grow-up 5s linear 0s 1 normal none running;
+  animation: grow-up 5s linear 0s 1 normal none running;
 }
 .pianoroll>div>div.released {
 	bottom: 100vh;
