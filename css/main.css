@@ -1,6 +1,6 @@
 @font-face {
-  font-family: Bravura;
-  src: url(/font/Bravura.woff2);
+	font-family: Bravura;
+	src: url(/font/Bravura.woff2);
 }
 
 *, ::after, ::before {
@@ -142,21 +142,21 @@ body.rotated {
 }
 
 #volume {
-  width: 0;
-  padding-left: 0.3rem;
-  transition: width 400ms ease-in-out, opacity 400ms ease-in-out;
-  opacity:0;
+	width: 0;
+	padding-left: 0.3rem;
+	transition: width 400ms ease-in-out, opacity 400ms ease-in-out;
+	opacity:0;
 }
 #volume-icon {
 	width: 1.5rem;
 }
 #volume-label {
-  min-width: 0;
+	min-width: 0;
 }
 #volume-label:hover > #volume {
-  width: 4rem;
-  opacity: 1;
-  transition: width 400ms ease-in-out, opacity 400ms ease-in-out;
+	width: 4rem;
+	opacity: 1;
+	transition: width 400ms ease-in-out, opacity 400ms ease-in-out;
 }
 
 /*  ===============  keboard  =============== */
@@ -165,12 +165,12 @@ body.rotated {
 	width: 156rem; /* (7*7+3)*3 */
 	position: relative;
 	height: 17.5rem;
-  transition:
-    left .2s ease-in,
-    width .2s ease-in-out,
-    margin .2s ease-in-out .05s,
-    height .2s ease-in-out .1s,
-    padding .2s ease-in-out .15s;
+	transition:
+		left .2s ease-in,
+		width .2s ease-in-out,
+		margin .2s ease-in-out .05s,
+		height .2s ease-in-out .1s,
+		padding .2s ease-in-out .15s;
 	left: 0rem;
 	overflow: visible;
 }
@@ -464,9 +464,9 @@ div.hint {
 	text-align: right;
 }
 .cinema .cinema-bar {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
 }
 .cinema-bar button {
 	width: 2.25rem;
@@ -490,8 +490,8 @@ body.idle .cinema-bar button {
 
 .cinema body {
 	background-color: #222;
-  background-image: none;
-  transition: background-color 0.5s ease;
+	background-image: none;
+	transition: background-color 0.5s ease;
 }
 
 .cinema body.idle * {
@@ -500,15 +500,15 @@ body.idle .cinema-bar button {
 
 .cinema .buttons {
 	transition-delay: 0s;
-  opacity: 0;
-  display: none;
+	opacity: 0;
+	display: none;
 }
 .cinema .keyboard {
 	width: 100%;
 	left: 0 !important; /* to disable transposition in cinema mode */
 	height: 0;
 	padding-bottom: 10%;
-  margin-top: 25vh;
+	margin-top: 25vh;
 }
 .cinema .keyboard button {
 	transition-delay: 0s;
@@ -534,19 +534,19 @@ body.idle .cinema-bar button {
 	background-image: linear-gradient(0deg,  hsla(var(--hue), 85%, 45%, 0.45) 0%, hsla(var(--hue), 70%, 100%, 0.1) 100%);
 }
 .background {
-  opacity: 0;
+	opacity: 0;
 	position: absolute;
 	top: 0;
 	bottom: 0;
 	left: 0;
 	right: 0;
 	background-color: black;
-  animation: hue-rot 15s linear 0s infinite alternate;
-  transition: opacity 2s ease 0s;
+	animation: hue-rot 15s linear 0s infinite alternate;
+	transition: opacity 2s ease 0s;
 }
 .cinema .background {
-  opacity: 1;
-  transition: opacity 2s ease 1.5s;
+	opacity: 1;
+	transition: opacity 2s ease 1.5s;
 }
 .background .smoke {
 	opacity: .66;
@@ -557,7 +557,7 @@ body.idle .cinema-bar button {
 	background-position: center center;
 	background-repeat: repeat;
 	background-size: contain;
-  animation-iteration-count: infinite;
+	animation-iteration-count: infinite;
 	animation-direction: alternate;
 }
 .background .smoke:nth-child(1) {
@@ -601,28 +601,28 @@ body.idle .cinema-bar button {
 }
 
 @keyframes hue-rot {
-  0%   {background-color: hsl(0, 100%, 55%)}
-  25%  {background-color: hsl(90, 100%, 55%)}
-  50%  {background-color: hsl(180, 100%, 55%)}
-  75%  {background-color: hsl(240, 100%, 55%)}
-  100% {background-color: hsl(360, 100%, 55%)}
+	0%   {background-color: hsl(0, 100%, 55%)}
+	25%  {background-color: hsl(90, 100%, 55%)}
+	50%  {background-color: hsl(180, 100%, 55%)}
+	75%  {background-color: hsl(240, 100%, 55%)}
+	100% {background-color: hsl(360, 100%, 55%)}
 }
 
 @keyframes flow-1 {
-  from {background-position: -75vw 25vh}
-  to {background-position: 75vw -25vh}
+	from {background-position: -75vw 25vh}
+	to {background-position: 75vw -25vh}
 }
 @keyframes flow-2 {
-  from {background-position: -50vw -50vh}
-  to {background-position: 50vw 50vh}
+	from {background-position: -50vw -50vh}
+	to {background-position: 50vw 50vh}
 }
 @keyframes flow-3 {
-  from {background-position: +75vw -75vh}
-  to {background-position: 25vw 25vh}
+	from {background-position: +75vw -75vh}
+	to {background-position: 25vw 25vh}
 }
 @keyframes flow-4 {
-  from {background-position: -25vw -50vh}
-  to {background-position: 75vw 50vh}
+	from {background-position: -25vw -50vh}
+	to {background-position: 75vw 50vh}
 }
 
 
@@ -632,76 +632,76 @@ body.idle .cinema-bar button {
 
 /* webkit */
 input[type=range]{
-  background: transparent;
-  -webkit-appearance: none;
+	background: transparent;
+	-webkit-appearance: none;
 }
 
 input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 5px;
-  background: #ddd;
-  border: none;
-  border-radius: 3px;
+	width: 100%;
+	height: 5px;
+	background: #ddd;
+	border: none;
+	border-radius: 3px;
 }
 
 input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  border: none;
-  height: 12px;
-  width: 12px;
-  border-radius: 50%;
-  background: #555;
-  margin-top: -4px;
+	-webkit-appearance: none;
+	border: none;
+	height: 12px;
+	width: 12px;
+	border-radius: 50%;
+	background: #555;
+	margin-top: -4px;
 }
 
 input[type=range]:focus {
-  outline: none;
+	outline: none;
 }
 
 /* mozilla */
 input[type=range]{
-  width: 100%;
+	width: 100%;
 }
 
 input[type=range]::-moz-range-track {
-  width: 100%;
-  height: 5px;
-  background: #ddd;
-  border: none;
-  border-radius: 3px;
+	width: 100%;
+	height: 5px;
+	background: #ddd;
+	border: none;
+	border-radius: 3px;
 }
 
 input[type=range]::-moz-range-thumb {
-  border: none;
-  height: 12px;
-  width: 12px;
-  border-radius: 50%;
-  background: #555;
+	border: none;
+	height: 12px;
+	width: 12px;
+	border-radius: 50%;
+	background: #555;
 }
 
 /* IE (10+) a Edge */
 input[type=range]::-ms-track {
-  width: 100%;
-  height: 5px;
-  background: transparent;
-  border-color: transparent;
-  border-width: 6px 0;
-  color: transparent;
+	width: 100%;
+	height: 5px;
+	background: transparent;
+	border-color: transparent;
+	border-width: 6px 0;
+	color: transparent;
 }
 
 input[type=range]::-ms-fill-lower,
 input[type=range]::-ms-fill-upper {
-  background: #ddd;
-  border-radius: 10px;
+	background: #ddd;
+	border-radius: 10px;
 }
 
 input[type=range]::-ms-thumb {
-  border: none;
-  height: 12px;
-  width: 12px;
-  border-radius: 50%;
-  background: #555;
-  margin-top: 0px!important;
+	border: none;
+	height: 12px;
+	width: 12px;
+	border-radius: 50%;
+	background: #555;
+	margin-top: 0px!important;
 }
 
 
@@ -753,15 +753,14 @@ input[type=range]::-ms-thumb {
 	position: absolute;
 	bottom: 0;
 	height: 100vh;
-  border-radius: 3px;
-  box-shadow:
-    0 0 5px hsla(var(--hue), 70%, 50%, 0.9),
-    0 0 10px hsla(var(--hue), 70%, 50%, 0.8),
-    0 0 20px hsla(var(--hue), 70%, 50%, 0.7),
-    0 0 30px hsla(var(--hue), 70%, 50%, 0.5);
+	border-radius: 3px;
+	box-shadow:
+		0 0 5px hsla(var(--hue), 70%, 50%, 0.9),
+		0 0 15px hsla(var(--hue), 70%, 50%, 0.8),
+		0 0 25px hsla(var(--hue), 70%, 50%, 0.7);
 }
 .pianoroll>div>div.pressed {
-  animation: grow-up 5s linear 0s 1 normal none running;
+	animation: grow-up 5s linear 0s 1 normal none running;
 }
 .pianoroll>div>div.released {
 	bottom: 100vh;
