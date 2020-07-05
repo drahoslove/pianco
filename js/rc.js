@@ -1,6 +1,15 @@
 import * as R from "./roland.js"
 import '../lib/Tone.js'
 
+
+window.onload = async () => {
+  if ('serviceWorker' in window.navigator) {
+    const registerServiceWorker = async () =>  
+      window.navigator.serviceWorker.register('/js/service-worker.js')
+    const registration = await registerServiceWorker()
+  }
+}
+
 const { instruments } = R
 
 import {
