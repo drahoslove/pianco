@@ -20,7 +20,9 @@ self.addEventListener('install', e => {
   )
 })
 
-self.addEventListener('activate', e => self.clients.claim())
+self.addEventListener('activate', e => {
+  return self.clients.claim()
+})
 
 self.addEventListener('fetch', e => {
   e.respondWith(

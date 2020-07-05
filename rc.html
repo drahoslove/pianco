@@ -18,7 +18,11 @@
 <!-- slider -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js"></script>
-
+<script>
+if ('serviceWorker' in window.navigator) {
+  window.navigator.serviceWorker.register('/service-worker.js')
+}
+</script>
 <style>
 :root {
   --hue: 188;
