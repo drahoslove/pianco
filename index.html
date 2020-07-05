@@ -8,13 +8,15 @@
 	Virtual piano - with multiplayer.
 	Play just for fun on your touch screen, try to cooperate with your fiends, or connect your real piano via MIDI and share your skill with others." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎹</text></svg>">
-<script src="https://unpkg.com/@popperjs/core@2"></script>
-<script src="https://unpkg.com/tippy.js@6"></script>
+<!-- <script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-tippy@4/dist/vue-tippy.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.min.css">
 <link rel="stylesheet" href="/css/main.css" />
 <script type="module" src="js/main.js"></script>
 </head>
-<body>
+<body id="app">
 	<div class="background">
 		<div class="smoke"></div>
 		<div class="smoke"></div>
@@ -99,7 +101,17 @@
 		</div>
 	</div>
 	<div class="buttons">
+		<div id="networking-app" v-cloak>
+			<button :content="isOnline ? 'connected' : 'disconnected'" v-tippy>
+				<span v-if="isOnline" class="mdi mdi-check-network"></span>
+				<span v-if="!isOnline" class="mdi mdi-close-network"></span>
+			</button>
+			<label v-if="Object.values(users).length > 0" content="co-pianists" v-tippy>
+				<span v-for="u in Object.values(users)" class="mdi mdi-account-network"></span>
+			</label>
+		</div>
 		<div class="footer">
+			<b></b>	
 		</div>
 		<div>
 			<button id="go-down" title="shift left"><span class="mdi mdi-chevron-left"></span></button>
@@ -108,6 +120,16 @@
 		</div>
 		<div class="footer">
 			<b></b>	
+		</div>
+		<div id="recorder-app" v-cloak>
+			<button title="record" disabled>
+				<span v-if="!isRecording" class="mdi mdi-record-circle-outline"></span>
+				<span v-if="isRecording" class="mdi mdi-stop-circle-outline"></span>
+			</button>
+			<button title="replay" disabled>
+				<span v-if="!isPlaying" class="mdi mdi-play-circle-outline"></span>
+				<span v-if="isPlaying" class="mdi mdi-pause-circle-outline"></span>
+			</button>
 		</div>
 	</div>
 	<div class="cinema-bar">

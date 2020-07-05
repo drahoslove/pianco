@@ -21,7 +21,7 @@ if (!SSL_KEY || !SSL_CA || !SSL_CERT) { // http
 
 const wss = new WebSocket.Server({ server })
 
-const broadcast = (data) => {
+const broadcast = (data) => { // to everyone
   const [gid, uid] = data
   wss.clients.forEach(client => {
     if (client.gid == gid && client.readyState === WebSocket.OPEN) {
@@ -29,7 +29,7 @@ const broadcast = (data) => {
     }
   })
 }
-const echo = (data) => {
+const echo = (data) => { // to eveyone except origin
   const [gid, uid] = data
   wss.clients.forEach(client => {
     if (client.gid == gid && client.uid !== uid && client.readyState === WebSocket.OPEN) {

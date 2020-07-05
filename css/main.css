@@ -7,6 +7,11 @@
 	box-sizing: border-box;
 }
 
+#networking-app[v-cloak],
+#recorder-app[v-cloak] {
+  visibility: hidden;
+}
+
 html body *[hidden] {
 	display: none;
 	-webkit-user-select: none;
@@ -370,7 +375,7 @@ div.hint {
 	position: absolute;
 	font-size: 3.25rem;
 	bottom: .75em;
-	margin-bottom: -.25em;
+	margin-bottom: -0em;
 }
 .staff {
 	margin-bottom: -2.5em;

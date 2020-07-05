@@ -1,3 +1,6 @@
+import './vue/init.js'
+import './vue/networking.js'
+import './vue/recorder.js'
 import {
   allNotes,
   instrumentById,

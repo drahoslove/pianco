@@ -1,4 +1,3 @@
-
 // settings
 const defaultSettings = {
   labels: false,
@@ -118,7 +117,7 @@ if (!('ontouchstart' in document.documentElement)) {
 // cinema off
 const cinemaOffButton = document.getElementById('cinema-off')
 const offCinema = function () {
-  this.blur()
+  this && this.blur()
   document.getElementById('toggle-cinema').classList.remove('on')
   actions.cinema(false)
   saveSetting('cinema', false)
@@ -137,7 +136,7 @@ window.addEventListener('keydown', (e) => {
 // fullscreen on
 const fullscreenButton = document.getElementById('fullscreen')
 const toggleFullscreen = async function () {
-  this.blur()
+  this && this.blur()
   if (document.fullscreenElement) {
     await document.exitFullscreen()
   } else {
@@ -228,7 +227,7 @@ document.body.onmousemove = () => {
 }
 
 ;[...document.querySelectorAll('[title]')].forEach(el => {
-  tippy(el, {
+  VueTippy.tippy(el, {
     content: el.title,
     delay: [500, 100],
     trigger: 'mouseenter',
