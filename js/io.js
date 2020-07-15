@@ -17,18 +17,27 @@ let GID = 0
 // WS!
 let ws
 
-const onRegroup = async ({ data: message }) => {
+const onCmd = (cmdName, callback) => async ({ data: message }) => {
   if (typeof message !== 'string') {
     return
   }
   const [cmd, ...values] = message.split(' ')
-  if (cmd === 'regroup') {
-    const [newGid, newUid] = values.map(Number)
-    GID = newGid
-    UID = newUid
-    console.log(`${UID}@${GID} changed`)
+  if (cmd === cmdName) {
+    callback(values)
   }
 }
+
+const onRegroup = onCmd('regroup', (values) => {
+  const [newGid, newUid] = values.map(Number)
+  networkingApp.gid = GID = newGid
+  networkingApp.uid = UID = newUid
+  console.log(`${UID}@${GID} changed`)
+})
+
+const onStatus =  onCmd('status', (values) => {
+  const status = JSON.parse(values.join(''))
+  networkingApp.users = [...status.groups[GID]]
+})
 
 const onBlob = async ({ data }) => {
   if (!(data instanceof Blob)) {
@@ -111,6 +120,8 @@ const connect = () => {
     ws.addEventListener('message', onRegroup)
     // hanlde incomming notes
     ws.addEventListener('message', onBlob)
+    // handle status
+    ws.addEventListener('message', onStatus)
     
     ws.onopen = () => {
       const newGid = (parseInt(location.hash.slice(1))) % 256 || 0

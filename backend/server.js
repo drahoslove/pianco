@@ -38,8 +38,21 @@ const echo = (data) => { // to eveyone except origin
   })
 }
 
+const status = () => { // broadcast state of the world to everyone
+  const data = JSON.stringify({
+    groups: groups.map(uids => [...uids]),
+    // TODO additional data in the future
+  })
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(`status ${data}`)
+    }
+  })
+}
+
 wss.broadcast = broadcast
 wss.echo = echo
+wss.status = status
 
 const groups = Array.from({ length: 256 }).map(() => new Set())
 
@@ -57,6 +70,7 @@ const autoplayers = groups.map((_, gid) => new Autoplay(gid, ROOT_USR)) // init 
 wss.on('connection', function connection(ws) {
   console.log('client connected')
   ws.send('connected')
+  wss.status()
 
   ws.on('message', function incoming(message) {
     if (typeof message === "string") {
@@ -67,7 +81,9 @@ wss.on('connection', function connection(ws) {
       if (cmd === "regroup") {
         const [oldGid, oldUid, newGid] = values.map(Number)
         if (groups[newGid].size === 255) {
-          return ws.send(`regroup ${oldGid} ${oldUid}`)
+          ws.send(`regroup ${oldGid} ${oldUid}`)
+          wss.status()
+          return
         }
         groups[oldGid] && groups[oldGid].delete(oldUid)
         const newUid = genUid(newGid)
@@ -76,6 +92,7 @@ wss.on('connection', function connection(ws) {
         ws.gid = newGid
         ws.uid = newUid
         console.log(`${oldUid}@${oldGid} => ${newUid}@${newGid}`)
+        wss.status()
       }
       if (cmd === 'autoplay') {
         const [gid, uid] = values.map(Number)
@@ -91,6 +108,7 @@ wss.on('connection', function connection(ws) {
     const { gid, uid } = ws
     groups[gid].delete(uid)
     console.log(`${uid}@${gid} => close`)
+    wss.status()
   })
 })
 

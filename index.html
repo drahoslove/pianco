@@ -106,8 +106,8 @@
 				<span v-if="isOnline" class="mdi mdi-check-network"></span>
 				<span v-if="!isOnline" class="mdi mdi-close-network"></span>
 			</button>
-			<label v-if="Object.values(users).length > 0" content="co-pianists" v-tippy>
-				<span v-for="u in Object.values(users)" class="mdi mdi-account-network"></span>
+			<label v-if="copianists.length > 0" content="co-pianists" v-tippy>
+				<span v-for="u of copianists" :style="{'--color': userColor(u)}" class="mdi mdi-account-network user-icon"></span>
 			</label>
 		</div>
 		<div class="footer">

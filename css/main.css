@@ -164,6 +164,16 @@ body.rotated {
 	transition: width 400ms ease-in-out, opacity 400ms ease-in-out;
 }
 
+.buttons .user-icon {
+	color: inherit;
+	transition: color .5s ease;
+}
+
+.buttons:hover .user-icon {
+	color: var(--color) !important;
+}
+
+
 /*  ===============  keboard  =============== */
 
 .keyboard {
@@ -367,7 +377,6 @@ div.hint {
 	display: flex;
 	align-items: flex-end;
 }
-
 
 /* =============== staff =============== */
 .staffs {
