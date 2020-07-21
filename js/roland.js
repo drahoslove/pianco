@@ -197,6 +197,9 @@ export const connect = () => [
   req(addrs.metronomeStatus),
   req(addrs.sequencerTempoRO),
 
+  req(addrs.headphonesConnection),
+  req(addrs.headphones3DAmbience),
+
   req(addrs.keyTouch),
   req(addrs.ambience),
   req(addrs.brilliance),
@@ -214,10 +217,9 @@ export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
 export const setMetronomeVolume = (val) => set(addrs.metronomeVolume, _H(val))
 
 export const checkHeadphones = () => req(addrs.headphonesConnection)
-
+export const setHeadphones = (val) => set(addrs.headphonesConnection, _H(val))
 
 export const toggleMetronome = () => set(addrs.metronomeSwToggle, _H(0))
-
 
 export const setMetronomeTempo = (val) => set(addrs.sequencerTempoWO, _H(val, 2))
 

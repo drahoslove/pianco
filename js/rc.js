@@ -73,6 +73,18 @@ const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single'
   }
 })
 
+const headphonesButton = document.querySelector('#headphones')
+const setHeadphones = (on) => {
+  const icon = headphonesButton.querySelector('.mdi')
+  if (on) {
+    icon.classList.remove('mdi-none')
+    icon.classList.add('mdi-headphones')
+  } else {
+    icon.classList.remove('mdi-headphones')
+    icon.classList.add('mdi-none')
+  }
+}
+
 /* init volume */
 const [ setMasterVolume, setMetronomeVolume ] = ['master', 'metronome'].map((variant) => {
   let volume = 0 // 0-100 or 0-10
@@ -322,6 +334,9 @@ navigator.requestMIDIAccess({ sysex: true })
         }
         if (addr === 'toneForSplit') {
           setSplitInstrument(hexval.substr(0,6))
+        }
+        if (addr === 'headphonesConnection') {
+          setHeadphones(Boolean(value))
         }
         if (addr === 'masterVolume') {
           setMasterVolume(value)
