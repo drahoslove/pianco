@@ -210,6 +210,9 @@ export const connect = () => [
   req(addrs.toneForDual),
   req(addrs.toneForSplit),
 
+  req(addrs.dualBalance),
+  req(addrs.splitBalance),
+
   req(addrs.splitPoint),
 ]
 
@@ -238,6 +241,10 @@ export const setBrilliance = (value) => set(addrs.brilliance, _H(value))
 export const setSplitPoint = (value) => set(addrs.splitPoint, _H(value))
 export const setSplitBalance = (value) => set(addrs.splitBalance, _H(value))
 export const setDualBalance = (value) => set(addrs.dualBalance, _H(value))
+
+export const checkSplitPoint = () => req(addrs.splitPoint)
+export const checkSplitBalance = () => req(addrs.splitBalance)
+export const checkDualBalance = () => req(addrs.dualBalance)
 
 
 export const setToneFor = (variant) => (tonecode) => set({

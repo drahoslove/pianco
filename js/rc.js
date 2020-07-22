@@ -21,7 +21,15 @@ const tabs = [
 tabs.forEach((tab, i) => {
   const mode = i
   tab.onclick = () => {
+    send(R.setKeyboardMode(0)) // to prevent some glitches
     send(R.setKeyboardMode(mode))
+    if (mode === 1) {
+      send(R.checkSplitPoint())
+      send(R.checkSplitBalance())
+    }
+    if (mode === 2) {
+      send(R.checkDualBalance())
+    }
     sliders.forEach(slider => {
       setTimeout(() => {
         slider.refresh({ useCurrentValue: true })
@@ -36,40 +44,44 @@ const selectKeyboardMode = (mode) => {
 
 /* init insrument selector */
 const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single', 'dual', 'split'].map((variant, mode) => {
-  const instrumentSelector = document.getElementById(`${variant}-instrument-selector`)
-  instrumentSelector.size = 0
-  Object.entries(instruments).forEach(([groupName, instruments]) => {
-    const optGroup = document.createElement('optgroup')
-    optGroup.label = groupName
-    instruments.forEach(([name, code, ...val]) => {
-      const option = document.createElement('option')
-      option.value = code
-      option.dataset.midival = val
-      option.innerText = `${name}`
-      optGroup.append(option)
+  const selectors = document.querySelectorAll(`#${variant}-instrument-selector`)
+  for (const instrumentSelector of selectors) {
+    instrumentSelector.size = 0
+    Object.entries(instruments).forEach(([groupName, instruments]) => {
+      const optGroup = document.createElement('optgroup')
+      optGroup.label = groupName
+      instruments.forEach(([name, code, ...val]) => {
+        const option = document.createElement('option')
+        option.value = code
+        option.dataset.midival = val
+        option.innerText = `${name}`
+        optGroup.append(option)
+        instrumentSelector.size++
+      })
       instrumentSelector.size++
+      instrumentSelector.append(optGroup)
     })
-    instrumentSelector.size++
-    instrumentSelector.append(optGroup)
-  })
-  instrumentSelector.onchange = async (e) => {
-    const { value: hexcode } = e.target
-    
-    const option = instrumentSelector.querySelector(`[value='${hexcode}']`)
-    const msg = R.setToneFor(variant)(hexcode)
-    send(msg)
-    if (option) {
-      // this is only for preview will not change the note of 'single', because it is on channel 0 not 3
-      const ch = 0
-      const [bankMSB, bankLSB, program] = option.dataset.midival.split(',').map(Number)
-      send([toCmd(CMD_CONTROL_CHANGE, ch), CC_BANK_0, bankMSB])
-      send([toCmd(CMD_CONTROL_CHANGE, ch), CC_BANK_1, bankLSB])
-      send([toCmd(CMD_PROGRAM, ch), program])
-      playnote(MID_C, ch)
+    instrumentSelector.onchange = async (e) => {
+      const { value: hexcode } = e.target
+      
+      const option = instrumentSelector.querySelector(`[value='${hexcode}']`)
+      const msg = R.setToneFor(variant)(hexcode)
+      send(msg)
+      if (option) {
+        // this is only for preview will not change the note of 'single', because it is on channel 0 not 3
+        const ch = 0
+        const [bankMSB, bankLSB, program] = option.dataset.midival.split(',').map(Number)
+        send([toCmd(CMD_CONTROL_CHANGE, ch), CC_BANK_0, bankMSB])
+        send([toCmd(CMD_CONTROL_CHANGE, ch), CC_BANK_1, bankLSB])
+        send([toCmd(CMD_PROGRAM, ch), program])
+        playnote(MID_C, ch)
+      }
     }
   }
   return (hexcode) => {
-    instrumentSelector.value = instrumentSelector.querySelector(`[value='${hexcode}']`).value
+    selectors.forEach(instrumentSelector => {
+      instrumentSelector.value = instrumentSelector.querySelector(`[value='${hexcode}']`).value
+    })
   }
 })
 

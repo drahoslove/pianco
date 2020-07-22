@@ -10,7 +10,8 @@ export const CC_SUTAIN = 64
 
 export const MID_C = 60
 
-const CHANNEL = 3 // this is what roland actually uses
+const CHANNEL = 3 // this is what roland actually uses as output
+// 1=piano,  2,3=main layer, 9=silent, rest=piano
 
 export const toCmd = (x, ch=CHANNEL) => (1<<3 | x)<<4 | ch
 export const fromCmd = (cmd) => (cmd>>4) & 7

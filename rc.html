@@ -42,6 +42,13 @@ if ('serviceWorker' in window.navigator) {
   --c2: hsla(calc(var(--hue) + 120), 78%, 41%, 1);
   --c3: hsla(calc(var(--hue) - 120), 78%, 41%, 1);
 }
+
+body {
+  width: 100vw;
+}
+.container {
+  overflow: hidden;
+}
   
 .select {
   overflow: hidden;
@@ -191,7 +198,6 @@ select#split-instrument-selector:-internal-list-box option:checked
   </nav>
   <div class="container mt-3">
     <div class="row">
-
       <div class="col-md d-flex flex-column justify-content-between">
         <ul class="nav nav-tabs" id="keyboard-mode-tabs" role="tablist">
           <li class="nav-item" role="presentation">
@@ -215,81 +221,116 @@ select#split-instrument-selector:-internal-list-box option:checked
             </a>
           </li>
         </ul>
-        <div>
-        </div>
         <div class="tab-content row pt-2">
+          <div class="col-md-12 tab-pane active" role="tabpanel" id="single" aria-labelledby="single-tab">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="single-instrument-selector">Instrument</label>
+                  <select id="single-instrument-selector" class="form-control select bc1"></select>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="col-md-12 tab-pane" role="tabpanel" id="split" aria-labelledby="split-tab">
-            <div class="form-group my-4">
-              <label for="">Split point</label>
-              <div class="mx-2 text-center">
-                <input
-                  id="split-point-slider"
-                  data-slider-id="split-point-slider-slider"
-                  type="range"
-                  data-slider-min="35"
-                  data-slider-value="59"
-                  data-slider-max="95"
-                  data-slider-step="1"
-                  data-slider-tooltip="hide"
-                  data-slider-ticks="[35, 47, 59, 71, 83, 95]"
-                  data-slider-ticks-positions="[0, 20, 40, 60, 80, 100]"
-                  data-slider-ticks-labels='["C2", "C3", "C4", "C5", "C6", "C7"]'
-                  data-slider-ticks-snap-bounds="0"
-                >
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group my-4">
+                  <label for="">Split point</label>
+                  <div class="mx-2 text-center">
+                    <input
+                      id="split-point-slider"
+                      data-slider-id="split-point-slider-slider"
+                      type="range"
+                      data-slider-min="35"
+                      data-slider-value="59"
+                      data-slider-max="95"
+                      data-slider-step="1"
+                      data-slider-tooltip="hide"
+                      data-slider-ticks="[35, 47, 59, 71, 83, 95]"
+                      data-slider-ticks-positions="[0, 20, 40, 60, 80, 100]"
+                      data-slider-ticks-labels='["C2", "C3", "C4", "C5", "C6", "C7"]'
+                      data-slider-ticks-snap-bounds="0"
+                    >
+                  </div>
+                </div>
+                <div class="form-group my-4">
+                  <label for="">Volume balance</label>
+                  <div class="mx-2 text-center balance">
+                    <input
+                      id="split-balance-slider"
+                      type="range"
+                      data-slider-min="56"
+                      data-slider-value="64"
+                      data-slider-max="72"
+                      data-slider-step="1"
+                      data-slider-tooltip="hide"
+                      data-slider-ticks="[56, 64, 72]"
+                      data-slider-ticks-positions="[0, 50, 100]"
+                      data-slider-ticks-labels='["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lefth hand", "balanced", "Right hand&nbsp;&nbsp;&nbsp;"]'
+                      data-slider-ticks-snap-bounds="0"
+                    >
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="form-group my-4">
-              <label for="">Volume balance</label>
-              <div class="mx-2 text-center balance">
-                <input
-                  id="split-balance-slider"
-                  type="range"
-                  data-slider-min="56"
-                  data-slider-value="64"
-                  data-slider-max="72"
-                  data-slider-step="1"
-                  data-slider-tooltip="hide"
-                  data-slider-ticks="[56, 64, 72]"
-                  data-slider-ticks-positions="[0, 50, 100]"
-                  data-slider-ticks-labels='["lefth hand", "balanced", "right hand"]'
-                  data-slider-ticks-snap-bounds="0"
-                >
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="split-instrument-selector">Left-hand Instrument</label>
+                  <select id="split-instrument-selector" class="form-control select bc3"></select>
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <label for="split-instrument-selector">Left-hand Instrument</label>
-              <select id="split-instrument-selector" class="form-control select bc3"></select>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="single-instrument-selector">Right-hand Instrument</label>
+                  <select id="single-instrument-selector" class="form-control select bc1"></select>
+                </div>
+              </div>
             </div>
           </div>
           <div class="col-md-12 tab-pane" role="tabpanel" id="dual" aria-labelledby="dual-tab">
-            <div class="form-group my-4">
-              <label for="">Volume balance</label>
-              <div class="mx-2 text-center balance">
-                <input
-                  id="dual-balance-slider"
-                  type="range"
-                  data-slider-min="56"
-                  data-slider-value="64"
-                  data-slider-max="72"
-                  data-slider-step="1"
-                  data-slider-tooltip="hide"
-                  data-slider-ticks="[56, 64, 72]"
-                  data-slider-ticks-positions="[0, 50, 100]"
-                  data-slider-ticks-labels='["First layer", "balanced", "Second layer"]'
-                  data-slider-ticks-snap-bounds="0"
-                >
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group my-4">
+                  <label for="">Volume balance</label>
+                  <div class="mx-2 text-center balance">
+                    <input
+                      id="dual-balance-slider"
+                      type="range"
+                      data-slider-min="56"
+                      data-slider-value="64"
+                      data-slider-max="72"
+                      data-slider-step="1"
+                      data-slider-tooltip="hide"
+                      data-slider-ticks="[56, 64, 72]"
+                      data-slider-ticks-positions="[0, 50, 100]"
+                      data-slider-ticks-labels='["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;First layer", "balanced", "Second layer&nbsp;&nbsp;&nbsp;&nbsp;"]'
+                      data-slider-ticks-snap-bounds="0"
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="dual-instrument-selector">First-layer Instrument</label>
+                  <select id="dual-instrument-selector" class="form-control select bc2"></select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="single-instrument-selector">Second-layer Instrument</label>
+                  <select id="single-instrument-selector" class="form-control select bc1"></select>
+                </div>
               </div>
             </div>
-            <div class="form-group">
-              <label for="dual-instrument-selector">Second-layer Instrument</label>
-              <select id="dual-instrument-selector" class="form-control select bc2"></select>
-            </div>
           </div>
-          <div id="twin"></div>
-          <div class="col-md active" role="tabpanel" id="single"> <!-- missing .tab-pane intentional here-->
-            <div class="form-group">
-              <label for="single-instrument-selector">Instrument</label>
-              <select id="single-instrument-selector" class="form-control select bc1"></select>
+          <div class="col-md-12 tab-pane" role="tabpanel" id="twin" aria-labelledby="twin-tab">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="single-instrument-selector">Twin instruments</label>
+                  <select id="single-instrument-selector" class="form-control select bc1"></select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -371,7 +412,7 @@ select#split-instrument-selector:-internal-list-box option:checked
         </div>
     
         <div class="card mt-1 my-4">
-          <div class="card-header"> Tunes </div>
+          <div class="card-header"> Tuning </div>
           <div class="card-body">
 
             <div class="form-group">
