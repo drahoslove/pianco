@@ -47,6 +47,7 @@ const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single'
   const selectors = document.querySelectorAll(`#${variant}-instrument-selector`)
   for (const instrumentSelector of selectors) {
     instrumentSelector.size = 0
+    instrumentSelector.multiple = true
     Object.entries(instruments).forEach(([groupName, instruments]) => {
       const optGroup = document.createElement('optgroup')
       optGroup.label = groupName
@@ -63,6 +64,7 @@ const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single'
     })
     instrumentSelector.onchange = async (e) => {
       const { value: hexcode } = e.target
+      instrumentSelector.value = hexcode // to prevent actually select multiple
       
       const option = instrumentSelector.querySelector(`[value='${hexcode}']`)
       const msg = R.setToneFor(variant)(hexcode)
