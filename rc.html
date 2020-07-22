@@ -139,6 +139,18 @@ a.nav-link {
   opacity: calc(var(--righto)*var(--lefto)) !important;
 }
 
+#split #split-instrument-selector,
+#dual #dual-instrument-selector
+{
+  opacity: calc(var(--lefto) * (2 - var(--lefto)));
+}
+
+#split #single-instrument-selector,
+#dual #single-instrument-selector
+{
+  opacity: calc(var(--righto) * (2 - var(--righto)));
+}
+
 #split .slider-selection {
   background: var(--c3);
 }

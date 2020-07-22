@@ -260,8 +260,14 @@ const [
     const x = value - 64
     const left = x < 0 ? 9 : 9-x
     const right = x > 0 ? 9 : 9+x
-    slider.element.parentElement.style.setProperty('--lefto', left/9)
-    slider.element.parentElement.style.setProperty('--righto', right/9)
+    let tabEl = slider.element
+    while (tabEl && tabEl.getAttribute('role') !== 'tabpanel') {
+      tabEl = tabEl.parentElement
+    }
+    if (tabEl) {
+      tabEl.style.setProperty('--lefto', left/9)
+      tabEl.style.setProperty('--righto', right/9)
+    }
   }
 
   const setValue = (value) => {
