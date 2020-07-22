@@ -292,8 +292,8 @@ const init = () => {
 
 navigator.requestMIDIAccess({ sysex: true })
   .then((midiAccess) => {
-    const input = [...midiAccess.inputs.values()].find(({ name }) => name.includes('Roland Digital Piano'))
-    const output = [...midiAccess.outputs.values()].find(({ name }) => name.includes('Roland Digital Piano'))
+    const input = [...midiAccess.inputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-'))
+    const output = [...midiAccess.outputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-'))
     if (!input || !output) {
       midiEl.innerHTML = 'No Roland digital piano detected'
       midiEl.className = 'alert alert-warning'
