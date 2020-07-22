@@ -41,6 +41,9 @@ if ('serviceWorker' in window.navigator) {
   --c1: hsla(var(--hue), 78%, 41%, 1);
   --c2: hsla(calc(var(--hue) + 120), 78%, 41%, 1);
   --c3: hsla(calc(var(--hue) - 120), 78%, 41%, 1);
+
+  --lefto: 1;
+  --righto: 1;
 }
 
 body {
@@ -122,6 +125,18 @@ a.nav-link {
 }
 .slider .slider-track-high {
   transition: all 0.15s ease;
+}
+
+.balance .slider-selection,
+.balance .slider-tick:nth-child(1) {
+  opacity: var(--lefto) !important;
+}
+.balance .slider-track-high,
+.balance .slider-tick:nth-child(3)  {
+  opacity: var(--righto) !important;
+}
+.balance .slider-tick:nth-child(2) {
+  opacity: calc(var(--righto)*var(--lefto)) !important;
 }
 
 #split .slider-selection {

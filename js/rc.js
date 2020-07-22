@@ -32,7 +32,7 @@ tabs.forEach((tab, i) => {
     }
     sliders.forEach(slider => {
       setTimeout(() => {
-        slider.refresh({ useCurrentValue: true })
+        // slider.refresh({ useCurrentValue: true })
       })
     })
   }
@@ -256,8 +256,17 @@ const [
     formatter = x => (x-=64, x < 0 ? `9:${9+x}` : `${9-x}:9`)
 
   const slider = new Slider(`#${variant}-slider`, { tooltip: true, formatter })
+  const updateOpacity = (value) => {
+    const x = value - 64
+    const left = x < 0 ? 9 : 9-x
+    const right = x > 0 ? 9 : 9+x
+    slider.element.parentElement.style.setProperty('--lefto', left/9)
+    slider.element.parentElement.style.setProperty('--righto', right/9)
+  }
+
   const setValue = (value) => {
     slider.setValue(value)
+    updateOpacity(value)
   }
   slider.on('change', ({ newValue }) => {
     send({
@@ -267,6 +276,7 @@ const [
       'split-balance': R.setSplitBalance,
       'dual-balance': R.setDualBalance,
     }[variant](+newValue))
+    updateOpacity(newValue)
     // playnote(MID_C)
   })
   sliders.push(slider)
