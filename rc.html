@@ -140,13 +140,13 @@ a.nav-link {
 }
 
 #split #split-instrument-selector,
-#dual #dual-instrument-selector
+#dual #single-instrument-selector
 {
   opacity: calc(var(--lefto) * (2 - var(--lefto)));
 }
 
 #split #single-instrument-selector,
-#dual #single-instrument-selector
+#dual #dual-instrument-selector
 {
   opacity: calc(var(--righto) * (2 - var(--righto)));
 }
@@ -166,17 +166,17 @@ a.nav-link {
 }
 
 #dual .slider-selection {
-  background: var(--c2);
+  background: var(--c1);
 }
 #dual .slider-track-high {
-  background: var(--c1);
+  background: var(--c2);
 }
 #dual .slider-tick {
-  background: var(--c1);
+  background: var(--c2);
   opacity: 1;
 }
 #dual .slider-tick.in-selection {
-  background: var(--c2);
+  background: var(--c1);
 }
 
 .balance .slider .slider-handle {
@@ -339,13 +339,13 @@ select#split-instrument-selector:-internal-list-box option:checked
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="dual-instrument-selector">First-layer Instrument</label>
-                  <select id="dual-instrument-selector" class="form-control select bc2"></select>
+                  <select id="single-instrument-selector" class="form-control select bc1"></select>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="single-instrument-selector">Second-layer Instrument</label>
-                  <select id="single-instrument-selector" class="form-control select bc1"></select>
+                  <select id="dual-instrument-selector" class="form-control select bc2"></select>
                 </div>
               </div>
             </div>
