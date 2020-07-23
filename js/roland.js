@@ -75,7 +75,7 @@ const addrs = {
   splitBalance:                   "01000203", //
   dualOctaveShift:                "01000204", 
   dualBalance:                    "01000205", //
-  twinPianoMode:                  "01000206",
+  twinPianoMode:                  "01000206", //
   toneForSingle:                  "01000207", //
   toneForSplit:                   "0100020A", //
   toneForDual:                    "0100020D", //

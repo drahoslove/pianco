@@ -345,6 +345,9 @@ const setMidiStatus = (isOn, statusText) => {
 }
 
 const connectMidi = async () => {
+  if (devices.input && devices.input.state === 'connected') {
+    return
+  }
   const midiAccess = await navigator.requestMIDIAccess({ sysex: true })
     .catch(() => {
       setMidiStatus(false, '')
