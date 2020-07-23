@@ -49,6 +49,10 @@ if ('serviceWorker' in window.navigator) {
   --grayer: #7c8185;
 }
 
+.unselectable {
+  user-select: none;
+}
+
 .btn-secondary {
   background-color: var(--grayer);
 }
@@ -410,7 +414,7 @@ select#split-instrument-selector:-internal-list-box option:checked
             </span>
           </label>
           <div class="btn-toolbar d-flex align-items-stretch">
-            <div class="progress flex-fill h-auto">
+            <div class="progress unselectable flex-fill h-auto">
               <div id="master-volume-bar" class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
             </div>
             <div class="btn-group btn-group-sm ml-2">
@@ -434,7 +438,7 @@ select#split-instrument-selector:-internal-list-box option:checked
             <div class="form-group">
               <label>Volume</label>
               <div class="input-group">
-                <div class="progress flex-fill h-auto">
+                <div class="progress unselectable flex-fill h-auto">
                   <div id="metronome-volume-bar" class="progress-bar bg-secondary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                 </div>
                 <div class="btn-group btn-group-sm ml-2">

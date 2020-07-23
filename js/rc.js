@@ -116,7 +116,7 @@ const [ setMasterVolume, setMetronomeVolume ] = ['master', 'metronome'].map((var
   }
   const volumeDown = () => setVolume(volume-step)
   const volumeUp = () => setVolume(volume+step)
-  
+
   volumeBar.parentElement.parentElement.onwheel = (e) => {
     e.preventDefault()
     const { deltaY } = e
@@ -130,8 +130,12 @@ const [ setMasterVolume, setMetronomeVolume ] = ['master', 'metronome'].map((var
       metronome: R.setMetronomeVolume(volume),
     }[variant])
   }
-  volumeBar.parentElement.onclick = (e) => {
-    const { offsetX } = e
+  volumeBar.parentElement.onclick =
+  volumeBar.parentElement.onmousemove =
+   (e) => {
+    const { offsetX, buttons, type } = e
+    if (type === 'mousemove' && buttons !== 1)
+      return
     let val = Math.round(100/5 * offsetX/volumeBar.parentElement.offsetWidth)*5
     if (variant === 'metronome') {
       val /= 10
@@ -142,6 +146,7 @@ const [ setMasterVolume, setMetronomeVolume ] = ['master', 'metronome'].map((var
       metronome: R.setMetronomeVolume(volume),
     }[variant])
   }
+
   document.getElementById(`${variant}-volume-up`).onclick = volumeUp
   document.getElementById(`${variant}-volume-down`).onclick = volumeDown
   return setVolume
