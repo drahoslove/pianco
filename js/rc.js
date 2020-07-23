@@ -212,20 +212,25 @@ mastterTunePitchInput.onchange = (e) => {
 /* init radio buttons */
 const [
   setPressure,
-  setKeyTranspose
+  setKeyTranspose,
+  setTwinPianoMode,
 ] = Object.entries({
-  'pressure': (button) => {
-    send(R.setKeyPressure(+button.value))
+  'pressure': (value) => {
+    send(R.setKeyPressure(value))
     send(R.checkKeyPressure())
   },
-  'key-transpose': (button) => {
-    send(R.setKeyTranspose(+button.value))
+  'key-transpose': (value) => {
+    send(R.setKeyTranspose(value))
     send(R.checkKeyTranspose())
   },
+  'twin-mode': (value) => {
+    send(R.setTwinPianoMode(value))
+    send(R.checkTwinPianoMode())
+  }
 }).map(([name, onchange]) => {
   const buttons = [...document.querySelectorAll(`input[name="${name}"]`)]
   buttons.forEach(button => {
-    button.onchange = () => { onchange(button) }
+    button.onchange = () => { onchange(+button.value) }
   })
   const setter = (value) => {
     buttons.forEach(button => {
@@ -434,6 +439,9 @@ function onMidiMessage (e) {
     }
     if (addr === 'dualBalance') {
       setDualBalance(value)
+    }
+    if (addr === 'twinPianoMode') {
+      setTwinPianoMode(value)
     }
     if (addr === 'keyBoardMode') {
       const mode = parseInt(hexval.substr(0,2), 16)

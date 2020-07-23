@@ -369,6 +369,21 @@ select#split-instrument-selector:-internal-list-box option:checked
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
+                  <label for="key-transpose">Twin mode</label>
+                  <div class="btn-toolbar justify-content-center">
+                    <div class="btn-group btn-group-sm btn-group-toggle w-50">
+                      <label class="btn btn-secondary w-50" title="L/R channels mixed together">
+                        <input type="radio" name="twin-mode" value="0"> pair
+                      </label>
+                      <label class="btn btn-secondary w-50" title="L/R channels separated per twin">
+                        <input type="radio" name="twin-mode" value="1"> individual
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
                   <label for="single-instrument-selector">Twin instruments</label>
                   <select id="single-instrument-selector" class="form-control select bc1"></select>
                 </div>

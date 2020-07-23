@@ -215,6 +215,7 @@ export const connect = () => [
   req(addrs.splitBalance),
 
   req(addrs.splitPoint),
+  req(addrs.twinPianoMode),
 ]
 
 export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
@@ -233,22 +234,25 @@ export const checkKeyPressure = () => req(addrs.keyTouch)
 export const setKeyboardMode = (mode) => set(addrs.keyBoardMode, _H(mode))
 export const checkKeyboardMode = () => req(addrs.keyBoardMode)
 
-export const setMasterTune = (value) => set(addrs.masterTuning, _H(value, 2))
+export const setMasterTune = (val) => set(addrs.masterTuning, _H(val, 2))
 export const checkMasterTune = () => req(addrs.masterTuning)
 
-export const setKeyTranspose = (value) => set(addrs.keyTransposeWO, _H(value))
+export const setKeyTranspose = (val) => set(addrs.keyTransposeWO, _H(val))
 export const checkKeyTranspose = () => req(addrs.keyTransposeRO)
 
-export const setAmbience = (value) => set(addrs.ambience, _H(value))
-export const setBrilliance = (value) => set(addrs.brilliance, _H(value))
+export const setAmbience = (val) => set(addrs.ambience, _H(val))
+export const setBrilliance = (val) => set(addrs.brilliance, _H(val))
 
-export const setSplitPoint = (value) => set(addrs.splitPoint, _H(value))
-export const setSplitBalance = (value) => set(addrs.splitBalance, _H(value))
-export const setDualBalance = (value) => set(addrs.dualBalance, _H(value))
+export const setSplitPoint = (val) => set(addrs.splitPoint, _H(val))
+export const setSplitBalance = (val) => set(addrs.splitBalance, _H(val))
+export const setDualBalance = (val) => set(addrs.dualBalance, _H(val))
+export const setTwinPianoMode = (val) => set(addrs.twinPianoMode, _H(val))
 
 export const checkSplitPoint = () => req(addrs.splitPoint)
 export const checkSplitBalance = () => req(addrs.splitBalance)
 export const checkDualBalance = () => req(addrs.dualBalance)
+export const checkTwinPianoMode = () => req(addrs.twinPianoMode)
+
 
 
 export const setToneFor = (variant) => (tonecode) => set({
