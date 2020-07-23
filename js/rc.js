@@ -264,11 +264,13 @@ const [
     formatter = x => x-64
   if (variant ===  'split-point')
     formatter = x => Tone.Midi(x+1).toNote()
-  if (variant === 'split-balance' || variant === 'dual-balance')
+  if (variant.includes('balance'))
     formatter = x => (x-=64, x < 0 ? `9:${9+x}` : `${9-x}:9`)
 
   const slider = new Slider(`#${variant}-slider`, { tooltip: true, formatter })
   const updateOpacity = (value) => {
+    if (!variant.includes('balance'))
+      return
     const x = value - 64
     const left = x < 0 ? 9 : 9-x
     const right = x > 0 ? 9 : 9+x
