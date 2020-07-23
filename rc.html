@@ -44,6 +44,13 @@ if ('serviceWorker' in window.navigator) {
 
   --lefto: 1;
   --righto: 1;
+
+  --gray: #a2a9ae;
+  --grayer: #7c8185;
+}
+
+.btn-secondary {
+  background-color: var(--grayer);
 }
 
 h2 b {
@@ -116,7 +123,7 @@ a.nav-link {
 }
 .slider .slider-tick.in-selection,
 .slider .slider-selection {
-  background: #a2a9ae; /* var(--gray);*/
+  background: var(--gray);
   transition: all 0.15s ease;
 }
 .slider .slider-handle {
@@ -180,7 +187,7 @@ a.nav-link {
 }
 
 .balance .slider .slider-handle {
-  background: #a2a9ae; /* var(--gray);*/
+  background: var(--gray);
 }
 
 
@@ -224,7 +231,7 @@ select#split-instrument-selector:-internal-list-box option:checked
         🎹
         <b>R</b>emote <b>C</b>ontroller
         <small>
-          — for Roland Digital Pianos &emsp; FP-10 / FP-30
+          — for Roland digital pianos &emsp; FP-10 / FP-30
         </small>
       </h2>
       <button
