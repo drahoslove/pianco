@@ -87,6 +87,7 @@ const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single'
   }
 })
 
+/* headphone jack indicatro */
 const headphonesButton = document.querySelector('#headphones')
 const setHeadphones = (on) => {
   const icon = headphonesButton.querySelector('.mdi')
@@ -147,11 +148,9 @@ const [ setMasterVolume, setMetronomeVolume ] = ['master', 'metronome'].map((var
 })
 
 /* init metronome */
-let metronomeOn = false
 const metronomeButton = document.getElementById('metronome-toggle')
 const metronomeVolumeBar = document.getElementById('metronome-volume-bar')
 const setMetronome = (on) => {
-  metronomeOn = on
   if (on) {
     $(metronomeButton).bootstrapToggle('on', true)
     metronomeVolumeBar.classList.add('bg-info')
@@ -164,11 +163,9 @@ $(metronomeButton).change(() => {
   send(R.toggleMetronome())
 })
 
-let metronomeTempo = 0
 const metronomeTempoInput = document.getElementById('metronome-tempo')
 const setMetronomeTempo = (tempo) => {
   tempo = Math.max(10, Math.min(tempo, 400))
-  metronomeTempo = tempo
   metronomeTempoInput.value = tempo
 }
 metronomeTempoInput.onchange = (e) => {
@@ -303,9 +300,8 @@ const [
   return setValue
 })
 
-/* init midi */
 
-const midiEl = document.getElementById('midi')
+/**** init midi ****/
 
 const devices = {
   input: {name: 'none'},
@@ -322,136 +318,146 @@ const playnote = (note, ch) => {
   send([toCmd(CMD_NOTE_OFF, ch), note, toVal(.2)], performance.now() + 500)
 }
 
-const init = () => {
+document.getElementById('midi-log-clear').onclick = () => {
+  document.getElementById('midi-log').value = ''
+}
+
+const midiEl = document.getElementById('midi')
+const midiButton = document.getElementById('midi-button')
+const setMidiStatus = (isOn, statusText) => {
+  midiEl.innerHTML = statusText
+  // midiButton.title = statusText
+  if (isOn) {
+    midiEl.className = 'alert alert-success'
+    midiButton.classList.add('text-info')
+    midiButton.classList.remove('text-white-50')
+  } else {
+    midiEl.className = 'alert alert-warning'
+    midiButton.classList.remove('text-info')
+    midiButton.classList.add('text-white-50')
+  }
+  $(midiButton).attr('data-original-title', statusText)
+}
+
+const connectMidi = async () => {
+  const midiAccess = await navigator.requestMIDIAccess({ sysex: true })
+    .catch(() => {
+      setMidiStatus(false, '')
+    })
+  const input = [...midiAccess.inputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-'))
+  const output = [...midiAccess.outputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-'))
+  if (!input || !output) {
+    setMidiStatus(false, 'No Roland digital piano detected')
+    return
+  }
+  devices.input = input
+  devices.output = output
+
+  setMidiStatus(true, `in: ${input.name} | out: ${output.name}`)
+  
+  input.onstatechange = output.onstatechange = (e) => {
+    console.log(e)
+    const { state } = e.target
+    if (state === 'disconnected') {
+      devices[e.port.type] = { name: 'Disconnected' }
+      setMidiStatus(false, `in: ${devices.input.name} <br> out: ${devices.output.name}`)
+    }
+    if (state === 'connected') {
+      devices[e.port.type] = e.target
+      setMidiStatus(true, `in: ${devices.input.name} <br> out: ${devices.output.name}`)
+    }
+  }
+  input.onmidimessage = onMidiMessage
+
+  // init roland driver
   $(async () => {
     for (let msg of R.connect()) {
       send(msg)
       await sleep(25)
     }
   })
-  // playnote(MID_C)
 }
 
-navigator.requestMIDIAccess({ sysex: true })
-  .then((midiAccess) => {
-    const input = [...midiAccess.inputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-'))
-    const output = [...midiAccess.outputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-'))
-    if (!input || !output) {
-      midiEl.innerHTML = 'No Roland digital piano detected'
-      midiEl.className = 'alert alert-warning'
-      return
-    }
-    devices.input = input
-    devices.output = output
+midiButton.onclick = connectMidi
 
-    midiEl.innerHTML = `in: ${input.name} | out: ${output.name}`
-    midiEl.className = 'alert alert-success'
-    
-    input.onstatechange = output.onstatechange = (e) => {
-      console.log(e)
-      const { state } = e.target
-      if (state === 'disconnected') {
-        devices[e.port.type] = { name: 'Disconnected' }
-        midiEl.innerHTML = `in: ${devices.input.name} | out: ${devices.output.name}`
-        midiEl.className = 'alert alert-warning'
-      }
-      if (state === 'connected') {
-        devices[e.port.type] = e.target
-        midiEl.innerHTML = `in: ${devices.input.name} | out: ${devices.output.name}`
-        midiEl.className = 'alert alert-success'
-      }
+function onMidiMessage (e) {
+  const logArea = document.getElementById('midi-log')
+  let { type, timeStamp, data: [ cmd, ...rest ]} = e
+  const time = (new Date(timeStamp)).toISOString().substr(11,12)
+  if (cmd === 240) { // sysex
+    const {addr, mode, value, hexval, err} = R.parseMsg(e.data)
+    logArea.value += `${time} sysex\t ${mode} ${addr} - ${value} (${hexval}) ${err}\n`
+    if (addr === 'toneForSingle') {
+      setSingleInstrument(hexval.substr(0,6))
     }
-    input.onmidimessage = (e) => {
-      const logArea = document.getElementById('midi-log')
-      let { type, timeStamp, data: [ cmd, ...rest ]} = e
-      const time = (new Date(timeStamp)).toISOString().substr(11,12)
-      if (cmd === 240) { // sysex
-        const {addr, mode, value, hexval, err} = R.parseMsg(e.data)
-        logArea.value += `${time} sysex\t ${mode} ${addr} - ${value} (${hexval}) ${err}\n`
-        if (addr === 'toneForSingle') {
-          setSingleInstrument(hexval.substr(0,6))
-        }
-        if (addr === 'toneForDual') {
-          setDualInstrument(hexval.substr(0,6))
-        }
-        if (addr === 'toneForSplit') {
-          setSplitInstrument(hexval.substr(0,6))
-        }
-        if (addr === 'headphonesConnection') {
-          setHeadphones(Boolean(value))
-        }
-        if (addr === 'masterVolume') {
-          setMasterVolume(value)
-        }
-        if (addr === 'metronomeVolume') {
-          setMetronomeVolume(value)
-        }
-        if (addr === 'metronomeStatus') {
-          setMetronome(Boolean(value))
-        }
-        if (addr === 'sequencerTempoRO') {
-          setMetronomeTempo(value)
-        }
-        if (addr === 'keyTouch') {
-          setPressure(value)
-        }
-        if (addr === 'masterTuning') {
-          setMasterTunePitch(value)
-        }
-        if (addr === 'keyTransposeRO') {
-          setKeyTranspose(value)
-        }
-        if (addr === 'ambience') {
-          setAmbience(value)
-        }
-        if (addr === 'brilliance') {
-          setBrilliance(value)
-        }
-        if (addr === 'splitPoint') {
-          setSplitPoint(value)
-        }
-        if (addr === 'splitBalance') {
-          setSplitBalance(value)
-        }
-        if (addr === 'dualBalance') {
-          setDualBalance(value)
-        }
-        if (addr === 'keyBoardMode') {
-          const mode = parseInt(hexval.substr(0,2), 16)
-          const singleInstrument = (hexval.substr(14,6))
-          const splitInstrument = (hexval.substr(20,6))
-          const dualInstrument = (hexval.substr(26,6))
-          selectKeyboardMode(mode)
-          singleInstrument && setSingleInstrument(singleInstrument)
-          splitInstrument && setSplitInstrument(splitInstrument)
-          dualInstrument && setDualInstrument(dualInstrument)
-        }
-      } else {
-        logArea.value += `${time} ${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\n`
-      }
-      logArea.scrollTop = logArea.scrollHeight
-      console.log(e)
+    if (addr === 'toneForDual') {
+      setDualInstrument(hexval.substr(0,6))
     }
-
-    // init roland driver
-    init()
-    
-  }, () => {
-    midiEl.className = 'alert alert-warning'
-  })
-
-document.getElementById('midi-log-clear').onclick = () => {
-  document.getElementById('midi-log').value = ''
+    if (addr === 'toneForSplit') {
+      setSplitInstrument(hexval.substr(0,6))
+    }
+    if (addr === 'headphonesConnection') {
+      setHeadphones(Boolean(value))
+    }
+    if (addr === 'masterVolume') {
+      setMasterVolume(value)
+    }
+    if (addr === 'metronomeVolume') {
+      setMetronomeVolume(value)
+    }
+    if (addr === 'metronomeStatus') {
+      setMetronome(Boolean(value))
+    }
+    if (addr === 'sequencerTempoRO') {
+      setMetronomeTempo(value)
+    }
+    if (addr === 'keyTouch') {
+      setPressure(value)
+    }
+    if (addr === 'masterTuning') {
+      setMasterTunePitch(value)
+    }
+    if (addr === 'keyTransposeRO') {
+      setKeyTranspose(value)
+    }
+    if (addr === 'ambience') {
+      setAmbience(value)
+    }
+    if (addr === 'brilliance') {
+      setBrilliance(value)
+    }
+    if (addr === 'splitPoint') {
+      setSplitPoint(value)
+    }
+    if (addr === 'splitBalance') {
+      setSplitBalance(value)
+    }
+    if (addr === 'dualBalance') {
+      setDualBalance(value)
+    }
+    if (addr === 'keyBoardMode') {
+      const mode = parseInt(hexval.substr(0,2), 16)
+      const singleInstrument = (hexval.substr(14,6))
+      const splitInstrument = (hexval.substr(20,6))
+      const dualInstrument = (hexval.substr(26,6))
+      selectKeyboardMode(mode)
+      singleInstrument && setSingleInstrument(singleInstrument)
+      splitInstrument && setSplitInstrument(splitInstrument)
+      dualInstrument && setDualInstrument(dualInstrument)
+    }
+  } else {
+    logArea.value += `${time} ${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\n`
+  }
+  logArea.scrollTop = logArea.scrollHeight
+  console.log(e)
 }
 
+// connect midi
+$(connectMidi)
 
+// help functions
 const sleep = async (t) => {
   return new Promise(resolve => {
     setTimeout(resolve, t)
   })
-}
-
-
-window.checkKeyboardMode = () => {
-  send(R.checkKeyboardMode())
 }

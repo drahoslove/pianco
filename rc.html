@@ -46,6 +46,9 @@ if ('serviceWorker' in window.navigator) {
   --righto: 1;
 }
 
+h2 b {
+  color: var(--c1);
+}
 .container {
   overflow: hidden;
 }
@@ -217,7 +220,22 @@ select#split-instrument-selector:-internal-list-box option:checked
 <body>
   <nav class="navbar navbar-dark bg-dark">
     <div class="container">
-      <h2 class="navbar-brand">Roland Digital Piano - remote controller</h2>
+      <h2 class="navbar-brand">
+        🎹
+        <b>R</b>emote <b>C</b>ontroller
+        <small>
+          — for Roland Digital Pianos &emsp; FP-10 / FP-30
+        </small>
+      </h2>
+      <button
+        id="midi-button"
+        class="btn btn-lg btn-dark text-white-50"
+        data-placement="left"
+        data-html="true"
+        title="no midi connection"
+      >
+        <span class="mdi mdi-midi-port mdi-lg "></span>
+      </button>
     </div>
   </nav>
   <div class="container mt-3">
