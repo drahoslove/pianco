@@ -46,9 +46,6 @@ if ('serviceWorker' in window.navigator) {
   --righto: 1;
 }
 
-body {
-  width: 100vw;
-}
 .container {
   overflow: hidden;
 }
@@ -226,29 +223,29 @@ select#split-instrument-selector:-internal-list-box option:checked
   <div class="container mt-3">
     <div class="row">
       <div class="col-md d-flex flex-column justify-content-between">
-        <ul class="nav nav-tabs" id="keyboard-mode-tabs" role="tablist">
-          <li class="nav-item" role="presentation">
+        <ul class="nav nav-tabs row" id="keyboard-mode-tabs" role="tablist">
+          <li class="nav-item flex-fill" role="presentation">
             <a class="nav-link active" data-toggle="tab" id="single-tab" href="#single" role="tab">
               Single  <b class="lh c1"></b><b class="rh c1"></b>
             </a>
           </li>
-          <li class="nav-item" role="presentation">
+          <li class="nav-item flex-fill" role="presentation">
             <a class="nav-link" data-toggle="tab" id="split-tab" href="#split" role="tab">
               Split <b class="lh c3"></b><b class="rh c1"></b>
             </a>
           </li>
-          <li class="nav-item" role="presentation">
+          <li class="nav-item flex-fill" role="presentation">
             <a class="nav-link" data-toggle="tab" id="dual-tab" href="#dual" role="tab">
               Dual  <b class="lh c1c2"></b><b class="rh c1c2"></b>
             </a>
           </li>
-          <li class="nav-item" role="presentation">
+          <li class="nav-item flex-fill" role="presentation">
             <a class="nav-link" data-toggle="tab" id="twin-tab" href="#twin" role="tab">
               Twin <b class="lh c1"></b><b class="rh c1"></b><b class="lh c1"></b><b class="rh c1"></b>
             </a>
           </li>
         </ul>
-        <div class="tab-content row pt-2">
+        <div class="tab-content row pt-2 border border-top-0">
           <div class="col-md-12 tab-pane active" role="tabpanel" id="single" aria-labelledby="single-tab">
             <div class="row">
               <div class="col-md-12">
@@ -362,17 +359,6 @@ select#split-instrument-selector:-internal-list-box option:checked
           </div>
         </div>
 
-        <hr />
-
-        <div class="form-group mt-3 d-flex flex-column flex-grow-1">
-          <label>MIDI event log</label>
-          <div class="input-group flex-grow-1">
-            <textarea name="log" id="midi-log" cols="30" rows="7" class="form-control" readonly></textarea>
-            <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button" id="midi-log-clear">&times;</button>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="col-md">
@@ -521,7 +507,7 @@ select#split-instrument-selector:-internal-list-box option:checked
               </div>
             </div>
 
-            <div class="form-group my-4">
+            <div class="form-group">
               <label for="key-transpose">Key transpose</label>
               <div class="btn-toolbar">
                 <div class="btn-group btn-group-sm btn-group-toggle flex-fill">
@@ -571,21 +557,31 @@ select#split-instrument-selector:-internal-list-box option:checked
        
       </div>
     </div>
+
+    <hr class="my-4" />
     
     <div class="row">
-      <div class="col-md">
+      <div class="col-md-6">
         <div class="form-group">
           <label>MIDI status</label>
           <div id="midi" class="alert alert-secondary"></div>
         </div>
-      </div>
-      <div class="col-md">
         <label>Supported devices</label>
         <ul class="list-group">
           <li class="list-group-item">FP-10, FP-30, <small>possibly others</small></li>
         </ul>
       </div>
-
+      <div class="col-md-6">
+        <div class="form-group d-flex flex-column flex-grow-1">
+          <label>MIDI event log</label>
+          <div class="input-group flex-grow-1">
+            <textarea name="log" id="midi-log" cols="30" rows="7" class="form-control" readonly></textarea>
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" id="midi-log-clear">&times;</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <script>
