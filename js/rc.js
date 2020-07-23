@@ -10,7 +10,9 @@ import {
   CC_BANK_0, CC_BANK_1, MID_C,
 } from './midi.js'
 
-/* init keybaord mode selector */
+$('[title]').tooltip()
+
+/* init keyboard mode selector */
 const tabs = [
   document.getElementById('single-tab'),
   document.getElementById('split-tab'),
@@ -42,7 +44,7 @@ const selectKeyboardMode = (mode) => {
   $(tabs[mode]).tab('show')
 }
 
-/* init insrument selector */
+/* init insrument selectors */
 const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single', 'dual', 'split'].map((variant, mode) => {
   const selectors = document.querySelectorAll(`#${variant}-instrument-selector`)
   for (const instrumentSelector of selectors) {
@@ -212,26 +214,36 @@ mastterTunePitchInput.onchange = (e) => {
   }
 })
 
-/* init pressure */
-let pressure = 0
-const pressureButtons = [...document.querySelectorAll('input[name="pressure"]')]
-const setPressure = (value) => {
-  pressure = value
-  pressureButtons.forEach(button => {
-    button.checked = false
-    button.parentElement.classList.remove('active')
-  })
-  const button = pressureButtons.find(button => +button.value === value)
-  if (button) {
-    button.checked = true
-    button.parentElement.classList.add('active')
-  }
-}
-pressureButtons.forEach(button => {
-  button.onchange = () => {
+/* init radio buttons */
+const [
+  setPressure,
+  setKeyTranspose
+] = Object.entries({
+  'pressure': (button) => {
     send(R.setKeyPressure(+button.value))
     send(R.checkKeyPressure())
+  },
+  'key-transpose': (button) => {
+    send(R.setKeyTranspose(+button.value))
+    send(R.checkKeyTranspose())
+  },
+}).map(([name, onchange]) => {
+  const buttons = [...document.querySelectorAll(`input[name="${name}"]`)]
+  buttons.forEach(button => {
+    button.onchange = () => { onchange(button) }
+  })
+  const setter = (value) => {
+    buttons.forEach(button => {
+      button.checked = false
+      button.parentElement.classList.remove('active')
+    })
+    const button = buttons.find(button => +button.value === value)
+    if (button) {
+      button.checked = true
+      button.parentElement.classList.add('active')
+    }
   }
+  return setter
 })
 
 /* init sliders */
@@ -385,6 +397,9 @@ navigator.requestMIDIAccess({ sysex: true })
         }
         if (addr === 'masterTuning') {
           setMasterTunePitch(value)
+        }
+        if (addr === 'keyTransposeRO') {
+          setKeyTranspose(value)
         }
         if (addr === 'ambience') {
           setAmbience(value)

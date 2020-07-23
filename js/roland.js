@@ -55,7 +55,7 @@ const addrs = {
   serverSetupFileName:            "01000000",
   // 010001xx
   songToneLanguage:               "01000100",
-  keyTransposeRO:                 "01000101",
+  keyTransposeRO:                 "01000101", //
   songTransposeRO:                "01000102",
   sequencerStatus:                "01000103",
   sequencerMeasure:               "01000105",
@@ -102,7 +102,7 @@ const addrs = {
   arrangerPedalFunction:          "01000303",
   arrangerBalance:                "01000305",
   connection:                     "01000306", //
-  keyTransposeWO:                 "01000307",
+  keyTransposeWO:                 "01000307", //
   songTransposeWO:                "01000308",
   sequencerTempoWO:               "01000309",
   tempoReset:                     "0100030B",
@@ -204,6 +204,7 @@ export const connect = () => [
   req(addrs.ambience),
   req(addrs.brilliance),
   req(addrs.masterTuning),
+  req(addrs.keyTransposeRO),
 
   req(addrs.keyBoardMode),
   req(addrs.toneForSingle),
@@ -234,6 +235,9 @@ export const checkKeyboardMode = () => req(addrs.keyBoardMode)
 
 export const setMasterTune = (value) => set(addrs.masterTuning, _H(value, 2))
 export const checkMasterTune = () => req(addrs.masterTuning)
+
+export const setKeyTranspose = (value) => set(addrs.keyTransposeWO, _H(value))
+export const checkKeyTranspose = () => req(addrs.keyTransposeRO)
 
 export const setAmbience = (value) => set(addrs.ambience, _H(value))
 export const setBrilliance = (value) => set(addrs.brilliance, _H(value))
