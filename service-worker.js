@@ -1,4 +1,4 @@
-const cacheName = 'rc-cache';
+const CACHE = 'rc-cache';
 const filesToCache = [
   location.pathname, // self
   '/rc',
@@ -14,10 +14,7 @@ const filesToCache = [
   'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js',
 ]
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(cacheName)
-      .then(cache => cache.addAll(filesToCache))
-  )
+  e.waitUntil(precache())
 })
 
 self.addEventListener('activate', e => {
@@ -25,9 +22,28 @@ self.addEventListener('activate', e => {
 })
 
 self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(
-      response => response || fetch(e.request)
+  e.respondWith(fromCache(e.request))
+  e.waitUntil(update(e.request))
+})
+
+function precache() {
+  return caches.open(CACHE).then((cache) => 
+    cache.addAll(filesToCache)
+  )
+}
+
+function fromCache(request) {
+  return caches.open(CACHE).then(cache =>
+    cache.match(request).then(matching =>
+      matching || fetch(request)
     )
   )
-})
+}
+
+function update(request) {
+  return caches.open(CACHE).then(cache =>
+    fetch(request).then(response =>
+      cache.put(request, response)
+    )
+  )
+}
