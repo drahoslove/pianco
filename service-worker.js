@@ -1,5 +1,6 @@
 const cacheName = 'rc-cache';
 const filesToCache = [
+  location.pathname, // self
   '/rc',
   '/js/roland.js',
   '/lib/Tone.js',
