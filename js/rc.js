@@ -357,8 +357,8 @@ const connectMidi = async () => {
     .catch(() => {
       setMidiStatus(false, '')
     })
-  const input = [...midiAccess.inputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-'))
-  const output = [...midiAccess.outputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-'))
+  const input = [...midiAccess.inputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-') || name.includes('USB'))
+  const output = [...midiAccess.outputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-') || name.includes('USB'))
   if (!input || !output) {
     setMidiStatus(false, 'No Roland digital piano detected')
     return
