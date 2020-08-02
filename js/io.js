@@ -146,7 +146,7 @@ const connect = () => {
 
 connect()
 
-const sendNoteOn = (note, velocity=0.6,) => (source) => {
+const sendNoteOn = (note, velocity=0.5,) => (source) => {
   pressNote(note, velocity, UID)(source)
   if (ws.readyState !== WebSocket.OPEN) {
     return

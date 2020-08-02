@@ -194,7 +194,7 @@ const updateNote = (note, velocity, action) => (source) => {
 	}
 }
 
-const pressNote = (note, velocity=0.6, uid) => updateNote(note, velocity, () => {
+const pressNote = (note, velocity=0.5, uid) => updateNote(note, velocity, () => {
 	pressedNotes[note].add(uid)
 	if (sustainState[uid]) {
 		sustainedNotes[note].add(uid)
