@@ -22,7 +22,7 @@ const app = new Vue({
       this.page = page
     },
     selectPreset(e) {
-      const { value } = e.target
+      const { value } = e.target.dataset
       this.selectedPreset = value
       const [ cc, i ] = value.split(':')
       send([

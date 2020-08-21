@@ -274,32 +274,30 @@ select#split-instrument-selector:-internal-list-box option:checked
       </div>
     </nav>
 
-    <div v-show="page === 'pianoteq'" class="container mt-3">
+    <div id="page-pianoteq" v-show="page === 'pianoteq'" class="container mt-3">
       <div class="row">
         <div v-for="instrument in presets" class="col-md" :key="instrument.cc">
           <h4>
            {{ instrument.name }}
           </h4>
-          <select
+          <div class="dropdown-menu d-block position-static w-100"
             :id="`presets-${instrument.cc}`"
-            class="form-control"
-            :size="instrument.presets.length"
-            @change="selectPreset($event)"
-            :value="selectedPreset"
           >
-            <option
+            <button
               v-for="(preset, i) in instrument.presets"
               :key="i"
-              :value="`${instrument.cc}:${i+1}`"
+              :class="['dropdown-item', { 'active bg-info': selectedPreset === `${instrument.cc}:${i+1}` }]"
+              :data-value="`${instrument.cc}:${i+1}`"
+              @click="selectPreset($event)"
             >
               {{ presetShort(instrument.name, preset) }}
-            </option>
-          </select>
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div v-show="page === 'roland'" class="container mt-3">
+    <div id="page-roland" v-show="page === 'roland'" class="container mt-3">
       <div class="row">
         <div class="col-md d-flex flex-column">
           <ul class="nav nav-tabs row" id="keyboard-mode-tabs" role="tablist">
