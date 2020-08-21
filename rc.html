@@ -58,6 +58,10 @@ if ('serviceWorker' in window.navigator) {
   background-color: var(--grayer);
 }
 
+#app[v-cloak] {
+  display: none;
+}
+
 h2 {
   font-size: 1.5rem;
 }
@@ -236,7 +240,7 @@ select#split-instrument-selector:-internal-list-box option:checked
 </style>
 </head>
 <body>
-  <div id="app">
+  <div id="app" v-cloak>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
