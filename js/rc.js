@@ -1,14 +1,41 @@
 import * as R from "./roland.js"
+import * as Ptq from './pianoteq.js'
 import '../lib/Tone.js'
-
-const { instruments } = R
-
 import {
   toCmd, fromCmd, toVal, fromVal, chanFromCmd,
   CMD_NOTE_ON, CMD_NOTE_OFF,
   CMD_PROGRAM, CMD_CONTROL_CHANGE,
   CC_BANK_0, CC_BANK_1, MID_C,
 } from './midi.js'
+
+const { instruments } = R
+
+const app = new Vue({
+  el: '#app',
+  data: {
+    page: 'pianoteq',
+    presets: Ptq.presets,
+    selectedPreset: null,
+  },
+  methods: {
+    setPage(page) {
+      this.page = page
+    },
+    selectPreset(e) {
+      const { value } = e.target
+      this.selectedPreset = value
+      const [ cc, i ] = value.split(':')
+      send([
+        toCmd(CMD_CONTROL_CHANGE, 9),
+        +cc,
+        +i,
+      ])
+    },
+    presetShort: (prefix, preset) =>
+      preset.substr(prefix.length) 
+  }
+})
+
 
 $('[title]').tooltip()
 
@@ -357,8 +384,11 @@ const connectMidi = async () => {
     .catch(() => {
       setMidiStatus(false, '')
     })
-  const input = [...midiAccess.inputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-') || name.includes('USB'))
-  const output = [...midiAccess.outputs.values()].find(({ name }) => name.includes('Roland Digital Piano') || name.includes('FP-') || name.includes('USB'))
+  const isAllowedDevice = ({ name }) =>
+    name.includes('Roland Digital Piano') || name.includes('FP-')
+    || name.includes('USB') || name.includes('loop')
+  const input = [...midiAccess.inputs.values()].find(isAllowedDevice)
+  const output = [...midiAccess.outputs.values()].find(isAllowedDevice)
   if (!input || !output) {
     setMidiStatus(false, 'No Roland digital piano detected')
     return

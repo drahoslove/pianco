@@ -15,6 +15,8 @@ gtag('config', 'UA-21351225-3')
 </script>
 <!-- icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.2.45/css/materialdesignicons.min.css">
+<!-- vue -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <!-- bootstrap -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
@@ -56,6 +58,9 @@ if ('serviceWorker' in window.navigator) {
   background-color: var(--grayer);
 }
 
+h2 {
+  font-size: 1.5rem;
+}
 h2 b {
   color: var(--c1);
 }
@@ -115,6 +120,10 @@ h2 b {
 }
 .bc3 {
   border-color: var(--c3) !important;
+}
+
+.nav-item {
+  cursor: pointer;
 }
 
 a.nav-link {
@@ -225,409 +234,454 @@ select#split-instrument-selector:-internal-list-box option:checked
 }
 
 </style>
-<script type="module" src="/js/rc.js"></script>
 </head>
 <body>
-  <nav class="navbar navbar-dark bg-dark">
-    <div class="container">
-      <h2 class="navbar-brand">
-        🎹
-        <b>R</b>emote <b>C</b>ontroller
-        <small>
-          — for Roland digital pianos &emsp; FP-10 / FP-30
-        </small>
-      </h2>
-      <button
-        id="midi-button"
-        class="btn btn-lg btn-dark text-white-50"
-        data-placement="left"
-        data-html="true"
-        title="no midi connection"
-      >
-        <span class="mdi mdi-midi-port mdi-lg "></span>
-      </button>
+  <div id="app">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-brand">
+          <h2>
+            🎹
+            <b>R</b>emote <b>C</b>ontroller
+          </h2>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav nav-pills mr-auto">
+            <li :class="['nav-item', { active: page === 'roland'}]">
+              <a class="nav-link" @click="setPage('roland')">
+                Roland digital piano
+              </a>
+            </li>
+            <li :class="['nav-item', { active: page === 'pianoteq'}]">
+              <a class="nav-link" @click="setPage('pianoteq')">
+                Pianoteq
+              </a>
+            </li>
+          </ul>
+        </div>
+        <button
+          id="midi-button"
+          class="btn btn-lg btn-dark text-white-50"
+          data-placement="left"
+          data-html="true"
+          title="no midi connection"
+        >
+          <span class="mdi mdi-midi-port mdi-lg "></span>
+        </button>
+      </div>
+    </nav>
+
+    <div v-show="page === 'pianoteq'" class="container mt-3">
+      <div class="row">
+        <div v-for="instrument in presets" class="col-md" :key="instrument.cc">
+          <h4>
+           {{ instrument.name }}
+          </h4>
+          <select
+            :id="`presets-${instrument.cc}`"
+            class="form-control"
+            :size="instrument.presets.length"
+            @change="selectPreset($event)"
+            :value="selectedPreset"
+          >
+            <option
+              v-for="(preset, i) in instrument.presets"
+              :key="i"
+              :value="`${instrument.cc}:${i+1}`"
+            >
+              {{ presetShort(instrument.name, preset) }}
+            </option>
+          </select>
+        </div>
+      </div>
     </div>
-  </nav>
-  <div class="container mt-3">
-    <div class="row">
-      <div class="col-md d-flex flex-column">
-        <ul class="nav nav-tabs row" id="keyboard-mode-tabs" role="tablist">
-          <li class="nav-item flex-fill" role="presentation">
-            <a class="nav-link active" data-toggle="tab" id="single-tab" href="#single" role="tab">
-              Single  <b class="lh c1"></b><b class="rh c1"></b>
-            </a>
-          </li>
-          <li class="nav-item flex-fill" role="presentation">
-            <a class="nav-link" data-toggle="tab" id="split-tab" href="#split" role="tab">
-              Split <b class="lh c3"></b><b class="rh c1"></b>
-            </a>
-          </li>
-          <li class="nav-item flex-fill" role="presentation">
-            <a class="nav-link" data-toggle="tab" id="dual-tab" href="#dual" role="tab">
-              Dual  <b class="lh c1c2"></b><b class="rh c1c2"></b>
-            </a>
-          </li>
-          <li class="nav-item flex-fill" role="presentation">
-            <a class="nav-link" data-toggle="tab" id="twin-tab" href="#twin" role="tab">
-              Twin <b class="lh c1"></b><b class="rh c1"></b><b class="lh c1"></b><b class="rh c1"></b>
-            </a>
-          </li>
-        </ul>
-        <div class="tab-content row pt-2 border border-top-0">
-          <div class="col-md-12 tab-pane active" role="tabpanel" id="single" aria-labelledby="single-tab">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <label for="single-instrument-selector">Instrument</label>
-                  <select id="single-instrument-selector" class="form-control select bc1"></select>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-12 tab-pane" role="tabpanel" id="split" aria-labelledby="split-tab">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group my-4">
-                  <label for="">Split point</label>
-                  <div class="mx-2 text-center">
-                    <input
-                      id="split-point-slider"
-                      data-slider-id="split-point-slider-slider"
-                      type="range"
-                      data-slider-min="35"
-                      data-slider-value="59"
-                      data-slider-max="95"
-                      data-slider-step="1"
-                      data-slider-tooltip="hide"
-                      data-slider-ticks="[35, 47, 59, 71, 83, 95]"
-                      data-slider-ticks-positions="[0, 20, 40, 60, 80, 100]"
-                      data-slider-ticks-labels='["C2", "C3", "C4", "C5", "C6", "C7"]'
-                      data-slider-ticks-snap-bounds="0"
-                    >
-                  </div>
-                </div>
-                <div class="form-group my-4">
-                  <label for="">Volume balance</label>
-                  <div class="mx-2 text-center balance">
-                    <input
-                      id="split-balance-slider"
-                      type="range"
-                      data-slider-min="56"
-                      data-slider-value="64"
-                      data-slider-max="72"
-                      data-slider-step="1"
-                      data-slider-tooltip="hide"
-                      data-slider-ticks="[56, 64, 72]"
-                      data-slider-ticks-positions="[0, 50, 100]"
-                      data-slider-ticks-labels='["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lefth hand", "balanced", "Right hand&nbsp;&nbsp;&nbsp;"]'
-                      data-slider-ticks-snap-bounds="0"
-                    >
+
+    <div v-show="page === 'roland'" class="container mt-3">
+      <div class="row">
+        <div class="col-md d-flex flex-column">
+          <ul class="nav nav-tabs row" id="keyboard-mode-tabs" role="tablist">
+            <li class="nav-item flex-fill" role="presentation">
+              <a class="nav-link active" data-toggle="tab" id="single-tab" href="#single" role="tab">
+                Single  <b class="lh c1"></b><b class="rh c1"></b>
+              </a>
+            </li>
+            <li class="nav-item flex-fill" role="presentation">
+              <a class="nav-link" data-toggle="tab" id="split-tab" href="#split" role="tab">
+                Split <b class="lh c3"></b><b class="rh c1"></b>
+              </a>
+            </li>
+            <li class="nav-item flex-fill" role="presentation">
+              <a class="nav-link" data-toggle="tab" id="dual-tab" href="#dual" role="tab">
+                Dual  <b class="lh c1c2"></b><b class="rh c1c2"></b>
+              </a>
+            </li>
+            <li class="nav-item flex-fill" role="presentation">
+              <a class="nav-link" data-toggle="tab" id="twin-tab" href="#twin" role="tab">
+                Twin <b class="lh c1"></b><b class="rh c1"></b><b class="lh c1"></b><b class="rh c1"></b>
+              </a>
+            </li>
+          </ul>
+          <div class="tab-content row pt-2 border border-top-0">
+            <div class="col-md-12 tab-pane active" role="tabpanel" id="single" aria-labelledby="single-tab">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="single-instrument-selector">Instrument</label>
+                    <select id="single-instrument-selector" class="form-control select bc1"></select>
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="split-instrument-selector">Left-hand Instrument</label>
-                  <select id="split-instrument-selector" class="form-control select bc3"></select>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="single-instrument-selector">Right-hand Instrument</label>
-                  <select id="single-instrument-selector" class="form-control select bc1"></select>
-                </div>
-              </div>
             </div>
-          </div>
-          <div class="col-md-12 tab-pane" role="tabpanel" id="dual" aria-labelledby="dual-tab">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group my-4">
-                  <label for="">Volume balance</label>
-                  <div class="mx-2 text-center balance">
-                    <input
-                      id="dual-balance-slider"
-                      type="range"
-                      data-slider-min="56"
-                      data-slider-value="64"
-                      data-slider-max="72"
-                      data-slider-step="1"
-                      data-slider-tooltip="hide"
-                      data-slider-ticks="[56, 64, 72]"
-                      data-slider-ticks-positions="[0, 50, 100]"
-                      data-slider-ticks-labels='["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;First layer", "balanced", "Second layer&nbsp;&nbsp;&nbsp;&nbsp;"]'
-                      data-slider-ticks-snap-bounds="0"
-                    >
+            <div class="col-md-12 tab-pane" role="tabpanel" id="split" aria-labelledby="split-tab">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group my-4">
+                    <label for="">Split point</label>
+                    <div class="mx-2 text-center">
+                      <input
+                        id="split-point-slider"
+                        data-slider-id="split-point-slider-slider"
+                        type="range"
+                        data-slider-min="35"
+                        data-slider-value="59"
+                        data-slider-max="95"
+                        data-slider-step="1"
+                        data-slider-tooltip="hide"
+                        data-slider-ticks="[35, 47, 59, 71, 83, 95]"
+                        data-slider-ticks-positions="[0, 20, 40, 60, 80, 100]"
+                        data-slider-ticks-labels='["C2", "C3", "C4", "C5", "C6", "C7"]'
+                        data-slider-ticks-snap-bounds="0"
+                      >
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="dual-instrument-selector">First-layer Instrument</label>
-                  <select id="single-instrument-selector" class="form-control select bc1"></select>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="single-instrument-selector">Second-layer Instrument</label>
-                  <select id="dual-instrument-selector" class="form-control select bc2"></select>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-12 tab-pane" role="tabpanel" id="twin" aria-labelledby="twin-tab">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <label for="key-transpose">Twin mode</label>
-                  <div class="btn-toolbar justify-content-center">
-                    <div class="btn-group btn-group-sm btn-group-toggle w-50">
-                      <label class="btn btn-secondary w-50" title="L/R channels mixed together">
-                        <input type="radio" name="twin-mode" value="0"> pair
-                      </label>
-                      <label class="btn btn-secondary w-50" title="L/R channels separated per twin">
-                        <input type="radio" name="twin-mode" value="1"> individual
-                      </label>
+                  <div class="form-group my-4">
+                    <label for="">Volume balance</label>
+                    <div class="mx-2 text-center balance">
+                      <input
+                        id="split-balance-slider"
+                        type="range"
+                        data-slider-min="56"
+                        data-slider-value="64"
+                        data-slider-max="72"
+                        data-slider-step="1"
+                        data-slider-tooltip="hide"
+                        data-slider-ticks="[56, 64, 72]"
+                        data-slider-ticks-positions="[0, 50, 100]"
+                        data-slider-ticks-labels='["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lefth hand", "balanced", "Right hand&nbsp;&nbsp;&nbsp;"]'
+                        data-slider-ticks-snap-bounds="0"
+                      >
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="col-md-12">
-                <div class="form-group">
-                  <label for="single-instrument-selector">Twin instruments</label>
-                  <select id="single-instrument-selector" class="form-control select bc1"></select>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="split-instrument-selector">Left-hand Instrument</label>
+                    <select id="split-instrument-selector" class="form-control select bc3"></select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="single-instrument-selector">Right-hand Instrument</label>
+                    <select id="single-instrument-selector" class="form-control select bc1"></select>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="col-md">
-        <div class="form-group">
-          <label>
-            Master volume
-            <span class="" id="headphones">
-              <span class="mdi mdi-none"></span>
-            </span>
-          </label>
-          <div class="btn-toolbar d-flex align-items-stretch">
-            <div class="progress unselectable flex-fill h-auto">
-              <div id="master-volume-bar" class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-            </div>
-            <div class="btn-group btn-group-sm ml-2">
-              <button class="btn btn-outline-secondary w-50" id="master-volume-down"> ➖ </button>
-              <button class="btn btn-outline-secondary w-50" id="master-volume-up"> ➕ </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card my-4">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <div>
-              <span class="mdi mdi-metronome-tick"></span>
-              <span>Metronome</span>
-            </div>
-            <div>
-              <input type="checkbox" data-toggle="toggle" id="metronome-toggle" data-onstyle="info"  data-offstyle="outline-dark">
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="form-group">
-              <label>Volume</label>
-              <div class="input-group">
-                <div class="progress unselectable flex-fill h-auto">
-                  <div id="metronome-volume-bar" class="progress-bar bg-secondary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+            <div class="col-md-12 tab-pane" role="tabpanel" id="dual" aria-labelledby="dual-tab">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group my-4">
+                    <label for="">Volume balance</label>
+                    <div class="mx-2 text-center balance">
+                      <input
+                        id="dual-balance-slider"
+                        type="range"
+                        data-slider-min="56"
+                        data-slider-value="64"
+                        data-slider-max="72"
+                        data-slider-step="1"
+                        data-slider-tooltip="hide"
+                        data-slider-ticks="[56, 64, 72]"
+                        data-slider-ticks-positions="[0, 50, 100]"
+                        data-slider-ticks-labels='["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;First layer", "balanced", "Second layer&nbsp;&nbsp;&nbsp;&nbsp;"]'
+                        data-slider-ticks-snap-bounds="0"
+                      >
+                    </div>
+                  </div>
                 </div>
-                <div class="btn-group btn-group-sm ml-2">
-                  <button class="btn btn-outline-secondary w-50" id="metronome-volume-down"> ➖ </button>
-                  <button class="btn btn-outline-secondary w-50" id="metronome-volume-up"> ➕ </button>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="dual-instrument-selector">First-layer Instrument</label>
+                    <select id="single-instrument-selector" class="form-control select bc1"></select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="single-instrument-selector">Second-layer Instrument</label>
+                    <select id="dual-instrument-selector" class="form-control select bc2"></select>
+                  </div>
                 </div>
               </div>
             </div>
-    
-            <div class="form-group">
-              <label for="metronome-tempo">Tempo</label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <button class="btn btn-outline-secondary" type="button" data-tempo="30">30</button>
-                  <button class="btn btn-outline-secondary" type="button" data-tempo="60">60</button>
-                  <button class="btn btn-outline-secondary" type="button" data-tempo="90">90</button>
-                  <button class="btn btn-outline-secondary" type="button" data-tempo="120">120</button>
-                  <button class="btn btn-outline-secondary" type="button" data-tempo="180">180</button>
-                  <button class="btn btn-outline-secondary" type="button" data-tempo="240">240</button>
+            <div class="col-md-12 tab-pane" role="tabpanel" id="twin" aria-labelledby="twin-tab">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="key-transpose">Twin mode</label>
+                    <div class="btn-toolbar justify-content-center">
+                      <div class="btn-group btn-group-sm btn-group-toggle w-50">
+                        <label class="btn btn-secondary w-50" title="L/R channels mixed together">
+                          <input type="radio" name="twin-mode" value="0"> pair
+                        </label>
+                        <label class="btn btn-secondary w-50" title="L/R channels separated per twin">
+                          <input type="radio" name="twin-mode" value="1"> individual
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <input id="metronome-tempo" type="number" class="form-control text-right" value="0" min="20" max="500">
-                <div class="input-group-append">
-                  <span class="input-group-text">bpm</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-    
-        <div class="card mt-1 my-4">
-          <div class="card-header"> Tuning </div>
-          <div class="card-body">
-
-            <div class="form-group">
-              <label>Key touch</label>
-              <div class="btn-toolbar">
-                <div class="btn-group btn-group-sm btn-group-toggle mr-2">
-                  <label class="btn btn-secondary">
-                    <input type="radio" name="pressure" value="0"> Fixed
-                  </label>
-                </div>
-                <div class="btn-group btn-group-sm btn-group-toggle flex-fill">
-                  <label class="btn btn-secondary">
-                    <input type="radio" name="pressure" value="1"> Super Light
-                  </label>
-                  <label class="btn btn-secondary">
-                    <input type="radio" name="pressure" value="2"> Light
-                  </label>
-                  <label class="btn btn-secondary">
-                    <input type="radio" name="pressure" value="3"> Medium
-                  </label>
-                  <label class="btn btn-secondary">
-                    <input type="radio" name="pressure" value="4"> Heavy
-                  </label>
-                  <label class="btn btn-secondary">
-                    <input type="radio" name="pressure" value="5"> Super Heavy
-                  </label>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="single-instrument-selector">Twin instruments</label>
+                    <select id="single-instrument-selector" class="form-control select bc1"></select>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div class="form-group my-4">
-              <label for="">Ambience (reverb)</label>
-              <div class="mx-2 text-center">
-                <input
-                  id="ambience-slider"
-                  type="range"
-                  data-slider-min="0"
-                  data-slider-value="2"
-                  data-slider-max="10"
-                  data-slider-step="1"
-                  data-slider-tooltip="hide"
-                  data-slider-ticks="[0, 2, 10]"
-                  data-slider-ticks-positions="[0, 20, 100]"
-                  data-slider-ticks-labels='["min", "default", "max"]'
-                  data-slider-ticks-snap-bounds="0"
-                >
-              </div>
-            </div>
-            
-            <div class="form-group my-4">
-              <label for="">Brilliance (brightness)</label>
-              <div class="mx-2 text-center">
-                <input
-                  id="brilliance-slider"
-                  type="range"
-                  data-slider-min="54"
-                  data-slider-value="64"
-                  data-slider-max="74"
-                  data-slider-step="1"
-                  data-slider-tooltip="hide"
-                  data-slider-ticks="[54, 64, 74]"
-                  data-slider-ticks-labels='["min", "default", "max"]'
-                  data-slider-ticks-snap-bounds="0"
-                >
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="master-tune">Pitch</label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <button class="btn btn-outline-secondary" type="button" data-pitch="440">440</button>
-                  <button class="btn btn-outline-secondary" type="button" data-pitch="442">442</button>
-                </div>
-                <input id="master-tune" type="number" class="form-control text-right" value="440" min="400" max="480" step="0.1">
-                <div class="input-group-append">
-                  <span class="input-group-text">Hz</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="key-transpose">Key transpose</label>
-              <div class="btn-toolbar">
-                <div class="btn-group btn-group-sm btn-group-toggle flex-fill">
-                  <label class="btn btn-secondary"  title="C 🠖 G♭">
-                    <input type="radio" name="key-transpose" value="58"> -6
-                  </label>
-                  <label class="btn btn-secondary" title="C 🠖 G">
-                    <input type="radio" name="key-transpose" value="59"> -5
-                  </label>
-                  <label class="btn btn-secondary" title="C 🠖 A♭">
-                    <input type="radio" name="key-transpose" value="60"> -4
-                  </label>
-                  <label class="btn btn-secondary" title="C 🠖 A">
-                    <input type="radio" name="key-transpose" value="61"> -3
-                  </label>
-                  <label class="btn btn-secondary" title="C 🠖 B♭">
-                    <input type="radio" name="key-transpose" value="62"> -2
-                  </label>
-                  <label class="btn btn-secondary" title="C 🠖 B">
-                    <input type="radio" name="key-transpose" value="63"> -1
-                  </label>
-                  <label class="btn btn-secondary" title="C 🠖 C">
-                    <input type="radio" name="key-transpose" value="64"> 0
-                  </label>
-                  <label class="btn btn-secondary" title="C 🠖 C♯">
-                    <input type="radio" name="key-transpose" value="65"> +1
-                  </label>
-                  <label class="btn btn-secondary" title="C 🠖 D">
-                    <input type="radio" name="key-transpose" value="66"> +2
-                  </label>
-                  <label class="btn btn-secondary" title="C 🠖 D♯">
-                    <input type="radio" name="key-transpose" value="67"> +3
-                  </label>
-                  <label class="btn btn-secondary"  title="C 🠖 E">
-                    <input type="radio" name="key-transpose" value="68"> +4
-                  </label>
-                  <label class="btn btn-secondary"  title="C 🠖 F">
-                    <input type="radio" name="key-transpose" value="69"> +5
-                  </label>
-                </div>
-              </div>
-            </div>
-
           </div>
 
         </div>
-       
+
+        <div class="col-md">
+          <div class="form-group">
+            <label>
+              Master volume
+              <span class="" id="headphones">
+                <span class="mdi mdi-none"></span>
+              </span>
+            </label>
+            <div class="btn-toolbar d-flex align-items-stretch">
+              <div class="progress unselectable flex-fill h-auto">
+                <div id="master-volume-bar" class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+              </div>
+              <div class="btn-group btn-group-sm ml-2">
+                <button class="btn btn-outline-secondary w-50" id="master-volume-down"> ➖ </button>
+                <button class="btn btn-outline-secondary w-50" id="master-volume-up"> ➕ </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card my-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <div>
+                <span class="mdi mdi-metronome-tick"></span>
+                <span>Metronome</span>
+              </div>
+              <div>
+                <input type="checkbox" data-toggle="toggle" id="metronome-toggle" data-onstyle="info"  data-offstyle="outline-dark">
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Volume</label>
+                <div class="input-group">
+                  <div class="progress unselectable flex-fill h-auto">
+                    <div id="metronome-volume-bar" class="progress-bar bg-secondary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                  </div>
+                  <div class="btn-group btn-group-sm ml-2">
+                    <button class="btn btn-outline-secondary w-50" id="metronome-volume-down"> ➖ </button>
+                    <button class="btn btn-outline-secondary w-50" id="metronome-volume-up"> ➕ </button>
+                  </div>
+                </div>
+              </div>
+      
+              <div class="form-group">
+                <label for="metronome-tempo">Tempo</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary" type="button" data-tempo="30">30</button>
+                    <button class="btn btn-outline-secondary" type="button" data-tempo="60">60</button>
+                    <button class="btn btn-outline-secondary" type="button" data-tempo="90">90</button>
+                    <button class="btn btn-outline-secondary" type="button" data-tempo="120">120</button>
+                    <button class="btn btn-outline-secondary" type="button" data-tempo="180">180</button>
+                    <button class="btn btn-outline-secondary" type="button" data-tempo="240">240</button>
+                  </div>
+                  <input id="metronome-tempo" type="number" class="form-control text-right" value="0" min="20" max="500">
+                  <div class="input-group-append">
+                    <span class="input-group-text">bpm</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      
+          <div class="card mt-1 my-4">
+            <div class="card-header"> Tuning </div>
+            <div class="card-body">
+
+              <div class="form-group">
+                <label>Key touch</label>
+                <div class="btn-toolbar">
+                  <div class="btn-group btn-group-sm btn-group-toggle mr-2">
+                    <label class="btn btn-secondary">
+                      <input type="radio" name="pressure" value="0"> Fixed
+                    </label>
+                  </div>
+                  <div class="btn-group btn-group-sm btn-group-toggle flex-fill">
+                    <label class="btn btn-secondary">
+                      <input type="radio" name="pressure" value="1"> Super Light
+                    </label>
+                    <label class="btn btn-secondary">
+                      <input type="radio" name="pressure" value="2"> Light
+                    </label>
+                    <label class="btn btn-secondary">
+                      <input type="radio" name="pressure" value="3"> Medium
+                    </label>
+                    <label class="btn btn-secondary">
+                      <input type="radio" name="pressure" value="4"> Heavy
+                    </label>
+                    <label class="btn btn-secondary">
+                      <input type="radio" name="pressure" value="5"> Super Heavy
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group my-4">
+                <label for="">Ambience (reverb)</label>
+                <div class="mx-2 text-center">
+                  <input
+                    id="ambience-slider"
+                    type="range"
+                    data-slider-min="0"
+                    data-slider-value="2"
+                    data-slider-max="10"
+                    data-slider-step="1"
+                    data-slider-tooltip="hide"
+                    data-slider-ticks="[0, 2, 10]"
+                    data-slider-ticks-positions="[0, 20, 100]"
+                    data-slider-ticks-labels='["min", "default", "max"]'
+                    data-slider-ticks-snap-bounds="0"
+                  >
+                </div>
+              </div>
+              
+              <div class="form-group my-4">
+                <label for="">Brilliance (brightness)</label>
+                <div class="mx-2 text-center">
+                  <input
+                    id="brilliance-slider"
+                    type="range"
+                    data-slider-min="54"
+                    data-slider-value="64"
+                    data-slider-max="74"
+                    data-slider-step="1"
+                    data-slider-tooltip="hide"
+                    data-slider-ticks="[54, 64, 74]"
+                    data-slider-ticks-labels='["min", "default", "max"]'
+                    data-slider-ticks-snap-bounds="0"
+                  >
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="master-tune">Pitch</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary" type="button" data-pitch="440">440</button>
+                    <button class="btn btn-outline-secondary" type="button" data-pitch="442">442</button>
+                  </div>
+                  <input id="master-tune" type="number" class="form-control text-right" value="440" min="400" max="480" step="0.1">
+                  <div class="input-group-append">
+                    <span class="input-group-text">Hz</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="key-transpose">Key transpose</label>
+                <div class="btn-toolbar">
+                  <div class="btn-group btn-group-sm btn-group-toggle flex-fill">
+                    <label class="btn btn-secondary"  title="C 🠖 G♭">
+                      <input type="radio" name="key-transpose" value="58"> -6
+                    </label>
+                    <label class="btn btn-secondary" title="C 🠖 G">
+                      <input type="radio" name="key-transpose" value="59"> -5
+                    </label>
+                    <label class="btn btn-secondary" title="C 🠖 A♭">
+                      <input type="radio" name="key-transpose" value="60"> -4
+                    </label>
+                    <label class="btn btn-secondary" title="C 🠖 A">
+                      <input type="radio" name="key-transpose" value="61"> -3
+                    </label>
+                    <label class="btn btn-secondary" title="C 🠖 B♭">
+                      <input type="radio" name="key-transpose" value="62"> -2
+                    </label>
+                    <label class="btn btn-secondary" title="C 🠖 B">
+                      <input type="radio" name="key-transpose" value="63"> -1
+                    </label>
+                    <label class="btn btn-secondary" title="C 🠖 C">
+                      <input type="radio" name="key-transpose" value="64"> 0
+                    </label>
+                    <label class="btn btn-secondary" title="C 🠖 C♯">
+                      <input type="radio" name="key-transpose" value="65"> +1
+                    </label>
+                    <label class="btn btn-secondary" title="C 🠖 D">
+                      <input type="radio" name="key-transpose" value="66"> +2
+                    </label>
+                    <label class="btn btn-secondary" title="C 🠖 D♯">
+                      <input type="radio" name="key-transpose" value="67"> +3
+                    </label>
+                    <label class="btn btn-secondary"  title="C 🠖 E">
+                      <input type="radio" name="key-transpose" value="68"> +4
+                    </label>
+                    <label class="btn btn-secondary"  title="C 🠖 F">
+                      <input type="radio" name="key-transpose" value="69"> +5
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        
+        </div>
       </div>
     </div>
 
-    <hr class="my-4" />
-    
-    <div class="row">
-      <div class="col-md-6">
-        <div class="form-group">
-          <label>MIDI status</label>
-          <div id="midi" class="alert alert-secondary"></div>
+    <div class="container">
+      <hr class="my-4" />
+      
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>MIDI status</label>
+            <div id="midi" class="alert alert-secondary"></div>
+          </div>
+          <label>Supported devices</label>
+          <ul class="list-group">
+            <li class="list-group-item">FP-10, FP-30, <small>possibly others</small></li>
+          </ul>
         </div>
-        <label>Supported devices</label>
-        <ul class="list-group">
-          <li class="list-group-item">FP-10, FP-30, <small>possibly others</small></li>
-        </ul>
-      </div>
-      <div class="col-md-6">
-        <div class="form-group d-flex flex-column flex-grow-1">
-          <label>MIDI event log</label>
-          <div class="input-group flex-grow-1">
-            <textarea name="log" id="midi-log" cols="30" rows="7" class="form-control" readonly></textarea>
-            <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button" id="midi-log-clear">&times;</button>
+        <div class="col-md-6">
+          <div class="form-group d-flex flex-column flex-grow-1">
+            <label>MIDI event log</label>
+            <div class="input-group flex-grow-1">
+              <textarea name="log" id="midi-log" cols="30" rows="7" class="form-control" readonly></textarea>
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="midi-log-clear">&times;</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
-  <script>
-  </script>
+  <script type="module" src="/js/rc.js"></script>
 </body>
 </html>
