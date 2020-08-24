@@ -266,6 +266,26 @@ select#split-instrument-selector:-internal-list-box option:checked
             </li>
           </ul>
         </div>
+        <div class="btn-group" role="group">
+          <button class="btn btn-secondary" @click="mmc('rewind')">
+            <span class="mdi mdi-skip-backward"></span>
+          </button>
+          <button class="btn btn-secondary" @click="mmc('forward')">
+            <span class="mdi mdi-skip-forward"></span>
+          </button>
+          <button class="btn btn-secondary" @click="mmc('stop')">
+            <span class="mdi mdi-stop"></span>
+          </button>
+          <button class="btn btn-secondary" @click="mmc('record')">
+            <span class="mdi mdi-record"></span>
+          </button>
+          <button class="btn btn-secondary" @click="mmc('pause')">
+            <span class="mdi mdi-pause"></span>
+          </button>
+          <button class="btn btn-secondary" @click="mmc('play')">
+            <span class="mdi mdi-play"></span>
+          </button>
+        </div>
         <button
           id="midi-button"
           class="btn btn-lg btn-dark text-white-50"

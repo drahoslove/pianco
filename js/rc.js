@@ -32,7 +32,26 @@ const app = new Vue({
       ])
     },
     presetShort: (prefix, preset) =>
-      preset.substr(prefix.length) 
+      preset.substr(prefix.length)
+    ,
+    mmc: (command) => {
+      // F0 7F <Device-ID> <Sub-ID#1> [<Sub-ID#2> [<parameters>]] F7
+      send([
+        0xf0,
+        0x7f,
+        0x7f, // all channels
+        0x06, // command
+        {
+          stop: 0x01,
+          play: 0x02,
+          forward: 0x04,
+          rewind: 0x05,
+          record: 0x06,
+          pause: 0x09,
+        }[command],
+        0xf7,
+      ])
+    },
   }
 })
 
