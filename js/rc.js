@@ -442,13 +442,21 @@ const connectMidi = async () => {
 
 midiButton.onclick = connectMidi
 
-function onMidiMessage (e) {
+const log = (text) => {
   const logArea = document.getElementById('midi-log')
+  const MAX_LOG_LINES = 100
+  const logLines = logArea.value.split('\n').slice(-MAX_LOG_LINES)
+  logLines.push(text)
+  logArea.value = logLines.join('\n')
+  logArea.scrollTop = logArea.scrollHeight
+}
+
+function onMidiMessage (e) {
   let { type, timeStamp, data: [ cmd, ...rest ]} = e
   const time = (new Date(timeStamp)).toISOString().substr(11,12)
   if (cmd === 240) { // sysex
     const {addr, mode, value, hexval, err} = R.parseMsg(e.data)
-    logArea.value += `${time} sysex\t ${mode} ${addr} - ${value} (${hexval}) ${err}\n`
+    log(`${time} sysex\t ${mode} ${addr} - ${value} (${hexval}) ${err}`)
     if (addr === 'toneForSingle') {
       setSingleInstrument(hexval.substr(0,6))
     }
@@ -511,9 +519,8 @@ function onMidiMessage (e) {
       dualInstrument && setDualInstrument(dualInstrument)
     }
   } else {
-    logArea.value += `${time} ${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}\n`
+    log(`${time} ${type}\t #${chanFromCmd(cmd)}:${fromCmd(cmd)} ${rest.join(' ')}`)
   }
-  logArea.scrollTop = logArea.scrollHeight
   console.log(e)
 }
 
