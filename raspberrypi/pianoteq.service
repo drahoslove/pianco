@@ -1,0 +1,16 @@
+[Unit]
+Description=Pianoteq
+Wants=multi-user.target
+
+[Service]
+User=pi
+Group=pi
+LimitMEMLOCK=500000
+LimitRTPRIO=90
+LimitNICE=-10
+Nice=-10
+Restart=always
+RestartSec=10
+#PermissionsStartOnly=true
+ExecStart=/usr/local/bin/start-pianoteq.sh
+ExecStop=/usr/local/bin/stop-pianoteq.sh

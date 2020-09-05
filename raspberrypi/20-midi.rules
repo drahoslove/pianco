@@ -1,0 +1,3 @@
+# put into '/etc/udev/rules.d'
+# ids obtained from `lsusb`
+ACTION=="bind", DRIVER=="snd_seq_midi", ATTRS{idVendor}=="0582", ATTRS{idProduct}=="01b1", RUN+="/usr/local/bin/connect-midi.sh"
