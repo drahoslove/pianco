@@ -154,7 +154,7 @@ const PREFIX = "411000000028"
 export const parseMsg = (data) => {
   const match = byteArrayToStr(data).match(/^F0411000000028([0-9A-F]{2})([0-9A-F]{8})([0-9A-F]*)([0-9A-F]{2})F7$/)
   if (!match) {
-    return {err: 'not a valid roland syses msg'} // not valid roland sysex msg
+    return {err: 'not a valid roland sysex msg'} // not valid roland sysex msg
   }
 
   const [ _, mode, addr, hexval, checksum ] = match

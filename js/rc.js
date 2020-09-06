@@ -456,7 +456,11 @@ function onMidiMessage (e) {
   const time = (new Date(timeStamp)).toISOString().substr(11,12)
   if (cmd === 240) { // sysex
     const {addr, mode, value, hexval, err} = R.parseMsg(e.data)
-    log(`${time} sysex\t ${mode} ${addr} - ${value} (${hexval}) ${err}`)
+    if (err) {
+      log(`${time} other sysex\t ${[cmd, ...rest]} (?)`)
+      return
+    }
+    log(`${time} roland sysex\t ${mode} ${addr} - ${value} (${hexval}) ${err}`)
     if (addr === 'toneForSingle') {
       setSingleInstrument(hexval.substr(0,6))
     }
