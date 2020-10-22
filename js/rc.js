@@ -13,13 +13,14 @@ const { instruments } = R
 const app = new Vue({
   el: '#app',
   data: {
-    page: 'pianoteq',
+    page: localStorage['rc-page'] || 'pianoteq',
     presets: Ptq.presets,
     selectedPreset: null,
   },
   methods: {
     setPage(page) {
       this.page = page
+      localStorage['rc-page'] = page
     },
     selectPreset(e) {
       const { value } = e.target.dataset
