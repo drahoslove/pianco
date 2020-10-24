@@ -164,13 +164,13 @@ a.nav-link {
 }
 
 #split #split-instrument-selector,
-#dual #single-instrument-selector
+#dual #dual-instrument-selector
 {
   opacity: calc(var(--lefto) * (2 - var(--lefto)));
 }
 
 #split #single-instrument-selector,
-#dual #dual-instrument-selector
+#dual #single-instrument-selector
 {
   opacity: calc(var(--righto) * (2 - var(--righto)));
 }
@@ -190,24 +190,22 @@ a.nav-link {
 }
 
 #dual .slider-selection {
-  background: var(--c1);
+  background: var(--c2);
 }
 #dual .slider-track-high {
-  background: var(--c2);
+  background: var(--c1);
 }
 #dual .slider-tick {
-  background: var(--c2);
+  background: var(--c1);
   opacity: 1;
 }
 #dual .slider-tick.in-selection {
-  background: var(--c1);
+  background: var(--c2);
 }
 
 .balance .slider .slider-handle {
   background: var(--gray);
 }
-
-
 
 
 input[type="number"] {
@@ -226,17 +224,34 @@ select#split-instrument-selector:-internal-list-box option:checked
 {
   color: var(--light) !important;
 }
-#single-instrument-selector option:checked {
+#single-instrument-selector .dropdown-item.active {
   background: var(--c1) linear-gradient(0deg, var(--c1) 0%, var(--c1) 100%);
 }
 
-#dual-instrument-selector option:checked {
+#dual-instrument-selector .dropdown-item.active {
   background: var(--c2) linear-gradient(0deg, var(--c2) 0%, var(--c2) 100%);
 }
 
-#split-instrument-selector option:checked {
+#split-instrument-selector .dropdown-item.active {
   background: var(--c3) linear-gradient(0deg, var(--c3) 0%, var(--c3) 100%);
 }
+
+.dropdown-header {
+  font-size: 112.5%;
+}
+
+
+#single-instrument-selector .dropdown-header {
+  color: var(--c1);
+}
+#dual-instrument-selector .dropdown-header {
+  color: var(--c2);
+}
+#split-instrument-selector .dropdown-header {
+  color: var(--c3);
+}
+
+
 
 </style>
 </head>
@@ -299,6 +314,7 @@ select#split-instrument-selector:-internal-list-box option:checked
       </div>
     </nav>
 
+    <!-- pianoteq page -->
     <div id="page-pianoteq" v-show="page === 'pianoteq'" class="container mt-3">
       <div class="row">
         <div v-for="instrument in presets" class="col-md" :key="instrument.cc">
@@ -322,6 +338,7 @@ select#split-instrument-selector:-internal-list-box option:checked
       </div>
     </div>
 
+    <!-- roland page -->
     <div id="page-roland" v-show="page === 'roland'" class="container mt-3">
       <div class="row">
         <div class="col-md d-flex flex-column">
@@ -347,14 +364,18 @@ select#split-instrument-selector:-internal-list-box option:checked
               </a>
             </li>
           </ul>
-          <div class="tab-content row pt-2 border border-top-0">
+          <div class="tab-content row py-3 border border-top-0">
             <div class="col-md-12 tab-pane active" role="tabpanel" id="single" aria-labelledby="single-tab">
               <div class="row">
                 <div class="col-md-12">
-                  <div class="form-group">
-                    <label for="single-instrument-selector">Instrument</label>
-                    <select id="single-instrument-selector" class="form-control select bc1"></select>
-                  </div>
+                  <label for="single-instrument-selector">Instrument</label>
+                  <instrument-selector
+                    id="single-instrument-selector"
+                    className="bc1"
+                    :voices="rolandVoices"
+                    :selected="selectedRolandVoice['single']"
+                    @select="selectRolandVoice('single')($event)"
+                  ></instrument-selector>
                 </div>
               </div>
             </div>
@@ -402,13 +423,25 @@ select#split-instrument-selector:-internal-list-box option:checked
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="split-instrument-selector">Left-hand Instrument</label>
-                    <select id="split-instrument-selector" class="form-control select bc3"></select>
+                    <instrument-selector
+                      id="split-instrument-selector"
+                      className="bc3"
+                      :voices="rolandVoices"
+                      :selected="selectedRolandVoice['split']"
+                      @select="selectRolandVoice('split')($event)"
+                    ></instrument-selector>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="single-instrument-selector">Right-hand Instrument</label>
-                    <select id="single-instrument-selector" class="form-control select bc1"></select>
+                    <instrument-selector
+                      id="single-instrument-selector"
+                      className="bc1"
+                      :voices="rolandVoices"
+                      :selected="selectedRolandVoice['single']"
+                      @select="selectRolandVoice('single')($event)"
+                    ></instrument-selector>
                   </div>
                 </div>
               </div>
@@ -437,14 +470,26 @@ select#split-instrument-selector:-internal-list-box option:checked
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label for="dual-instrument-selector">First-layer Instrument</label>
-                    <select id="single-instrument-selector" class="form-control select bc1"></select>
+                    <label for="single-instrument-selector">First-layer Instrument</label>
+                    <instrument-selector
+                      id="dual-instrument-selector"
+                      className="bc2"
+                      :voices="rolandVoices"
+                      :selected="selectedRolandVoice['single']"
+                      @select="selectRolandVoice('single')($event)"
+                    ></instrument-selector>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label for="single-instrument-selector">Second-layer Instrument</label>
-                    <select id="dual-instrument-selector" class="form-control select bc2"></select>
+                    <label for="dual-instrument-selector">Second-layer Instrument</label>
+                    <instrument-selector
+                      id="single-instrument-selector"
+                      className="bc1"
+                      :voices="rolandVoices"
+                      :selected="selectedRolandVoice['dual']"
+                      @select="selectRolandVoice('dual')($event)"
+                    ></instrument-selector>
                   </div>
                 </div>
               </div>
@@ -469,7 +514,13 @@ select#split-instrument-selector:-internal-list-box option:checked
                 <div class="col-md-12">
                   <div class="form-group">
                     <label for="single-instrument-selector">Twin instruments</label>
-                    <select id="single-instrument-selector" class="form-control select bc1"></select>
+                    <instrument-selector
+                      id="single-instrument-selector"
+                      classname="bc1"
+                      :voices="rolandVoices"
+                      :selected="selectedRolandVoice['single']"
+                      @select="selectRolandVoice('single')($event)"
+                    ></instrument-selector>
                   </div>
                 </div>
               </div>

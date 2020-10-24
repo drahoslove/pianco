@@ -10,12 +10,50 @@ import {
 
 const { instruments } = R
 
+Vue.prototype.$log = console.log
+
+Vue.component('instrument-selector', {
+  props: ['id', 'voices', 'selected', 'classname'],
+  template: `
+<div
+  :class="['dropdown-menu d-block position-static w-100', classname]"
+  :id="id"
+>
+  <template
+    v-for="(instruments, groupName, i) in voices"
+  >
+    <div class="dropdown-divider" v-if="i !== 0"></div>
+    <div class="dropdown-header">
+      <b>
+        {{ groupName }}
+      </b>
+    </div>
+    <button
+      v-for="(instrument, i) in instruments"
+      :key="instrument[1]"
+      :class="['dropdown-item', { 'active bg-info': selected === instrument[1] }]"
+      :data-value="instrument[1]"
+      @click="$emit('select', $event)"
+    >
+      {{ instrument[0] }}
+    </button>
+  </template>
+</div>
+`
+})
+
 const app = new Vue({
   el: '#app',
   data: {
     page: localStorage['rc-page'] || 'pianoteq',
     presets: Ptq.presets,
+    rolandVoices: R.instruments,
     selectedPreset: null,
+    selectedRolandVoice: {
+      single: null,
+      dual: null,
+      split: null
+    },
   },
   methods: {
     setPage(page) {
@@ -35,6 +73,17 @@ const app = new Vue({
     presetShort: (prefix, preset) =>
       preset.substr(prefix.length)
     ,
+    selectRolandVoice(variant) {
+      return (e) => {
+        const { value: hexcode } = e.target.dataset
+        this.selectedRolandVoice[variant] = hexcode
+        ;({
+          single: setSingleInstrument,
+          dual: setDualInstrument,
+          split: setSplitInstrument,
+        })[variant](hexcode)
+      }
+    },
     mmc: (command) => {
       // F0 7F <Device-ID> <Sub-ID#1> [<Sub-ID#2> [<parameters>]] F7
       send([
@@ -92,45 +141,15 @@ const selectKeyboardMode = (mode) => {
 }
 
 /* init insrument selectors */
-const [ setSingleInstrument, setDualInstrument, setSplitInstrument ] = ['single', 'dual', 'split'].map((variant, mode) => {
-  const selectors = document.querySelectorAll(`#${variant}-instrument-selector`)
-  for (const instrumentSelector of selectors) {
-    instrumentSelector.size = 0
-    Object.entries(instruments).forEach(([groupName, instruments]) => {
-      const optGroup = document.createElement('optgroup')
-      optGroup.label = groupName
-      instruments.forEach(([name, code, ...val]) => {
-        const option = document.createElement('option')
-        option.value = code
-        option.dataset.midival = val
-        option.innerText = `${name}`
-        optGroup.append(option)
-        instrumentSelector.size++
-      })
-      instrumentSelector.size++
-      instrumentSelector.append(optGroup)
-    })
-    instrumentSelector.onchange = async (e) => {
-      const { value: hexcode } = e.target
-      
-      const option = instrumentSelector.querySelector(`[value='${hexcode}']`)
-      const msg = R.setToneFor(variant)(hexcode)
-      send(msg)
-      if (option) {
-        // this is only for preview will not change the note of 'single', because it is on channel 0 not 3
-        const ch = 0
-        const [bankMSB, bankLSB, program] = option.dataset.midival.split(',').map(Number)
-        send([toCmd(CMD_CONTROL_CHANGE, ch), CC_BANK_0, bankMSB])
-        send([toCmd(CMD_CONTROL_CHANGE, ch), CC_BANK_1, bankLSB])
-        send([toCmd(CMD_PROGRAM, ch), program])
-        playnote(MID_C, ch)
-      }
-    }
-  }
+const [
+  setSingleInstrument,
+  setDualInstrument,
+  setSplitInstrument,
+] = ['single', 'dual', 'split'].map((variant, mode) => {
   return (hexcode) => {
-    selectors.forEach(instrumentSelector => {
-      instrumentSelector.value = instrumentSelector.querySelector(`[value='${hexcode}']`).value
-    })
+    const msg = R.setToneFor(variant)(hexcode)
+    send(msg)
+    app.selectedRolandVoice[variant] = hexcode
   }
 })
 

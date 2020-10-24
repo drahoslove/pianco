@@ -2,6 +2,7 @@ const CACHE = 'rc-cache';
 const filesToCache = [
   location.pathname, // self
   '/rc',
+  '/js/rc.js',
   '/js/roland.js',
   '/js/pianoteq.js',
   '/lib/Tone.js',
