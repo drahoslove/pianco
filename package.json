@@ -1,5 +1,5 @@
 {
-  "name": "pianinous",
+  "name": "painco",
   "main": "index.html",
   "scripts": {
     "build": "webpack --config=webpack.config.js --mode development",

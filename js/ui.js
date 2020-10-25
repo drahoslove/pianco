@@ -50,21 +50,21 @@ function saveSetting(key, val) {
   let settings = {}
   try {
     settings = JSON.parse(
-      localStorage.pianinous || '{}'
+      localStorage.pianco || '{}'
     )
   } catch (e) {}
   settings[key] = val
-  localStorage.pianinous = JSON.stringify(settings)
+  localStorage.pianco = JSON.stringify(settings)
 }
 
 function loadSetting(key) {
   let settings = {}
   try {
     settings = JSON.parse(
-      localStorage.pianinous || '{}'
+      localStorage.pianco || '{}'
     )
   } catch (e) {
-    localStorage.pianinous = JSON.stringify({})
+    localStorage.pianco = JSON.stringify({})
   }
   return {
     ...defaultSettings,
