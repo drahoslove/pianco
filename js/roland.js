@@ -50,6 +50,8 @@ export const instruments = {
   ],
 }
 
+export const metronomeBeats = ['2/2', '3/2', '2/4', '3/4', '4/4', '5/4', '6/4', '7/4', '3/8', '6/8', '8/8', '9/8', '12/8']
+export const metronomeTempoNotations = ['𝅝𝅭', '𝅝', '𝅗𝅥𝅭', '𝅗𝅥', '𝅘𝅥𝅭', '𝅘𝅥', '𝅘𝅥𝅮𝅭', '𝅘𝅥𝅮', '𝅘𝅥𝅯𝅭', '𝅘𝅥𝅯']
 const addrs = {
   // 010000xx
   serverSetupFileName:            "01000000",
@@ -59,7 +61,7 @@ const addrs = {
   songTransposeRO:                "01000102",
   sequencerStatus:                "01000103",
   sequencerMeasure:               "01000105",
-  sequencerTempoNotation:         "01000107",
+  sequencerTempoNotation:         "01000107", // index to metronomeTempoNotations
   sequencerTempoRO:               "01000108", //
   sequencerBeatNumerator:         "0100010A",
   sequencerBeatDenominator:       "0100010B",
@@ -91,11 +93,11 @@ const addrs = {
   brilliance:                     "0100021C", //
   keyTouch:                       "0100021D", //
   transposeMode:                  "0100021E",
-  metronomeBeat:                  "0100021F",
+  metronomeBeat:                  "0100021F", // index of metronomeBeats
   metronomePattern:               "01000220",
   metronomeVolume:                "01000221", //
   metronomeTone:                  "01000222",
-  metronomeDownBeat:              "01000223",
+  metronomeDownBeat:              "01000223", // 0,1
   // 010003xx
   applicationMode:                "01000300", //
   scorePageTurn:                  "01000302",
@@ -196,6 +198,7 @@ export const connect = () => [
   req(addrs.metronomeVolume),
   req(addrs.metronomeStatus),
   req(addrs.sequencerTempoRO),
+  req(addrs.sequencerTempoNotation),
 
   req(addrs.headphonesConnection),
   req(addrs.headphones3DAmbience),
@@ -216,6 +219,9 @@ export const connect = () => [
 
   req(addrs.splitPoint),
   req(addrs.twinPianoMode),
+
+  req(addrs.metronomeBeat),
+  req(addrs.metronomeDownBeat),
 ]
 
 export const setMasterVolume = (val) => set(addrs.masterVolume, _H(val))
@@ -227,6 +233,9 @@ export const setHeadphones = (val) => set(addrs.headphonesConnection, _H(val))
 export const toggleMetronome = () => set(addrs.metronomeSwToggle, _H(0))
 
 export const setMetronomeTempo = (val) => set(addrs.sequencerTempoWO, _H(val, 2))
+export const checkMetronomeTempo = () => req(addrs.sequencerTempoRO)
+
+export const checkMetronomeNotation = () => req(addrs.sequencerTempoNotation)
 
 export const setKeyPressure = (val) => set(addrs.keyTouch, _H(val))
 export const checkKeyPressure = () => req(addrs.keyTouch)
@@ -253,7 +262,8 @@ export const checkSplitBalance = () => req(addrs.splitBalance)
 export const checkDualBalance = () => req(addrs.dualBalance)
 export const checkTwinPianoMode = () => req(addrs.twinPianoMode)
 
-
+export const setMetronomeBeat = (val) => set(addrs.metronomeBeat, _H(val))
+export const checkMetronomeBeat = () => req(addrs.metronomeBeat)
 
 export const setToneFor = (variant) => (tonecode) => set({
   single: addrs.toneForSingle,

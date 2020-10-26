@@ -583,9 +583,31 @@ select#split-instrument-selector:-internal-list-box option:checked
                     <button class="btn btn-outline-secondary" type="button" data-tempo="180">180</button>
                     <button class="btn btn-outline-secondary" type="button" data-tempo="240">240</button>
                   </div>
+                  <div class="input-group-prepend">
+                    <div class="input-group-text text-large">
+                      <span style="font-size: 150%; line-height: 1em;">
+                        {{rolandMetronomeTempoNotations[
+                          selectedRolandMetronomeTempoNotation
+                        ]}}
+                      </span>
+                      =
+                    </div>
+                  </div>
                   <input id="metronome-tempo" type="number" class="form-control text-right" value="0" min="20" max="500">
                   <div class="input-group-append">
                     <span class="input-group-text">bpm</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="metronome-beat">Beat</label>
+                <div class="btn-toolbar">
+                  <div class="btn-group btn-group-sm btn-group-toggle mr-2">
+                    <label class="btn btn-secondary" v-for="(beatName, i) in rolandMetronomeBeats">
+                      <input type="radio" name="metronome-beat" :value="i">
+                      {{beatName}}
+                    </label>
                   </div>
                 </div>
               </div>

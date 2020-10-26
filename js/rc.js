@@ -45,9 +45,12 @@ Vue.component('instrument-selector', {
 const app = new Vue({
   el: '#app',
   data: {
-    page: localStorage['rc-page'] || 'pianoteq',
+    page: localStorage['rc-page'] || 'roland',
     presets: Ptq.presets,
     rolandVoices: R.instruments,
+    rolandMetronomeBeats: R.metronomeBeats,
+    rolandMetronomeTempoNotations: R.metronomeTempoNotations,
+    selectedRolandMetronomeTempoNotation: 3,
     selectedPreset: null,
     selectedRolandVoice: {
       single: null,
@@ -153,7 +156,7 @@ const [
   }
 })
 
-/* headphone jack indicatro */
+/* headphone jack indicator */
 const headphonesButton = document.querySelector('#headphones')
 const setHeadphones = (on) => {
   const icon = headphonesButton.querySelector('.mdi')
@@ -285,6 +288,7 @@ const [
   setPressure,
   setKeyTranspose,
   setTwinPianoMode,
+  setMetronomeBeat,
 ] = Object.entries({
   'pressure': (value) => {
     send(R.setKeyPressure(value))
@@ -297,6 +301,15 @@ const [
   'twin-mode': (value) => {
     send(R.setTwinPianoMode(value))
     send(R.checkTwinPianoMode())
+  },
+  'metronome-beat': (value) => {
+    send(R.setMetronomeBeat(value))
+    send(R.checkMetronomeBeat())
+    setTimeout(() => {
+      send(R.checkMetronomeNotation())
+      send(R.checkMetronomeTempo())
+    }, 250)
+
   }
 }).map(([name, onchange]) => {
   const buttons = [...document.querySelectorAll(`input[name="${name}"]`)]
@@ -502,8 +515,14 @@ function onMidiMessage (e) {
     if (addr === 'metronomeStatus') {
       setMetronome(Boolean(value))
     }
+    if (addr === 'metronomeBeat') {
+      setMetronomeBeat(value)
+    }
     if (addr === 'sequencerTempoRO') {
       setMetronomeTempo(value)
+    }
+    if (addr === 'sequencerTempoNotation') {
+      app.selectedRolandMetronomeTempoNotation = Number(hexval.substr(0,2), 16)
     }
     if (addr === 'keyTouch') {
       setPressure(value)
