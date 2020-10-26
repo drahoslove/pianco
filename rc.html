@@ -35,6 +35,11 @@ if ('serviceWorker' in window.navigator) {
 }
 </script>
 <style>
+@font-face {
+	font-family: Bravura;
+	src: url(/font/Bravura.woff2);
+}
+
 :root {
   --hue: 188;
   /* --c1: hsla(var(--hue), 50%, 65%, 1);
@@ -251,6 +256,14 @@ select#split-instrument-selector:-internal-list-box option:checked
   color: var(--c3);
 }
 
+.note {
+  font-family: Bravura;
+  font-size: 150%;
+  line-height: 1em;
+  margin-top: 8px;
+  margin-bottom: -8px;
+  margin-right: 2px;
+}
 
 
 </style>
@@ -585,7 +598,7 @@ select#split-instrument-selector:-internal-list-box option:checked
                   </div>
                   <div class="input-group-prepend">
                     <div class="input-group-text text-large">
-                      <span style="font-size: 150%; line-height: 1em;">
+                      <span class="note">
                         {{rolandMetronomeTempoNotations[
                           selectedRolandMetronomeTempoNotation
                         ]}}
