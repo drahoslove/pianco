@@ -49,6 +49,7 @@ const app = new Vue({
     presets: Ptq.presets,
     rolandVoices: R.instruments,
     rolandMetronomeBeats: R.metronomeBeats,
+    rolandMetronomeBeatOn: false,
     rolandMetronomeTempoNotations: R.metronomeTempoNotations,
     selectedRolandMetronomeTempoNotation: 3,
     selectedPreset: null,
@@ -76,6 +77,10 @@ const app = new Vue({
     presetShort: (prefix, preset) =>
       preset.substr(prefix.length)
     ,
+    toggleRolandMetronomeBeat(event) {
+      event.preventDefault()
+      setMetronomeBeatDown(!this.rolandMetronomeBeatOn)
+    },
     selectRolandVoice(variant) {
       return (e) => {
         const { value: hexcode } = e.target.dataset
@@ -156,6 +161,12 @@ const [
   }
 })
 
+/* init toggles */
+const setMetronomeBeatDown = (beatOn) => {
+  send(R.setMetronomeDownBeat(+beatOn))
+  send(R.checkMetronomeDownBeat())
+}
+
 /* headphone jack indicator */
 const headphonesButton = document.querySelector('#headphones')
 const setHeadphones = (on) => {
@@ -233,9 +244,11 @@ const setMetronome = (on) => {
     metronomeVolumeBar.classList.remove('bg-info')
   }
 }
-$(metronomeButton).change(() => {
+$(metronomeButton).change((e) => {
+  $(metronomeButton).bootstrapToggle(!e.target.checked ? 'on' : 'off', true) // undo change
   send(R.toggleMetronome())
 })
+
 
 const metronomeTempoInput = document.getElementById('metronome-tempo')
 const setMetronomeTempo = (tempo) => {
@@ -517,6 +530,9 @@ function onMidiMessage (e) {
     }
     if (addr === 'metronomeBeat') {
       setMetronomeBeat(value)
+    }
+    if (addr === 'metronomeDownBeat') {
+      app.rolandMetronomeBeatOn = Boolean(value)
     }
     if (addr === 'sequencerTempoRO') {
       setMetronomeTempo(value)

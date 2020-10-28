@@ -50,7 +50,7 @@ export const instruments = {
   ],
 }
 
-export const metronomeBeats = ['2/2', '3/2', '2/4', '3/4', '4/4', '5/4', '6/4', '7/4', '3/8', '6/8', '8/8', '9/8', '12/8']
+export const metronomeBeats = ['2⁄2', '3⁄2', '2⁄4', '3⁄4', '4⁄4', '5⁄4', '6⁄4', '7⁄4', '3⁄8', '6⁄8', '8⁄8', '9⁄8', '12⁄8']
 export const metronomeTempoNotations = ['𝅝𝅭', '𝅝', '𝅗𝅥𝅭', '𝅗𝅥', '𝅘𝅥𝅭', '𝅘𝅥', '𝅘𝅥𝅮𝅭', '𝅘𝅥𝅮', '𝅘𝅥𝅯𝅭', '𝅘𝅥𝅯']
 const addrs = {
   // 010000xx
@@ -264,6 +264,9 @@ export const checkTwinPianoMode = () => req(addrs.twinPianoMode)
 
 export const setMetronomeBeat = (val) => set(addrs.metronomeBeat, _H(val))
 export const checkMetronomeBeat = () => req(addrs.metronomeBeat)
+
+export const setMetronomeDownBeat = (val) => set(addrs.metronomeDownBeat, _H(val))
+export const checkMetronomeDownBeat = () => req(addrs.metronomeDownBeat)
 
 export const setToneFor = (variant) => (tonecode) => set({
   single: addrs.toneForSingle,

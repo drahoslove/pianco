@@ -256,8 +256,12 @@ select#split-instrument-selector:-internal-list-box option:checked
   color: var(--c3);
 }
 
+.btn-group-sm .fraction {
+  font-size: 125%;
+}
+
 .note {
-  font-family: Bravura;
+  font-family: "Bravura";
   font-size: 150%;
   line-height: 1em;
   margin-top: 8px;
@@ -265,6 +269,42 @@ select#split-instrument-selector:-internal-list-box option:checked
   margin-right: 2px;
 }
 
+input.checkbox {
+  height: 20px;
+  width: 20px;
+  appearance: none;
+  border: 1px solid #6c757d;
+  border-radius: 3.2px;
+  outline: none;
+  transition-duration: 0.2s;
+  background-color: transparent;
+  cursor: pointer;
+  position: relative;
+}
+input.checkbox:checked {
+  border: 1px solid transparent;
+  background-color: var(--c1);
+}
+input.checkbox:checked::before {
+  content: '︎✓\FE0E';
+  display: block;
+  font-weight: bold;
+  text-align: center;
+  color: #fff;
+  position: absolute;
+  left: 3px;
+  top: -2.5px;
+}
+.checkbox-label {
+  display: inline-flex;
+  line-height: 30px;
+  user-select: none;
+  margin-left: .5em;
+}
+.checkbox-wrapper {
+  display: flex;
+  margin-bottom: 1em;
+}
 
 </style>
 </head>
@@ -614,10 +654,33 @@ select#split-instrument-selector:-internal-list-box option:checked
               </div>
 
               <div class="form-group">
-                <label for="metronome-beat">Beat</label>
+                <div class="form-check form-check-line checkbox-wrapper">
+                  <input class="form-check-input checkbox"
+                  type="checkbox"
+                  id="metronome-down-beat"
+                  name="metronome-down-beat"
+                  :checked="rolandMetronomeBeatOn"
+                  @click="toggleRolandMetronomeBeat($event)"
+                  >
+                  <label class="form-check-label checkbox-label" for="metronome-down-beat">
+                    Beat
+                  </label>
+                </div>
                 <div class="btn-toolbar">
                   <div class="btn-group btn-group-sm btn-group-toggle mr-2">
-                    <label class="btn btn-secondary" v-for="(beatName, i) in rolandMetronomeBeats">
+                    <label class="btn btn-secondary fraction" v-for="(beatName, i) in rolandMetronomeBeats" v-if="beatName.endsWith('2')">
+                      <input type="radio" name="metronome-beat" :value="i">
+                      {{beatName}}
+                    </label>
+                  </div>
+                  <div class="btn-group btn-group-sm btn-group-toggle mr-2">
+                    <label class="btn btn-secondary fraction" v-for="(beatName, i) in rolandMetronomeBeats" v-if="beatName.endsWith('4')">
+                      <input type="radio" name="metronome-beat" :value="i">
+                      {{beatName}}
+                    </label>
+                  </div>
+                  <div class="btn-group btn-group-sm btn-group-toggle mr-2">
+                    <label class="btn btn-secondary fraction" v-for="(beatName, i) in rolandMetronomeBeats" v-if="beatName.endsWith('8')">
                       <input type="radio" name="metronome-beat" :value="i">
                       {{beatName}}
                     </label>
