@@ -140,6 +140,21 @@ a.nav-link {
   color: var(--gray);
 }
 
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+  .col-md-6 {
+    padding-left: 15px;
+    padding-right: 7.5px;
+  }
+  .col-md-6 + .col-md-6 {
+    padding-left: 7.5px;
+    padding-right: 15px;
+  }
+}
+
 .slider {
   width: 100% !important;
 }
