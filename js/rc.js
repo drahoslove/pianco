@@ -13,31 +13,38 @@ const { instruments } = R
 Vue.prototype.$log = console.log
 
 Vue.component('instrument-selector', {
-  props: ['id', 'voices', 'selected', 'classname'],
+  props: ['id', 'voices', 'selected', 'classname', 'wrap'],
   template: `
 <div
-  :class="['dropdown-menu d-block position-static w-100', classname]"
+  :class="['dropdown-menu d-flex flex-row flex-wrap position-static w-100', classname]"
   :id="id"
 >
-  <template
-    v-for="(instruments, groupName, i) in voices"
+  <div
+    v-for="j in [0, 1]"
+    :class="wrap ? 'w-50': 'w-100'"
+    v-if="wrap || !j"
   >
-    <div class="dropdown-divider" v-if="i !== 0"></div>
-    <div class="dropdown-header">
-      <b>
-        {{ groupName }}
-      </b>
-    </div>
-    <button
-      v-for="(instrument, i) in instruments"
-      :key="instrument[1]"
-      :class="['dropdown-item', { 'active bg-info': selected === instrument[1] }]"
-      :data-value="instrument[1]"
-      @click="$emit('select', $event)"
+    <div
+      v-for="(instruments, groupName, i) in voices"
+      v-if="!wrap ? (j === 0) : (i % 2 === j)"
     >
-      {{ instrument[0] }}
-    </button>
-  </template>
+      <div class="dropdown-divider" v-if="!(wrap ? [0,1] : [0]).includes(i)"></div>
+      <div class="dropdown-header">
+        <b>
+          {{ groupName }}
+        </b>
+      </div>
+      <button
+        v-for="(instrument, i) in instruments"
+        :key="instrument[1]"
+        :class="['dropdown-item', { 'active bg-info': selected === instrument[1] }]"
+        :data-value="instrument[1]"
+        @click="$emit('select', $event)"
+      >
+        {{ instrument[0] }}
+      </button>
+    </div>
+  </div>
 </div>
 `
 })

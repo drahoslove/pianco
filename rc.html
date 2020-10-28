@@ -425,6 +425,7 @@ input.checkbox:checked::before {
                   <instrument-selector
                     id="single-instrument-selector"
                     className="bc1"
+                    wrap="true"
                     :voices="rolandVoices"
                     :selected="selectedRolandVoice['single']"
                     @select="selectRolandVoice('single')($event)"
@@ -568,6 +569,7 @@ input.checkbox:checked::before {
                   <div class="form-group">
                     <label for="single-instrument-selector">Twin instruments</label>
                     <instrument-selector
+                      wrap="true"
                       id="single-instrument-selector"
                       classname="bc1"
                       :voices="rolandVoices"
