@@ -70,8 +70,6 @@ const autoplayers = groups.map((_, gid) => new Autoplay(gid, ROOT_USR)) // init 
 wss.on('connection', function connection(ws) {
   console.log('client connected')
   ws.send('connected')
-  wss.status()
-
   ws.on('message', function incoming(message) {
     if (typeof message === "string") {
       const [cmd, ...values] = message.split(' ')
@@ -106,9 +104,11 @@ wss.on('connection', function connection(ws) {
 
   ws.on('close', () => {
     const { gid, uid } = ws
-    groups[gid].delete(uid)
-    console.log(`${uid}@${gid} => close`)
-    wss.status()
+    if (gid !== undefined && uid !== undefined) {
+      groups[gid].delete(uid)
+      console.log(`${uid}@${gid} => close`)
+      wss.status()
+    }
   })
 })
 
