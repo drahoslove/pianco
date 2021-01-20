@@ -3,7 +3,7 @@ const WebSocket = require('ws')
 const ROOT_USR = 0
 const ROOT_GRP = 0
 
-const PORT = 11088
+const PORT = process.env.PORT || 11088
 const { SSL_KEY, SSL_CA, SSL_CERT } = process.env
 
 let server
