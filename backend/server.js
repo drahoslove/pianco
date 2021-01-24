@@ -21,6 +21,8 @@ if (!SSL_KEY || !SSL_CA || !SSL_CERT) { // http
 
 const wss = new WebSocket.Server({ server })
 
+const groups = Array.from({ length: 256 }).map(() => new Set())
+
 const broadcast = (data) => { // to everyone
   const [gid, uid] = data
   wss.clients.forEach(client => {
@@ -54,7 +56,6 @@ wss.broadcast = broadcast
 wss.echo = echo
 wss.status = status
 
-const groups = Array.from({ length: 256 }).map(() => new Set())
 
 // return uid which is not yet in the group
 const genUid = (gid) => {
@@ -71,7 +72,9 @@ wss.on('connection', function connection(ws) {
   console.log('client connected')
   ws.send('connected')
   ws.on('message', function incoming(message) {
-    if (typeof message === "string") {
+    if (typeof message !== "string") {
+      echo(message)
+    } else {
       const [cmd, ...values] = message.split(' ')
       if (cmd === 'ping') {
         ws.send('pong')
@@ -97,8 +100,14 @@ wss.on('connection', function connection(ws) {
         const url= values[2]
         autoplayers[gid].requestHandler(ws)(url)
       }
-    } else {
-      echo(message)
+      if (cmd === 'randomplay') {
+        const [gid, uid] = values.map(Number)
+        autoplayers[gid].playRandomFile()
+      }
+      if (cmd === 'stopplay') {
+        const [gid, uid] = values.map(Number)
+        autoplayers[gid].stop()
+      }
     }
   })
 

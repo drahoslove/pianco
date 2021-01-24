@@ -219,11 +219,11 @@ const releaseAll = (uid) => () => {
 
 const pressSustain = (uid) => {
 	sustainState[uid] = true
-	console.log('sustain ON')
+	// console.log('sustain ON')
 }
 const releaseSustain = (uid, source) => {
 	sustainState[uid] = false
-	console.log('sustain OFF')
+	// console.log('sustain OFF')
 	Object.entries(sustainedNotes).forEach(([note, noteset]) => {
 		updateNote(note, undefined, () => {
 			noteset.delete(uid)

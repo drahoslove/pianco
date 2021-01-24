@@ -195,7 +195,9 @@ window.autoplay = (url='/audio/midi/blues.mid') => {
   ws.send(`autoplay ${GID} ${UID} ${url}`)
   console.log('will play', url, 'soon')
   const selectOptions = ({ data: msg }) => {
-    if (typeof msg !== 'string') return;
+    if (typeof msg !== 'string') {
+      return
+    }
     const [cmd, data] = msg.split(' ')
     if (cmd === 'auto?instrument') {
       let question = "Select intruments:\n"
@@ -213,4 +215,13 @@ window.autoplay = (url='/audio/midi/blues.mid') => {
     }
   }
   ws.addEventListener('message', selectOptions)
+}
+
+window.randomplay = () => {
+  ws.send(`randomplay ${GID} ${UID}`)
+}
+
+window.stopplay = () => {
+  ws.send(`stopplay ${GID} ${UID}`)
+  // allOff()
 }

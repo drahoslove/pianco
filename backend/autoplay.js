@@ -1,11 +1,19 @@
 const { Midi } = require('@tonejs/midi')
+const fs = require('fs').promises
+const path = require('path')
 const fetch = require('node-fetch')
+
+const rand = (n) => Math.floor(Math.random() * n)
+
+const MIDI_CACHE_DIR = '../audio/midi'
 
 
 // TODO move to common file
 const CC_BANK_0 = 0
 const CC_BANK_1 = 32
 const CC_SUTAIN = 64
+const A0_NOTE = 21
+const C8_NOTE = 108
 
 const toCmd = (x) => (1<<3 | x)<<4
 const fromCmd = (cmd) => (cmd>>4) & 7
@@ -23,6 +31,25 @@ class Autoplay {
   constructor (room, user) {
     this.gid = room
     this.uid = user
+  }
+
+  playRandomFile = async () => {
+    const files = await fs.readdir(MIDI_CACHE_DIR)
+    const fileName = files[rand(files.length)]
+    const midiFile = await fs.readFile(path.join(MIDI_CACHE_DIR, fileName))
+    const midi = new Midi(midiFile)
+    const tracks = this.getTracks(midi)
+    this.playTracks(tracks)
+  }
+
+  stop = () => {
+    while (this.timers.length > 0) { // empty current timers
+      clearTimeout(this.timers.shift())
+    }
+    for (let note = A0_NOTE; note < C8_NOTE; note++) {
+      this.sendNoteOff({midi: note})
+    }
+    this.sendSustain(0)
   }
 
   requestHandler = (ws) => async (url) => {
@@ -43,14 +70,15 @@ class Autoplay {
         return
       }
       Autoplay.midis[url] = midi
+      const filePath = path.join(MIDI_CACHE_DIR, path.basename(url))
+      fs.writeFile(filePath, midiFile) // save to midi cache
+      console.log('file saved', filePath)
     }
     this.askForTracks(Autoplay.midis[url], ws)
   }
 
   playTracks = (tracks) => {
-    while (this.timers.length > 0) { // empty current timers
-      clearTimeout(this.timers.shift())
-    }
+    this.stop()
     for (let track of tracks) {
       console.log(' - scheduling notes')
       track.notes.forEach(note => {
