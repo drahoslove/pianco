@@ -6,6 +6,7 @@ const { normalRand, rand } = require('./rand.js')
 
 const MIDI_CACHE_DIR = '../audio/midi'
 
+const GHOST_UID = 255
 
 // TODO move to common file
 const CC_BANK_0 = 0
@@ -23,7 +24,7 @@ const fromVal = (val) => val/127
 class Autoplay {
   static midis = {}
   static wss
-  timers = []
+  timers = Array.from({ length: 256 }).map(() => [])
   ghostTimer = 0
   gid = 0
   uid = 0
@@ -34,42 +35,46 @@ class Autoplay {
   }
 
   resetGhost = (delay=60) => {
-    this.stop()
+    this.stop(GHOST_UID)
     clearTimeout(this.ghostTimer)
     this.ghostTimer = setTimeout(() => {
-      this.playRandomFile()
+      this.playRandomFile(GHOST_UID)
     }, 1000 * delay)
   }
 
-  playRandomNotes = (count) => {
-    this.stop()
+  playRandomNotes = (uid, count) => {
+    this.stop(uid)
     for (let i = 0; i < count; i++) {
       const midi = A0_NOTE + normalRand(C8_NOTE-A0_NOTE)
       const note = { midi, velocity: 0.5, duration: 0.5 + normalRand(0.25), time: i + rand(7)/7 }
 
-      this.timers.push(setTimeout(this.sendNoteOn, note.time*1000, note))
-      this.timers.push(setTimeout(this.sendNoteOff, note.time*1000 + note.duration*1000, note))
+      this.timers[uid].push(setTimeout(this.sendNoteOn, note.time*1000, note))
+      this.timers[uid].push(setTimeout(this.sendNoteOff, note.time*1000 + note.duration*1000, note))
     }
   }
 
-  playRandomFile = async () => {
+  playRandomFile = async (uid) => {
     const files = await fs.readdir(MIDI_CACHE_DIR)
+    if (files.length === 0) {
+      return
+    }
     const fileName = files[rand(files.length)]
     const midiFile = await fs.readFile(path.join(MIDI_CACHE_DIR, fileName))
     const midi = new Midi(midiFile)
     const tracks = this.getTracks(midi)
-    this.playTracks(tracks)
+    this.playTracks(tracks, uid)
   }
 
-  stop = () => {
-    while (this.timers.length > 0) { // empty current timers
-      clearTimeout(this.timers.shift())
+  stop = (uid) => {
+    while (this.timers[uid].length > 0) { // empty current timers
+      clearTimeout(this.timers[uid].shift())
     }
     for (let note = A0_NOTE; note <= C8_NOTE; note++) {
-      this.sendNoteOff({midi: note})
+      this.sendNoteOff({midi: note}, uid)
     }
-    this.sendSustain(0)
+    this.sendSustain(0, uid)
   }
+
 
   requestHandler = (ws) => async (url) => {
     console.log('midi autoplay requested', url)
@@ -96,16 +101,16 @@ class Autoplay {
     this.askForTracks(Autoplay.midis[url], ws)
   }
 
-  playTracks = (tracks) => {
-    this.stop()
+  playTracks = (tracks, uid) => {
+    this.stop(uid)
     for (let track of tracks) {
       console.log(' - scheduling notes')
       track.notes.forEach(note => {
-        this.timers.push(setTimeout(this.sendNoteOn, note.time*1000, note))
-        this.timers.push(setTimeout(this.sendNoteOff, note.time*1000 + note.duration*1000, note))
+        this.timers[uid].push(setTimeout(this.sendNoteOn, note.time*1000, note))
+        this.timers[uid].push(setTimeout(this.sendNoteOff, note.time*1000 + note.duration*1000, note))
       })
       track.controlChanges.sustain && track.controlChanges.sustain.forEach(cc => {
-        this.timers.push(setTimeout(this.sendSustain, cc.time*1000, cc.value))
+        this.timers[uid].push(setTimeout(this.sendSustain, cc.time*1000, cc.value))
       })
       console.log(` - will play ${track.notes.length} ${track.instrument.family} notes`)
     }
@@ -128,7 +133,7 @@ class Autoplay {
       const selectedIndexes = selection.split(',').map(Number)
       const midi = Autoplay.midis[url]
       const selectedTracks = this.getTracks(midi).filter((_, i) => selectedIndexes.includes(i))
-      this.playTracks(selectedTracks)
+      this.playTracks(selectedTracks, client.uid)
     })
   }
   

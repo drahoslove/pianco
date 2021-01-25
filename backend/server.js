@@ -23,8 +23,6 @@ const wss = new WebSocket.Server({ server })
 
 const groups = Array.from({ length: 256 }).map(() => new Set())
 
-let ghostTimeout = 0
-
 const broadcast = (data) => { // to everyone
   const [gid, uid] = data
   wss.clients.forEach(client => {
@@ -57,13 +55,14 @@ const status = () => { // broadcast state of the world to everyone
 wss.broadcast = broadcast
 wss.echo = echo
 wss.status = status
+wss.groups = groups
 
 
 // return uid which is not yet in the group
 const genUid = (gid) => {
   let uid
   do {
-    uid = Math.floor(Math.random()*256)
+    uid = Math.floor(Math.random()*255) // 0-254 - 255 is ghost
   } while (uid === ROOT_USR || groups[gid].has(uid))
   return uid
 }
@@ -107,15 +106,15 @@ wss.on('connection', function connection(ws) {
       }
       if (cmd === 'playrandomfile') {
         const [gid, uid] = values.map(Number)
-        autoplayers[gid].playRandomFile()
+        autoplayers[gid].playRandomFile(uid)
       }
       if (cmd === 'playrandomnotes') {
         const [gid, uid, count] = values.map(Number)
-        autoplayers[gid].playRandomNotes(count)
+        autoplayers[gid].playRandomNotes(uid, count)
       }
       if (cmd === 'stopplay') {
         const [gid, uid] = values.map(Number)
-        autoplayers[gid].stop()
+        autoplayers[gid].stop(uid)
       }
       // console.log(cmd, values)
     }
