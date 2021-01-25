@@ -98,6 +98,7 @@ wss.on('connection', function connection(ws) {
         ws.uid = newUid
         console.log(`${oldUid}@${oldGid} => ${newUid}@${newGid}`)
         wss.status()
+        autoplayers[ws.gid].resetGhost(20)
       }
       if (cmd === 'autoplay') {
         const [gid, uid] = values.map(Number)
