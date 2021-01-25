@@ -2,8 +2,7 @@ const { Midi } = require('@tonejs/midi')
 const fs = require('fs').promises
 const path = require('path')
 const fetch = require('node-fetch')
-
-const rand = (n) => Math.floor(Math.random() * n)
+const { normalRand, rand } = require('./rand.js')
 
 const MIDI_CACHE_DIR = '../audio/midi'
 
@@ -25,12 +24,32 @@ class Autoplay {
   static midis = {}
   static wss
   timers = []
+  ghostTimer = 0
   gid = 0
   uid = 0
 
   constructor (room, user) {
     this.gid = room
     this.uid = user
+  }
+
+  resetGhost = (delay=60) => {
+    this.stop()
+    clearTimeout(this.ghostTimer)
+    this.ghostTimer = setTimeout(() => {
+      this.playRandomFile()
+    }, 1000 * delay)
+  }
+
+  playRandomNotes = (count) => {
+    this.stop()
+    for (let i = 0; i < count; i++) {
+      const midi = A0_NOTE + normalRand(C8_NOTE-A0_NOTE)
+      const note = { midi, velocity: 0.5, duration: 0.5 + normalRand(0.25), time: i + rand(7)/7 }
+
+      this.timers.push(setTimeout(this.sendNoteOn, note.time*1000, note))
+      this.timers.push(setTimeout(this.sendNoteOff, note.time*1000 + note.duration*1000, note))
+    }
   }
 
   playRandomFile = async () => {
@@ -46,7 +65,7 @@ class Autoplay {
     while (this.timers.length > 0) { // empty current timers
       clearTimeout(this.timers.shift())
     }
-    for (let note = A0_NOTE; note < C8_NOTE; note++) {
+    for (let note = A0_NOTE; note <= C8_NOTE; note++) {
       this.sendNoteOff({midi: note})
     }
     this.sendSustain(0)

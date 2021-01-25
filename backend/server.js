@@ -23,6 +23,8 @@ const wss = new WebSocket.Server({ server })
 
 const groups = Array.from({ length: 256 }).map(() => new Set())
 
+let ghostTimeout = 0
+
 const broadcast = (data) => { // to everyone
   const [gid, uid] = data
   wss.clients.forEach(client => {
@@ -73,7 +75,9 @@ wss.on('connection', function connection(ws) {
   ws.send('connected')
   ws.on('message', function incoming(message) {
     if (typeof message !== "string") {
-      echo(message)
+      echo(message) // <--- this is the most important
+      // ghost:
+      autoplayers[ws.gid].resetGhost()
     } else {
       const [cmd, ...values] = message.split(' ')
       if (cmd === 'ping') {
@@ -100,14 +104,19 @@ wss.on('connection', function connection(ws) {
         const url= values[2]
         autoplayers[gid].requestHandler(ws)(url)
       }
-      if (cmd === 'randomplay') {
+      if (cmd === 'playrandomfile') {
         const [gid, uid] = values.map(Number)
         autoplayers[gid].playRandomFile()
+      }
+      if (cmd === 'playrandomnotes') {
+        const [gid, uid, count] = values.map(Number)
+        autoplayers[gid].playRandomNotes(count)
       }
       if (cmd === 'stopplay') {
         const [gid, uid] = values.map(Number)
         autoplayers[gid].stop()
       }
+      // console.log(cmd, values)
     }
   })
 

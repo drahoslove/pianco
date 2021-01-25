@@ -217,11 +217,14 @@ window.autoplay = (url='/audio/midi/blues.mid') => {
   ws.addEventListener('message', selectOptions)
 }
 
-window.randomplay = () => {
-  ws.send(`randomplay ${GID} ${UID}`)
+window.randomfile = () => {
+  ws.send(`playrandomfile ${GID} ${UID}`)
+}
+
+window.randomnotes = (count=16) => {
+  ws.send(`playrandomnotes ${GID} ${UID} ${count}`)
 }
 
 window.stopplay = () => {
   ws.send(`stopplay ${GID} ${UID}`)
-  // allOff()
 }
