@@ -11,6 +11,10 @@ import {
 } from './midi.js'
 import { networkingApp } from './vue/networking.js'
 
+Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || function () {
+  return new Response(this).arrayBuffer()
+} // polyfill for safari
+
 let UID = 0 // will be changed by backend
 let GID = 0 
 
