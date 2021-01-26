@@ -3,7 +3,7 @@
   "main": "index.html",
   "scripts": {
     "build": "webpack --config=webpack.config.js --mode development",
-    "start": "http-server -a localhost -p 80"
+    "start": "http-server -a 0.0.0.0 -p 80"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",

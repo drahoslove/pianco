@@ -204,7 +204,10 @@ staffBoxes.forEach((staffBox, j) => {
 // orientation
 
 const reorient = () => {
-  if (window.screen.orientation.type.includes('portrait')) {
+  const isPortrait = !!window.screen.orientation
+    ? window.screen.orientation.type.includes('portrait')
+    : window.screen.availHeight > window.screen.availWidth * 1.5
+  if (isPortrait) {
     document.body.classList.add('rotated')
   } else {
     document.body.classList.remove('rotated')

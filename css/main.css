@@ -146,11 +146,11 @@ body.rotated {
 	line-height: 28px;
 }
 
-#volume {
-	width: 0;
+#volume-label > #volume {
+	width: 0.01rem; /* safari will bug if 0 */
 	padding-left: 0.3rem;
 	transition: width 400ms ease-in-out, opacity 400ms ease-in-out;
-	opacity:0;
+	opacity: 0;
 }
 #volume-icon {
 	width: 1.5rem;
@@ -161,7 +161,6 @@ body.rotated {
 #volume-label:hover > #volume {
 	width: 4rem;
 	opacity: 1;
-	transition: width 400ms ease-in-out, opacity 400ms ease-in-out;
 }
 
 .buttons .user-icon {
@@ -205,6 +204,7 @@ body.rotated {
 	border: 1px solid #888;
 	color: transparent;
 	padding: 1rem 0;
+	margin: 0;
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
