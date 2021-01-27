@@ -94,6 +94,10 @@ header h1#logo {
 	transition: opacity 0.1s ease 0.2s, display 0 linear 0.3s;
 }
 
+.bar.info {
+	min-height: 6rem;
+}
+
 header.bar,
 footer.bar {
 	padding: 0 0.5rem;
