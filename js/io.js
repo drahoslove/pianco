@@ -116,7 +116,7 @@ const connect = () => {
   console.log('connecting')
   try {
     ws = new WebSocket(
-      location.hostname === 'localhost'
+      location.hostname !== 'pianco.online'
         ? 'ws://localhost:11088'
         : 'wss://pianoecho.draho.cz:11088'
     )

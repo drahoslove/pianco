@@ -8,6 +8,8 @@
 	Virtual piano - with multiplayer.
 	Play just for fun on your touch screen, try to cooperate with your friends, or connect your real piano via MIDI and share your skill with others." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎹</text></svg>">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2&display=swap" rel="stylesheet">
 <!-- Sentry -->
 <script src="https://browser.sentry-cdn.com/6.0.2/bundle.min.js" integrity="sha384-mPF153CKKRhOGUecfj8Bo9gMzP/39GkWXC498PTR2t9NU6SRnQQpCM2b3hiUTsEo" crossorigin="anonymous"></script>
 <script>
@@ -42,38 +44,9 @@ Sentry.init({
 		<div class="smoke"></div>
 		<div class="smoke"></div>
 	</div>
-	<div class="buttons">
+	<header class="bar">
 		<div>
-			<button id="midi" title="MIDI in">
-				<span class="mdi mdi-midi"></span>
-			</button>
-			<label for="instrument" id="instrument-label" title="output voice">
-				<span id="out-icon" class="mdi mdi-dots-horizontal"></span>
-				<select name="instrument" id="instrument" hidden>
-					<option value="piano"> piano</option>
-					<option value="polySynth" class="mid mid-waveform"> synth</option>
-					<option value="midiout" hidden>MIDI out</option>
-					<option value="none" selected hidden>...</option>
-					<!-- <option value="AMSynth">AM synth</option>
-					<option value="FMSynth">FM synt</option> -->
-				</select>
-			</label>
-			<label id="volume-label" title="volume">
-				<span id="volume-icon" class="mdi mdi-volume-high"></span>
-				<input id="volume" type="range" min="-40" value="0" max="0" step="2.5" />
-			</label>
-		</div>
-		<div>
-			<div class="staffs">
-				<div class="staff treble" hidden>
-					<span><i>𝄞</i>𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚</span>
-					<span>𝅗</span>
-				</div>
-				<div class="staff bass" hidden>
-					<span><i>𝄢</i>𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚</span>
-					<span>𝅗</span>
-				</div>
-			</div>
+			<h1 id="logo">Pianco</h1>
 		</div>
 		<div>
 			<button id="toggle-score"  title="toggle staff" >
@@ -88,6 +61,25 @@ Sentry.init({
 			<button id="toggle-cinema"  title="cinema mode">
 				<span class="mdi mdi-television-clean"></span>
 			</button>
+		</div>
+	</header>
+	<div class="bar">
+		<div>
+		</div>
+		<div>
+			<div class="staffs">
+				<div class="staff treble" hidden>
+					<span><i>𝄞</i>𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚</span>
+					<span>𝅗</span>
+				</div>
+				<div class="staff bass" hidden>
+					<span><i>𝄢</i>𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚</span>
+					<span>𝅗</span>
+				</div>
+			</div>
+		</div>
+		<div>
+
 		</div>
 	</div>
 	<div class="keyboard letters">
@@ -115,27 +107,34 @@ Sentry.init({
 			<button data-note="F">'</button>
 		</div>
 	</div>
-	<div class="buttons">
-		<div id="networking-app" v-cloak>
-			<button :content="isOnline ? 'connected' : 'disconnected'" v-tippy>
-				<span v-if="isOnline" class="mdi mdi-check-network"></span>
-				<span v-if="!isOnline" class="mdi mdi-close-network"></span>
+	<div class="bar">
+		<div>
+			<button id="midi" title="MIDI in">
+				<span class="mdi mdi-midi"></span>
 			</button>
-			<label v-if="copianists.length > 0" content="co-pianists" v-tippy>
-				<span v-for="u of copianists" :style="{'--color': userColor(u)}" class="mdi mdi-account-network user-icon"></span>
+			<label for="instrument" id="instrument-label" title="output voice">
+				<span id="out-icon" class="mdi mdi-dots-horizontal"></span>
+				<select name="instrument" id="instrument" hidden>
+					<option value="piano"> piano</option>
+					<option value="polySynth" class="mid mid-waveform"> synth</option>
+					<option value="midiout" hidden>MIDI out</option>
+					<option value="none" selected hidden>...</option>
+					<!-- <option value="AMSynth">AM synth</option>
+					<option value="FMSynth">FM synt</option> -->
+				</select>
+			</label>
+			<label id="volume-label" title="volume">
+				<span id="volume-icon" class="mdi mdi-volume-high"></span>
+				<input id="volume" type="range" min="-40" value="0" max="0" step="2.5" />
 			</label>
 		</div>
-		<div class="footer">
-			<b></b>	
-		</div>
+
 		<div>
 			<button id="go-down" title="shift left"><span class="mdi mdi-chevron-left"></span></button>
 			<button id="go-mid" title="shift to middle"><span class="mdi mdi-chevron-up"></span></button>
 			<button id="go-up" title="shift right"><span class="mdi mdi-chevron-right"></span></button>
 		</div>
-		<div class="footer">
-			<b></b>	
-		</div>
+
 		<div id="recorder-app" v-cloak>
 			<button title="record" disabled>
 				<span v-if="!isRecording" class="mdi mdi-record-circle-outline"></span>
@@ -147,6 +146,32 @@ Sentry.init({
 			</button>
 		</div>
 	</div>
+	<footer class="bar" id="networking-app" v-cloak>
+		<div>
+			<button :content="isOnline ? 'connected' : 'disconnected'" v-tippy>
+				<span v-if="isOnline" class="mdi mdi-check-network"></span>
+				<span v-if="!isOnline" class="mdi mdi-close-network"></span>
+			</button>
+			<label v-if="copianists.length > 0" content="co-pianists" v-tippy>
+				<span v-for="u of copianists" :style="{'--color': userColor(u)}" class="mdi mdi-account-network user-icon"></span>
+			</label>
+		</div>
+		<div>
+			<button
+				v-for="room of [0,1,2]"
+				@click="changeRoom(room)"
+				:class="gid === room ? 'on' : ''"
+				v-tippy :content="`room ${room}`"
+			>
+				{{ room }}
+			</button>
+		</div>
+		<div>
+			<span class="copy">
+				&copy; <a href="https://draho.cz/" rel="me">draho.cz</a>
+			</span>
+		</div>
+	</footer>
 	<div class="cinema-bar">
 		<button id="fullscreen" class="mdi mdi-fullscreen" title="toggle fullscreen" data-placement="bottom"></button>
 		<button id="cinema-off" class="mdi mdi-close" title="close cinema mode" data-placement="bottom"></button>
