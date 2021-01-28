@@ -97,6 +97,7 @@ wss.on('connection', async function connection(ws) {
           wss.status()
           return
         }
+        autoplayers[oldGid].stop(oldUid)
         groups[oldGid] && groups[oldGid].delete(oldUid)
         const newUid = genUid(newGid)
         groups[newGid].add(newUid)
@@ -131,6 +132,7 @@ wss.on('connection', async function connection(ws) {
   ws.on('close', () => {
     const { gid, uid } = ws
     if (gid !== undefined && uid !== undefined) {
+      autoplayers[gid].stop(uid)
       groups[gid].delete(uid)
       console.log(`${uid}@${gid} => close`)
       wss.status()

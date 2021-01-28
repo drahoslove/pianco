@@ -136,13 +136,14 @@ Sentry.init({
 		</div>
 
 		<div id="recorder-app" v-cloak>
-			<button title="record" disabled>
+			<button title="record" @click="toggleRecord" disabled>
 				<span v-if="!isRecording" class="mdi mdi-record-circle-outline"></span>
 				<span v-if="isRecording" class="mdi mdi-stop-circle-outline"></span>
 			</button>
-			<button title="replay" disabled>
+			<button @click="togglePlay" v-tippy :content="!isPlaying ? 'Random replay' : 'Stop'">
 				<span v-if="!isPlaying" class="mdi mdi-play-circle-outline"></span>
-				<span v-if="isPlaying" class="mdi mdi-pause-circle-outline"></span>
+				<!-- <span v-if="isPlaying" class="mdi mdi-pause-circle-outline"></span> -->
+				<span v-if="isPlaying" class="mdi mdi-stop-circle-outline"></span>
 			</button>
 		</div>
 	</div>

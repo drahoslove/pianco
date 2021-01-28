@@ -10,6 +10,8 @@ import {
   CC_SUTAIN,
 } from './midi.js'
 import { networkingApp } from './vue/networking.js'
+import { recorderApp } from './vue/recorder.js'
+
 
 Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || function () {
   return new Response(this).arrayBuffer()
@@ -35,6 +37,7 @@ const onRegroup = onCmd('regroup', (values) => {
   const [newGid, newUid] = values.map(Number)
   networkingApp.gid = GID = newGid
   networkingApp.uid = UID = newUid
+  recorderApp.reset()
   console.log(`${UID}@${GID} changed`)
 })
 
@@ -231,4 +234,9 @@ window.randomnotes = (count=16) => {
 
 window.stopplay = () => {
   ws.send(`stopplay ${GID} ${UID}`)
+}
+
+window.interrupt = () => {
+  sendNoteOn('C4', 0)({})
+  sendNoteOff('C4')({})
 }
