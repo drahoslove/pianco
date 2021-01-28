@@ -1,4 +1,8 @@
+const { type } = require('os')
 const WebSocket = require('ws')
+
+const CMD_NOTE_ON = 1
+const fromCmd = (cmd) => (cmd>>4) & 7
 
 const ROOT_USR = 0
 const ROOT_GRP = 0
@@ -69,15 +73,19 @@ const genUid = (gid) => {
 const Autoplay = require('./autoplay.js')(wss)
 const autoplayers = groups.map((_, gid) => new Autoplay(gid, ROOT_USR)) // init autoplaye for each group
 
-wss.on('connection', function connection(ws) {
+wss.on('connection', async function connection(ws) {
   console.log('client connected')
   ws.send('connected')
   ws.on('message', function incoming(message) {
-    if (typeof message !== "string") {
+    if (message instanceof Buffer) {
       echo(message) // <--- this is the most important
       // ghost:
-      autoplayers[ws.gid].resetGhost(60)
-    } else {
+      const [gid, uid, cmd] = new Uint8Array(message)
+      if (fromCmd(cmd) === CMD_NOTE_ON) { // note on
+        autoplayers[ws.gid].resetGhost(60)
+      }
+    } 
+    if (typeof message === "string") {
       const [cmd, ...values] = message.split(' ')
       if (cmd === 'ping') {
         ws.send('pong')
@@ -97,7 +105,7 @@ wss.on('connection', function connection(ws) {
         ws.uid = newUid
         console.log(`${oldUid}@${oldGid} => ${newUid}@${newGid}`)
         wss.status()
-        autoplayers[ws.gid].resetGhost(20)
+        autoplayers[ws.gid].resetGhost(20, true)
       }
       if (cmd === 'autoplay') {
         const [gid, uid] = values.map(Number)

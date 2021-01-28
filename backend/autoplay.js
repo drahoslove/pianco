@@ -34,7 +34,7 @@ class Autoplay {
     this.uid = user
   }
 
-  resetGhost = (delay=60, noStop=true) => {
+  resetGhost = (delay=60, noStop=false) => {
     if (!noStop) {
       this.stop(GHOST_UID)
     }

@@ -265,7 +265,7 @@ const instrumentSelector = document.querySelector('#instrument')
 instrumentSelector.onchange = (e) => {
   const { value } = e.target
   document.querySelector('#out-icon').className = {
-    'piano': 'mdi mdi-piano',
+    'sampledPiano': 'mdi mdi-piano',
     'polySynth': 'mdi mdi-sine-wave',
     'midiout': 'mdi mdi-midi',
   }[value] || 'mdi'
@@ -277,14 +277,14 @@ instrumentLabel.onmouseup = (e) => {
   instrumentSelector.dispatchEvent(new Event('change', { bubbles: false }))
   if([...instrumentSelector.options].some(({ value, hidden }) => value === 'midiout' && hidden)) { // midi not enabled
     instrumentSelector.value = {
-      'piano': 'polySynth',
-      'polySynth': 'piano',
+      'sampledPiano': 'polySynth',
+      'polySynth': 'sampledPiano',
     }[currentValue] || 'none'
   } else { // midi enabled
     instrumentSelector.value ={
-      'piano': 'polySynth',
+      'sampledPiano': 'polySynth',
       'polySynth': 'midiout',
-      'midiout': 'piano'
+      'midiout': 'sampledPiano'
     }[currentValue] || 'none'
   }
   instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))

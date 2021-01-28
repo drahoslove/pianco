@@ -115,7 +115,7 @@ Sentry.init({
 			<label for="instrument" id="instrument-label" title="output voice">
 				<span id="out-icon" class="mdi mdi-dots-horizontal"></span>
 				<select name="instrument" id="instrument" hidden>
-					<option value="piano"> piano</option>
+					<option value="sampledPiano"> piano</option>
 					<option value="polySynth" class="mid mid-waveform"> synth</option>
 					<option value="midiout" hidden>MIDI out</option>
 					<option value="none" selected hidden>...</option>
@@ -158,12 +158,14 @@ Sentry.init({
 		</div>
 		<div class="tabs">
 			<button
-				v-for="room of [0,1,2]"
+				v-for="room of [0,1,2,3]"
 				@click="changeRoom(room)"
 				:class="gid === room ? 'on' : ''"
 				v-tippy :content="`room ${room}`"
 			>
-				{{ room }}
+			<span
+				:class="`mdi mdi-numeric-${ room }-circle`"></span>
+				<!-- {{ ['⊙','⊚','⦾',][room] }} -->
 			</button>
 		</div>
 		<div>

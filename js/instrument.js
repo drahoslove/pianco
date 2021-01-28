@@ -40,7 +40,7 @@ const instruments = {
   }).toMaster(),
   AMSynth: new Tone.AMSynth().toMaster(),
   FMSynth: new Tone.FMSynth().toMaster(),
-  piano: new Tone.Sampler({
+  sampledPiano: new Tone.Sampler({
     "A0" : "A0.[mp3|ogg]",
     "C1" : "C1.[mp3|ogg]",
     "D#1" : "Ds1.[mp3|ogg]",
@@ -76,7 +76,7 @@ const instruments = {
     onload: () => {
 			console.log('piano samples loaded')
 			if (instrumentSelector.value === 'none') {
-				instrumentSelector.value = 'piano'
+				instrumentSelector.value = 'sampledPiano'
 				instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
 			}
     },
