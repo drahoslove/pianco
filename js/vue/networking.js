@@ -12,7 +12,11 @@ export const networkingApp = new Vue({
     },
   },
   methods: {
-    userColor: (uid) => `hsla(${(uid/256) * 360}, 50%, 50%)`,
+    userColor: function (uid) {
+      return uid === this.uid
+        ? '#eee'
+        :`hsla(${(uid/256) * 360}, 50%, 50%)`
+    },
     changeRoom: function (room) {
       window.location.hash = room || ''
     },
