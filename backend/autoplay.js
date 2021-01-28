@@ -34,8 +34,10 @@ class Autoplay {
     this.uid = user
   }
 
-  resetGhost = (delay=60) => {
-    this.stop(GHOST_UID)
+  resetGhost = (delay=60, noStop=true) => {
+    if (!noStop) {
+      this.stop(GHOST_UID)
+    }
     clearTimeout(this.ghostTimer)
     this.ghostTimer = setTimeout(() => {
       this.playRandomFile(GHOST_UID)

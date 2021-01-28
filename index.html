@@ -156,7 +156,7 @@ Sentry.init({
 				<span v-for="u of copianists" :style="{'--color': userColor(u)}" class="mdi mdi-account-network user-icon"></span>
 			</label>
 		</div>
-		<div>
+		<div class="tabs">
 			<button
 				v-for="room of [0,1,2]"
 				@click="changeRoom(room)"

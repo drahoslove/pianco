@@ -120,7 +120,11 @@ navigator.requestMIDIAccess && navigator.requestMIDIAccess().then((midiAccess) =
 
 // instrument selector
 const instrumentSelector = document.getElementById('instrument')
-instrumentSelector.onchange = function () { this.blur() }
+instrumentSelector.addEventListener('change', function () {
+	allOff()
+	this.blur()
+})
+
 const getInstrument = (source) => (source !== 'midiin' || instrumentSelector.value !== 'midiout') // if source is midi, we don't want to send play the note twice
 	? instruments[instrumentSelector.value]
 	: instruments.none

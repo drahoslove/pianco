@@ -76,7 +76,7 @@ wss.on('connection', function connection(ws) {
     if (typeof message !== "string") {
       echo(message) // <--- this is the most important
       // ghost:
-      autoplayers[ws.gid].resetGhost()
+      autoplayers[ws.gid].resetGhost(60)
     } else {
       const [cmd, ...values] = message.split(' ')
       if (cmd === 'ping') {

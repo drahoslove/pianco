@@ -15,7 +15,6 @@ export const networkingApp = new Vue({
     userColor: (uid) => `hsla(${(uid/256) * 360}, 50%, 50%)`,
     changeRoom: function (room) {
       window.location.hash = room || ''
-      this.gid = room
     },
   },
 })

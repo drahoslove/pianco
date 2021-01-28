@@ -62,6 +62,7 @@ header {
 }
 footer {
 	bottom: 0;
+	box-shadow: inset 0px 12px 10px -10px #000;
 }
 
 header h1#logo {
@@ -75,6 +76,8 @@ header h1#logo {
 	color: #888;
 	display: inline-block;
 	margin: 0 1em;
+	font-family: 'Baloo 2';
+	font-size: 14pt;
 }
 .copy a {
 	color: inherit;
@@ -119,6 +122,37 @@ footer.bar {
 	justify-content: center;
 }
 
+/* tabs */
+.bar>div.tabs {
+	align-self: flex-start;
+}
+.bar>.tabs button {
+	border: none;
+	background-color: #888;
+	color: #212121;
+	border-bottom-left-radius: .5rem;
+	border-bottom-right-radius: .5rem;
+	box-shadow: inset 0px 12px 10px -10px #555;
+	font-family: 'Baloo 2';
+}
+.bar>.tabs button:hover {
+	background-color: #9a9a9a;
+}
+.bar>.tabs button.on {
+	background-color: #aaa;
+	color: #212121;
+	box-shadow: none;
+}
+.bar>.tabs button.on::after {
+	display: none;
+}
+.bar>.tabs button:first-child,
+.bar>.tabs button:last-child {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+
 .bar button,
 .bar select,
 .bar label {
@@ -143,14 +177,13 @@ footer.bar {
 header.bar button,
 footer.bar button,
 footer.bar label {
-	background: transparent;
+	border-color: #212112;
+	background: #333;
 	color: #888;
 }
 header.bar button.on,
 header.bar button.onon,
 footer.bar button.on {
-	background: transparent;
-	color: #888;
 	color: #ddd;
 }
 .bar div>:first-child {
@@ -873,6 +906,10 @@ input[type=range]::-ms-thumb {
 	}
 	.staffs {
 		font-size: 2.5em;
+	}
+	header,
+	footer {
+		display: none;
 	}
 }
 
