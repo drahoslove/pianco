@@ -8,7 +8,7 @@ export const networkingApp = new Vue({
   },
   computed: {
     copianists: function () {
-      return this.users.filter(uid => this.uid !== uid)
+      return this.users // .filter(uid => this.uid !== uid)
     },
   },
   methods: {

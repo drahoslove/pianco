@@ -153,8 +153,8 @@ Sentry.init({
 				<span v-if="isOnline" class="mdi mdi-check-network"></span>
 				<span v-if="!isOnline" class="mdi mdi-close-network"></span>
 			</button>
-			<label v-if="copianists.length > 0" content="co-pianists" v-tippy>
-				<span v-for="u of copianists" :style="{'--color': userColor(u)}" class="mdi mdi-account-network user-icon"></span>
+			<label v-for="u of copianists" :content="u === uid ? 'you' : 'copianist'" v-tippy>
+				<span :style="{'--color': userColor(u)}" class="mdi mdi-account-network user-icon"></span>
 			</label>
 		</div>
 		<div class="tabs">

@@ -61,6 +61,8 @@ wss.echo = echo
 wss.status = status
 wss.groups = groups
 
+groups[ROOT_GRP].add(ROOT_USR) // add ghost player to main room permanently
+
 
 // return uid which is not yet in the group
 const genUid = (gid) => {
@@ -82,7 +84,9 @@ wss.on('connection', async function connection(ws) {
       // ghost:
       const [gid, uid, cmd] = new Uint8Array(message)
       if (fromCmd(cmd) === CMD_NOTE_ON) { // note on
-        autoplayers[ws.gid].resetGhost(60)
+        if (ws.gid === 0) {
+          autoplayers[ws.gid].resetGhost(120)
+        }
       }
     } 
     if (typeof message === "string") {
@@ -97,8 +101,10 @@ wss.on('connection', async function connection(ws) {
           wss.status()
           return
         }
-        autoplayers[oldGid].stop(oldUid)
-        groups[oldGid] && groups[oldGid].delete(oldUid)
+        if (oldUid !== 0) {
+          autoplayers[oldGid].stop(oldUid)
+          groups[oldGid] && groups[oldGid].delete(oldUid)
+        }
         const newUid = genUid(newGid)
         groups[newGid].add(newUid)
         ws.send(`regroup ${newGid} ${newUid}`)
@@ -106,7 +112,9 @@ wss.on('connection', async function connection(ws) {
         ws.uid = newUid
         console.log(`${oldUid}@${oldGid} => ${newUid}@${newGid}`)
         wss.status()
-        autoplayers[ws.gid].resetGhost(20, true)
+        if (ws.gid === 0) {
+          autoplayers[ws.gid].resetGhost(60, true)
+        }
       }
       if (cmd === 'autoplay') {
         const [gid, uid] = values.map(Number)
