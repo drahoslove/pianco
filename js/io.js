@@ -126,7 +126,7 @@ const connect = () => {
     ws = new WebSocket(
       location.hostname !== 'pianco.online'
         ? `ws://${location.hostname}:11088`
-        : 'wss://pianoecho.draho.cz:11088'
+        : 'wss://pianoecho.draho.cz'
     )
     // handle regroup
     ws.addEventListener('message', onRegroup)
