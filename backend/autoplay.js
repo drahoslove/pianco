@@ -34,12 +34,14 @@ class Autoplay {
     this.uid = user
   }
 
-  resetGhost = (delay=60, noStop=false) => {
-    if (!noStop) {
+  resetGhost = ({delay=60, stopCurrent, pretendScared}) => {
+    if (stopCurrent) {
       if (this.timers[GHOST_UID].filter(id => !id._destroyed).length > 0) {
         setTimeout(() => {
           this.stop(GHOST_UID)
-          this.playRandomNotes(GHOST_UID, 5, 7)
+          if (pretendScared) {
+            this.playRandomNotes(GHOST_UID, 5, 7)
+          }
         }, 500)
       }
     }

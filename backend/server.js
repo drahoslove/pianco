@@ -82,10 +82,15 @@ wss.on('connection', async function connection(ws) {
     if (message instanceof Buffer) {
       echo(message) // <--- this is the most important
       // ghost:
-      if (ws.gid === 0 || ws.gid === undefined) { // gopiano should trigger this also
+      const isDirectApi = ws.gid === undefined
+      if (ws.gid === ROOT_GRP || isDirectApi) { // gopiano should trigger this also
         const [gid, uid, cmd] = new Uint8Array(message)
         if (fromCmd(cmd) === CMD_NOTE_ON) { // note on
-          autoplayers[ws.gid||0].resetGhost(120)
+          autoplayers[ROOT_GRP].resetGhost({
+            delay: 120,
+            stopCurrent: true,
+            pretendScared: !isDirectApi,
+          })
         }
       }
     } 
@@ -113,7 +118,10 @@ wss.on('connection', async function connection(ws) {
         console.log(`${oldUid}@${oldGid} => ${newUid}@${newGid}`)
         wss.status()
         if (ws.gid === 0) {
-          autoplayers[ws.gid].resetGhost(60, true)
+          autoplayers[ws.gid].resetGhost({
+            delay: 60,
+            stopCurrent: false,
+          })
         }
       }
       if (cmd === 'autoplay') {
