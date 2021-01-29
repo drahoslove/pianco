@@ -36,7 +36,12 @@ class Autoplay {
 
   resetGhost = (delay=60, noStop=false) => {
     if (!noStop) {
-      this.stop(GHOST_UID)
+      if (this.timers[GHOST_UID].filter(id => !id._destroyed).length > 0) {
+        setTimeout(() => {
+          this.stop(GHOST_UID)
+          this.playRandomNotes(GHOST_UID, 5, 7)
+        }, 500)
+      }
     }
     clearTimeout(this.ghostTimer)
     this.ghostTimer = setTimeout(() => {
@@ -44,11 +49,11 @@ class Autoplay {
     }, 1000 * delay)
   }
 
-  playRandomNotes = (uid, count) => {
+  playRandomNotes = (uid, count, tempo=1.0) => {
     this.stop(uid)
     for (let i = 0; i < count; i++) {
       const midi = A0_NOTE + normalRand(C8_NOTE-A0_NOTE)
-      const note = { midi, velocity: 0.5, duration: 0.5 + normalRand(0.25), time: i + rand(7)/7 }
+      const note = { midi, velocity: 0.5, duration: 0.5/tempo + normalRand(0.25), time: (i + rand(7)/7)/tempo }
 
       this.timers[uid].push(setTimeout(this.sendNoteOn, note.time*1000, note))
       this.timers[uid].push(setTimeout(this.sendNoteOff, note.time*1000 + note.duration*1000, note))

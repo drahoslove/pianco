@@ -225,6 +225,7 @@ window.addEventListener('keyup', e => {
 // init MIDI input
 const midiEl = document.getElementById('midi')
 const reloadMidi = (isFrist) => {
+  console.log('will reload midi')
   if (navigator.requestMIDIAccess) {
     console.log('This browser supports Web MIDI!')
     updateTooltip(midiEl, 'MIDI in: supported', isFrist !== true)

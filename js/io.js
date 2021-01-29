@@ -7,6 +7,7 @@ import {
 } from './instrument.js'
 import {
   fromCmd, toCmd, fromVal, toVal,
+  CMD_NOTE_ON, CMD_NOTE_OFF, CMD_CONTROL_CHANGE,
   CC_SUTAIN,
 } from './midi.js'
 import { networkingApp } from './vue/networking.js'
@@ -58,14 +59,14 @@ const onBlob = async ({ data }) => {
     return
   }
   const note = Tone.Midi(val1).toNote()
-  if (fromCmd(cmd) === 1) {
+  if (fromCmd(cmd) === CMD_NOTE_ON) {
     const velocity = fromVal(val2)
     pressNote(note, velocity, uid)()
   } 
-  if (fromCmd(cmd) === 0) {
+  if (fromCmd(cmd) === CMD_NOTE_OFF) {
     releaseNote(note, uid)()
   }
-  if (fromCmd(cmd) === 3) { // control command
+  if (fromCmd(cmd) === CMD_CONTROL_CHANGE) { // control command
     if (val1 === CC_SUTAIN) {
       const sustain = fromVal(val2)
       if (sustain >= 0.5) {
@@ -120,7 +121,7 @@ const connect = () => {
   try {
     ws = new WebSocket(
       location.hostname !== 'pianco.online'
-        ? 'ws://localhost:11088'
+        ? `ws://${location.hostname}:11088`
         : 'wss://pianoecho.draho.cz:11088'
     )
     // handle regroup

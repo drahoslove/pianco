@@ -82,10 +82,10 @@ wss.on('connection', async function connection(ws) {
     if (message instanceof Buffer) {
       echo(message) // <--- this is the most important
       // ghost:
-      const [gid, uid, cmd] = new Uint8Array(message)
-      if (fromCmd(cmd) === CMD_NOTE_ON) { // note on
-        if (ws.gid === 0) {
-          autoplayers[ws.gid].resetGhost(120)
+      if (ws.gid === 0 || ws.gid === undefined) { // gopiano should trigger this also
+        const [gid, uid, cmd] = new Uint8Array(message)
+        if (fromCmd(cmd) === CMD_NOTE_ON) { // note on
+          autoplayers[ws.gid||0].resetGhost(120)
         }
       }
     } 

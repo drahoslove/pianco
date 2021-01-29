@@ -15,7 +15,7 @@ const CHANNEL = 3 // this is what roland actually uses as output
 
 export const toCmd = (x, ch=CHANNEL) => (1<<3 | x)<<4 | ch
 export const fromCmd = (cmd) => (cmd>>4) & 7
-export const chanFromCmd = (cmd) => cmd && 0x0F
+export const chanFromCmd = (cmd) => cmd & 0x0F
 
 export const toVal = (x) => Math.round(x*127)
 export const fromVal = (val) => val/127
