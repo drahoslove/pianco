@@ -122,6 +122,10 @@ footer.bar {
 	justify-content: center;
 }
 
+header.bar>div>div {
+	display: flex;
+}
+
 /* tabs */
 .bar>div.tabs {
 	align-self: flex-start;
@@ -341,8 +345,25 @@ footer.bar button.on {
 	background-color: #fff;
 	z-index: 2;
 	box-shadow: 0px 0px 20px 3px hsl(calc(var(--hue) * 2), 75%, 85%);
-	background-image: linear-gradient(0deg, hsla(calc(var(--hue) * 2), 70%, 50%, 0.6) 0%, hsla(calc(var(--hue) * 2), 70%, 100%, 0.1) 100%);
-
+	background-image:	linear-gradient(
+			0deg,
+			hsla(calc(var(--hue) * 2), 70%, 50%, 0.6) 0%,
+			hsla(calc(var(--hue) * 2), 70%, 100%, 0.1) 100%
+		);
+}
+.velocity .bottom-keys button.pressed {
+	background-image:	linear-gradient(
+			0deg,
+			hsla(calc(var(--hue) * 2), 70%, 50%, 0.6) 0%,
+			hsla(calc(var(--hue) * 2), 70%, 50%, 0.6) calc(var(--velocity) * 100%),
+			transparent calc(var(--velocity) * 100%),
+			transparent 100%
+		),	
+		linear-gradient( /* this is copied from above*/
+			0deg,
+			hsla(calc(var(--hue) * 2), 70%, 50%, 0.6) 0%,
+			hsla(calc(var(--hue) * 2), 70%, 100%, 0.1) 100%
+		);
 }
 .letters .bottom-keys button {
 	color: #666;
@@ -360,8 +381,28 @@ footer.bar button.on {
 .top-keys button.pressed {
 	background-color: #000;
 	box-shadow: 0px 0px 20px 3px hsl(calc(var(--hue) * 2), 75%, 85%);
-	background-image: linear-gradient(180deg, hsla(calc(var(--hue) * 2), 70%, 50%, 0.8) 0%, hsla(calc(var(--hue) * 2), 70%, 50%, 0.1) 100%);
+	background-image:
+		linear-gradient(
+			180deg,
+			hsla(calc(var(--hue) * 2), 70%, 50%, 0.8) 0%,
+			hsla(calc(var(--hue) * 2), 70%, 50%, 0.1) 100%
+		);
+}
 
+.velocity .top-keys button.pressed {
+	background-image:
+		linear-gradient(
+			0deg,
+			hsl(calc(var(--hue) * 2), 70%, 50%) 0%,
+			hsl(calc(var(--hue) * 2), 70%, 50%) calc(var(--velocity) * 100%),
+			transparent calc(var(--velocity) * 100%),
+			transparent 100%
+		),
+		linear-gradient( /* this is copied from above*/
+			180deg,
+			hsla(calc(var(--hue) * 2), 70%, 50%, 0.8) 0%,
+			hsla(calc(var(--hue) * 2), 70%, 50%, 0.1) 100%
+		);
 }
 .letters .top-keys button {
 	color: #aaa;

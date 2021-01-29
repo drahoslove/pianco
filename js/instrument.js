@@ -177,7 +177,10 @@ const updateNote = (note, velocity, action) => (source) => {
 	const isSustained = sustainedNotes[note].size > 0
 
 	if (!wasPressed && isPressed) {
-		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.add('pressed'))  
+		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList, style }) => {
+			classList.add('pressed')
+			style.setProperty('--velocity', velocity)
+		})  
 		if (isSustained) { // repressing sustained note
 			releaseRect(note)
 			getInstrument(source).triggerRelease([note])
@@ -186,7 +189,10 @@ const updateNote = (note, velocity, action) => (source) => {
 		getInstrument(source).triggerAttack(note, "+0", velocity)
 	}
 	if (wasPressed && !isPressed) {
-		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList }) => classList.remove('pressed'))
+		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList, style }) => {
+			classList.remove('pressed')
+			style.setProperty('--velocity', 0)
+		})
 		if (!isSustained) {
 			releaseRect(note)
 			getInstrument(source).triggerRelease(note, "+0.001")

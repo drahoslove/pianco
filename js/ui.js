@@ -2,6 +2,7 @@
 const defaultSettings = {
   labels: false,
   qwerty: false,
+  velocity: false,
   score: 1,
   cinema: false,
 }
@@ -30,6 +31,10 @@ const actions = {
     const staff2 = document.querySelector('.staff.bass')
     staff1.hidden = val < 1
     staff2.hidden = val < 2
+  },
+  velocity: (val) => {
+    const keyboard = document.querySelector('.keyboard')
+    keyboard.classList[val ? 'add' : 'remove']('velocity')
   },
   cinema: (val) => {
     document.body.parentElement.classList[val ? 'add' : 'remove']('cinema')
