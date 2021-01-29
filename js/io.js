@@ -24,6 +24,8 @@ let GID = 0
 // WS!
 let ws
 
+// ws message handlers
+
 const onCmd = (cmdName, callback) => async ({ data: message }) => {
   if (typeof message !== 'string') {
     return
@@ -94,16 +96,9 @@ const pingPong = () => {
   let now
   let pings = 0
   let pongs = 0
-  ws.addEventListener('message', ({ data }) => {
-    if (data === 'pong') {
-      pongs++
-      if (localStorage.DEBUG){
-        console.log('ping', Math.floor((performance.now() - now)*100) /100, 'ms')
-      }
-    }
-  })
-  ;(function ping() {
+  const ping = () => {
     if (pings !== pongs) {
+      // networkingApp.isOnline = false
       ws.close()
       return
     }
@@ -113,7 +108,16 @@ const pingPong = () => {
     }
     pings++
     setTimeout(ping, 5000 + Math.floor(Math.random()*2000))
-  })()
+  }
+  ws.addEventListener('message', ({ data }) => {
+    if (data === 'pong') {
+      pongs++
+      if (localStorage.DEBUG){
+        console.log('ping', Math.floor((performance.now() - now)*100) /100, 'ms')
+      }
+    }
+  })
+  ping()
 }
 
 const connect = () => {

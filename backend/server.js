@@ -1,4 +1,3 @@
-const { type } = require('os')
 const WebSocket = require('ws')
 
 const CMD_NOTE_ON = 1
@@ -8,22 +7,8 @@ const ROOT_USR = 0
 const ROOT_GRP = 0
 
 const PORT = process.env.PORT || 11088
-const { SSL_KEY, SSL_CA, SSL_CERT } = process.env
 
-let server
-if (!SSL_KEY || !SSL_CA || !SSL_CERT) { // http
-	server = require('http').createServer().listen(PORT, '0.0.0.0')
-} else { // https
-  console.log("using certificate", SSL_KEY)
-	let fs = require('fs')
-	server = require('https').createServer({
-		key: fs.readFileSync(SSL_KEY),
-		cert: fs.readFileSync(SSL_CERT),
-		ca: fs.readFileSync(SSL_CA),
-	}).listen(PORT)
-}
-
-const wss = new WebSocket.Server({ server })
+const wss = new WebSocket.Server({ port: PORT })
 
 const groups = Array.from({ length: 256 }).map(() => new Set())
 
@@ -77,6 +62,7 @@ const autoplayers = groups.map((_, gid) => new Autoplay(gid, ROOT_USR)) // init 
 
 wss.on('connection', async function connection(ws) {
   console.log('client connected')
+  ws.isAlive = true
   ws.send('connected')
   ws.on('message', function incoming(message) {
     if (message instanceof Buffer) {
@@ -154,6 +140,24 @@ wss.on('connection', async function connection(ws) {
       wss.status()
     }
   })
+})
+
+const healthInterval = setInterval(() => {
+  wss.clients.forEach(ws => {
+    if (ws.isAlive === false) {
+      ws.terminate()
+      return
+    }
+    ws.isAlive = false
+    ws.ping()
+    ws.once('pong', () => {
+      ws.isAlive = true
+    })
+  })
+}, 30000)
+
+wss.on('close', () => {
+  clearInterval(healthInterval)
 })
 
 console.log('listening on port', PORT)
