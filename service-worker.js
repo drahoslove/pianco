@@ -1,13 +1,16 @@
-const CACHE = 'rc-cache';
+// https://serviceworke.rs/strategy-cache-and-update_service-worker_doc.html
+const CACHE = 'cache-and-update'
 const filesToCache = [
-  location.pathname, // self
+  '/',
   '/rc',
   '/js/rc.js',
   '/js/roland.js',
   '/js/pianoteq.js',
   '/lib/Tone.js',
+  '/font/Bravura.woff2',
   'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.2.45/css/materialdesignicons.min.css',
+  'https://cdn.jsdelivr.net/npm/vue-tippy/dist/vue-tippy.min.js',
+  'https://cdn.jsdelivr.net/npm/@mdi/font@5.9.55/css/materialdesignicons.min.css',
   'https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js',
   'https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js',
@@ -26,7 +29,7 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(fromCache(e.request))
-  e.waitUntil(update(e.request))
+  e.waitUntil(update(e.request.clone()))
 })
 
 function precache() {

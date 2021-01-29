@@ -8,13 +8,11 @@
 	Virtual piano - with multiplayer.
 	Play just for fun on your touch screen, try to cooperate with your friends, or connect your real piano via MIDI and share your skill with others." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎹</text></svg>">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2&display=swap" rel="stylesheet">
+<!-- fonts -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2&display=swap">
 <!-- Sentry -->
-<script
-  src="https://js.sentry-cdn.com/4f3d05f95bea47cdbf66d235f657fa30.min.js"
-  crossorigin="anonymous"
-></script>
+<script src="https://js.sentry-cdn.com/4f3d05f95bea47cdbf66d235f657fa30.min.js" crossorigin></script>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-21351225-3"></script>
 <script>
@@ -23,9 +21,14 @@
   gtag('js', new Date())
 	gtag('config', 'UA-21351225-3')
 </script>
+<script>
+	if ('serviceWorker' in window.navigator) {
+		window.navigator.serviceWorker.register('/service-worker.js')
+	}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="https://unpkg.com/vue-tippy@4/dist/vue-tippy.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/vue-tippy/dist/vue-tippy.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.9.55/css/materialdesignicons.min.css">
 <link rel="stylesheet" href="/css/main.css" />
 <script type="module" src="js/main.js"></script>
 </head>
