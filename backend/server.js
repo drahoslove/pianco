@@ -144,6 +144,9 @@ wss.on('connection', async function connection(ws) {
 
 const healthInterval = setInterval(() => {
   wss.clients.forEach(ws => {
+    if (ws.gid === undefined) { // ignore health of gopiano connection
+      return 
+    }
     if (ws.isAlive === false) {
       ws.terminate()
       return
