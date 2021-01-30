@@ -374,9 +374,18 @@ footer.bar button.on {
 			hsla(calc(var(--hue) * 2), 70%, 100%, 0.1) 100%
 		);
 }
+
 .letters .bottom-keys button {
 	color: #666;
 }
+
+.letters button sub {
+	display: none;
+}
+.letters.numbers button sub  {
+	display: inline;
+}
+
 
 .top-keys button {
 	border-bottom-left-radius: 15% 3%;

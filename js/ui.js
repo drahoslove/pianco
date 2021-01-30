@@ -1,6 +1,6 @@
 // settings
 const defaultSettings = {
-  labels: false,
+  labels: 0,
   qwerty: false,
   velocity: false,
   score: 1,
@@ -20,7 +20,8 @@ window.addEventListener('hashchange', () => {
 const actions = {
   labels: (val) => {
     const keyboard = document.querySelector('.keyboard')
-    keyboard.classList[val ? 'add' : 'remove']('letters')
+    keyboard.classList[val > 0 ? 'add' : 'remove']('letters')
+    keyboard.classList[val > 1 ? 'add' : 'remove']('numbers')
   },
   qwerty: (val) => {
     const hintBox = document.querySelector('.hint')
@@ -96,7 +97,7 @@ Object.keys(defaultSettings).forEach(key => {
   button.onclick = function () {
     this.blur()
     val = loadSetting(key)
-    if (key === 'score') {
+    if (['score', 'labels'].includes(key)) {
       val = (+val+1)%3
     } else {
       val = !val

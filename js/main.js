@@ -32,10 +32,25 @@ const keyboard = document.querySelector('.keyboard')
 const pianoroll = document.querySelector('.pianoroll')
 const keys = []
 
+const noteToLabel = (note) => {
+  if (note.includes('#')) {
+    const [ A, _, octave ] = note.split('')
+    const aSharp = A + '♯'
+    const B = String.fromCharCode(A.charCodeAt(0)+1)
+    const bFlat = B + '♭'
+    return `<span>${aSharp}<sub>${octave}</sub></span></br><span>${bFlat}<sub>${octave}</sub></span>`
+  } else {
+    const [ letter, octave ] = note.split('')
+    return letter + `<sub>${octave}</sub>`
+  }
+}
+
 allNotes.forEach((note, i, { length }) => {
   const key = document.createElement('button')
   key.dataset.note = note
-  key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (_, n, s, i) => `<span>${n}${s&&'♯'}<sub>${i}</sub></span>`)
+  key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (note, n, s, i) =>
+    `<span>${noteToLabel(note)}</span>`
+  )
   keyboard.querySelector('.top-keys').appendChild(key)
   const hue = 360*((i-3)/(12*4))
   key.style.setProperty('--hue', hue)
