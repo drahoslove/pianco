@@ -1,13 +1,36 @@
 // https://serviceworke.rs/strategy-cache-and-update_service-worker_doc.html
 const CACHE = 'cache-and-update'
-const filesToCache = [
-  '/',
-  '/rc',
-  '/js/rc.js',
-  '/js/roland.js',
-  '/js/pianoteq.js',
-  '/lib/Tone.js',
-  '/font/Bravura.woff2',
+
+const solidFiles = [ // these will not ever change
+  '/audio/salamander/Ds2.mp3',
+  '/audio/salamander/Ds4.mp3',
+  '/audio/salamander/Fs4.mp3',
+  '/audio/salamander/Fs5.mp3',
+  '/audio/salamander/A5.mp3',
+  '/audio/salamander/C6.mp3',
+  '/audio/salamander/Ds6.mp3',
+  '/audio/salamander/Fs6.mp3',
+  '/audio/salamander/A6.mp3',
+  '/audio/salamander/C7.mp3',
+  '/audio/salamander/Ds7.mp3',
+  '/audio/salamander/Fs7.mp3',
+  '/audio/salamander/A7.mp3',
+  '/audio/salamander/A0.mp3',
+  '/audio/salamander/C1.mp3',
+  '/audio/salamander/Ds1.mp3',
+  '/audio/salamander/Fs1.mp3',
+  '/audio/salamander/A1.mp3',
+  '/audio/salamander/C2.mp3',
+  '/audio/salamander/Fs2.mp3',
+  '/audio/salamander/A2.mp3',
+  '/audio/salamander/C3.mp3',
+  '/audio/salamander/Ds3.mp3',
+  '/audio/salamander/Fs3.mp3',
+  '/audio/salamander/A3.mp3',
+  '/audio/salamander/C4.mp3',
+  '/audio/salamander/A4.mp3',
+  '/audio/salamander/C5.mp3',
+  '/audio/salamander/Ds5.mp3',
   'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
   'https://cdn.jsdelivr.net/npm/vue-tippy/dist/vue-tippy.min.js',
   'https://cdn.jsdelivr.net/npm/@mdi/font@5.9.55/css/materialdesignicons.min.css',
@@ -19,6 +42,26 @@ const filesToCache = [
   'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js',
 ]
+const filesToCache = [
+  '/',
+  '/css/main.css',
+  '/js/main.js',
+  '/js/vue/init.js',
+  '/js/vue/networking.js',
+  '/js/vue/recorder.js',
+  '/js/instrument.js',
+  '/js/io.js',
+  '/js/midi.js',
+  '/js/ui.js',
+  '/lib/Tone.js',
+  '/font/Bravura.woff2',
+  ...solidFiles,
+  '/rc',
+  '/js/rc.js',
+  '/js/roland.js',
+  '/js/pianoteq.js',
+
+]
 self.addEventListener('install', e => {
   e.waitUntil(precache())
 })
@@ -28,8 +71,10 @@ self.addEventListener('activate', e => {
 })
 
 self.addEventListener('fetch', e => {
-  e.respondWith(fromCache(e.request))
-  e.waitUntil(update(e.request.clone()))
+  e.respondWith(fromCache(e.request.clone()))
+  if (!solidFiles.some(path => e.request.url.endsWith(path))) { // update non-solid files in cache
+    e.waitUntil(update(e.request))
+  }
 })
 
 function precache() {
@@ -47,6 +92,10 @@ function fromCache(request) {
 }
 
 function update(request) {
+  if (!filesToCache.some(path => request.url.endsWith(path))) {
+    // do not update files which are not in the cache already
+    return
+  }
   return caches.open(CACHE).then(cache =>
     fetch(request).then(response =>
       cache.put(request, response)
