@@ -159,7 +159,7 @@
 				<span v-if="isOnline" class="mdi mdi-check-network"></span>
 				<span v-if="!isOnline" class="mdi mdi-close-network"></span>
 			</button>
-			<label v-for="u of copianists" :content="u === uid ? 'you' : 'copianist'" v-tippy>
+			<label v-for="u of users" :content="u === uid ? 'you' : 'copianist'" v-tippy>
 				<span :style="{'--color': userColor(u)}" class="mdi mdi-account-network user-icon"></span>
 			</label>
 		</div>
@@ -169,6 +169,7 @@
 				@click="changeRoom(room)"
 				:class="gid === room ? 'on' : ''"
 				v-tippy :content="`room ${room}`"
+				:data-user-dots="dotsOfRoom(room)"
 			>
 			<span
 				:class="`mdi mdi-numeric-${ room }-circle`"></span>

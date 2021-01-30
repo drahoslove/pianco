@@ -46,7 +46,7 @@ const onRegroup = onCmd('regroup', (values) => {
 
 const onStatus =  onCmd('status', (values) => {
   const status = JSON.parse(values.join(''))
-  networkingApp.users = [...status.groups[GID]]
+  networkingApp.groups = status.groups || []
 })
 
 const onBlob = async ({ data }) => {

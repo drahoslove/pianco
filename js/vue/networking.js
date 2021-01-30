@@ -4,11 +4,11 @@ export const networkingApp = new Vue({
     isOnline: false,
     gid: 0,
     uid: 0,
-    users: [],
+    groups: [],
   },
   computed: {
-    copianists: function () {
-      return this.users // .filter(uid => this.uid !== uid)
+    users: function () {
+      return this.groups[this.gid]
     },
   },
   methods: {
@@ -20,5 +20,8 @@ export const networkingApp = new Vue({
     changeRoom: function (room) {
       window.location.hash = room || ''
     },
+    dotsOfRoom: function (gid) {
+      return (this.groups[gid || 0]||[]).map(() => '.').join('')
+    }
   },
 })
