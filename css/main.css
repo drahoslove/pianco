@@ -46,6 +46,7 @@ body.rotated {
 }
 
 header, footer {
+	z-index: 10;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -982,9 +983,28 @@ input[type=range]::-ms-thumb {
 	.staffs {
 		font-size: 2.5em;
 	}
+	h1#logo {
+		font-size: 1.5em;
+	}
+	.bar button,
+	.bar select,
+	.bar label {
+		padding: 0.1rem;	
+		min-width: 54px;
+	}
+	.bar .mdi {
+		font-size: 14px;
+		line-height: 18px;
+	}
+	.bar,
 	header.bar,
 	footer.bar {
-		display: none;
+		/* display: none; */
+		height: auto;
+		padding: 0;
+	}
+	.keyboard + .bar {
+		padding-bottom: 2rem;
 	}
 }
 
