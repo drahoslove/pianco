@@ -651,6 +651,9 @@ div.hint {
 	cursor: pointer;
 	transition: opacity 0.2s;
 	opacity: .5;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .cinema-bar button:hover {
