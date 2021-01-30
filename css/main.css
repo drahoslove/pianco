@@ -992,9 +992,11 @@ input[type=range]::-ms-thumb {
 		padding: 0.1rem;	
 		min-width: 54px;
 	}
-	.bar .mdi {
-		font-size: 14px;
-		line-height: 18px;
+	.bar button .mdi,
+	.bar select .mdi,
+	.bar label .mdi {
+		font-size: 22px;
+		line-height: 26px;
 	}
 	.bar,
 	header.bar,
@@ -1005,6 +1007,9 @@ input[type=range]::-ms-thumb {
 	}
 	.keyboard + .bar {
 		padding-bottom: 2rem;
+	}
+	.copy {
+		font-size: 75%;
 	}
 }
 
