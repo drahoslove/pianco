@@ -36,7 +36,7 @@ const noteToLabel = (note) => {
   if (note.includes('#')) {
     const [ A, _, octave ] = note.split('')
     const aSharp = A + '♯'
-    const B = String.fromCharCode(A.charCodeAt(0)+1)
+    const B = A === 'G' ? 'A' : String.fromCharCode(A.charCodeAt(0)+1)
     const bFlat = B + '♭'
     return `<span>${aSharp}<sub>${octave}</sub></span></br><span>${bFlat}<sub>${octave}</sub></span>`
   } else {
