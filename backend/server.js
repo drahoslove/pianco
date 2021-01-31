@@ -81,7 +81,8 @@ wss.on('connection', async function connection(ws) {
       echo(message) // <--- this is the most important
       // ghost:
       const isDirectApi = ws.secret === undefined
-      if (ws.secret === ROOT_SECRET || isDirectApi) { // gopiano should trigger this also
+
+      if (ws.secret in indentities && identities[ws.secret].gid === 0 || isDirectApi) { // gopiano should trigger this also
         const [gid, uid, cmd] = new Uint8Array(message)
         if (fromCmd(cmd) === CMD_NOTE_ON) { // note on
           autoplayers[ROOT_GRP].resetGhost({
