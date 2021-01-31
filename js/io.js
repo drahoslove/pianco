@@ -29,7 +29,7 @@ networkingApp.userClick = function(uid) {
     const { name, secret } = localStorage
     const newName = window.prompt('Your name', name)
     if (newName) {
-      ws.send(`regroup ${UID} ${GID} ${GID} ${secret||''} ${newName||''}`)
+      ws.send(`regroup ${GID} ${UID} ${GID} ${secret||''} ${newName||''}`)
     }
   }
 }
