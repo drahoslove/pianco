@@ -170,6 +170,9 @@ volumeSelector.oninput = updateVolume
 /* ==== note controll === */
 
 const updateNote = (note, velocity, action) => (source) => {
+	if (!(note in pressedNotes)){
+		return
+	}
 	const wasPressed = pressedNotes[note].size > 0
 	const wasSustained = sustainedNotes[note].size > 0
 	action()

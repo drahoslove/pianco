@@ -23,6 +23,16 @@ let GID = 0
 
 // WS!
 let ws
+ 
+networkingApp.userClick = function(uid) {
+  if (uid == this.uid) {
+    const { name, secret } = localStorage
+    const newName = window.prompt('Your name', name)
+    if (newName) {
+      ws.send(`regroup ${UID} ${GID} ${GID} ${secret||''} ${newName||''}`)
+    }
+  }
+}
 
 // ws message handlers
 
@@ -38,8 +48,19 @@ const onCmd = (cmdName, callback) => async ({ data: message }) => {
 
 const onRegroup = onCmd('regroup', (values) => {
   const [newGid, newUid] = values.map(Number)
+  const [secret, name] = values.slice(2)
   networkingApp.gid = GID = newGid
   networkingApp.uid = UID = newUid
+  if (secret) {
+    localStorage.secret = secret
+  }
+  if (name) {
+    localStorage.name = name
+  }
+  const hashRoom = (parseInt(location.hash.slice(1))) % 256 || 0
+  if (hashRoom !== newGid) {
+    location.hash = (newGid || '') + (location.hash.endsWith('m') ? 'm' : '')
+  }
   recorderApp.reset()
   console.log(`${UID}@${GID} changed`)
 })
@@ -47,6 +68,7 @@ const onRegroup = onCmd('regroup', (values) => {
 const onStatus =  onCmd('status', (values) => {
   const status = JSON.parse(values.join(''))
   networkingApp.groups = status.groups || []
+  networkingApp.names = status.names || {}
 })
 
 const onBlob = async ({ data }) => {
@@ -88,7 +110,8 @@ window.addEventListener('hashchange', () => { // chagning group
   if (ws.readyState !== WebSocket.OPEN) {
     return
   }
-  ws.send(`regroup ${GID} ${UID} ${newGid}`)
+  const { secret, name } = localStorage
+  ws.send(`regroup ${GID} ${UID} ${newGid} ${secret||''} ${name||''}`)
   console.log(`${UID}@${GID} => ?@${newGid} request`)
 })
 
@@ -137,7 +160,8 @@ const connect = () => {
     
     ws.onopen = () => {
       const newGid = (parseInt(location.hash.slice(1))) % 256 || 0
-      ws.send(`regroup 0 0 ${newGid}`)
+      const { secret, name } = localStorage
+      ws.send(`regroup 0 0 ${newGid} ${secret||''} ${name||''}`)
       networkingApp.isOnline = true
       console.log('ws open')
       pingPong()

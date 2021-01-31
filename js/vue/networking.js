@@ -5,6 +5,7 @@ export const networkingApp = new Vue({
     gid: 0,
     uid: 0,
     groups: [],
+    names: [],
   },
   computed: {
     users: function () {
@@ -12,6 +13,11 @@ export const networkingApp = new Vue({
     },
   },
   methods: {
+    userClick: function (uid) { },
+    userName: function (uid) {
+      const name = (this.names[this.gid]||[])[uid] || 'anon'
+      return name + (uid === this.uid ? ' (you)' : '')
+    },
     userColor: function (uid) {
       return uid === this.uid
         ? '#eee'

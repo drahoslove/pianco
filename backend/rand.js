@@ -1,3 +1,5 @@
+const crypto = require('crypto')
+
 const normalRand = (n) => {
   const normal = () => {
     let u = 0, v = 0;
@@ -14,8 +16,18 @@ const normalRand = (n) => {
 
 const rand = (n) => Math.floor(Math.random() * n)
 
+function randomString(n=8, chars='abcdefghijklmnopqrstuvwxyz234567') {
+	const result = new Array(n)
+	const randomBites = crypto.randomBytes(n)
+	for (let i = 0, cursor = 0; i < n; i++) {
+		cursor += randomBites[i]
+		result[i] = chars[cursor % chars.length]
+	}
+	return result.join('')
+}
 
 module.exports = {
   rand,
   normalRand,
+  randomString,
 }

@@ -1,8 +1,11 @@
+const { CLIENT_RENEG_LIMIT } = require('tls')
 const WebSocket = require('ws')
+const { randomString, rand } = require('./rand.js')
 
 const CMD_NOTE_ON = 1
 const fromCmd = (cmd) => (cmd>>4) & 7
 
+const ROOT_SECRET = '0000000000000000'
 const ROOT_USR = 0
 const ROOT_GRP = 0
 
@@ -11,11 +14,13 @@ const PORT = process.env.PORT || 11088
 const wss = new WebSocket.Server({ port: PORT })
 
 const groups = Array.from({ length: 256 }).map(() => new Set())
+const identities = {}
 
 const broadcast = (data) => { // to everyone
   const [gid, uid] = data
   wss.clients.forEach(client => {
-    if (client.gid == gid && client.readyState === WebSocket.OPEN) {
+    const { gid: clientGid } = identities[client.secret] || {}
+    if (clientGid === gid && client.readyState === WebSocket.OPEN) {
       client.send(new Uint8Array(data))
     }
   })
@@ -23,7 +28,8 @@ const broadcast = (data) => { // to everyone
 const echo = (data) => { // to eveyone except origin
   const [gid, uid] = data
   wss.clients.forEach(client => {
-    if (client.gid == gid && client.uid !== uid && client.readyState === WebSocket.OPEN) {
+    const { gid: clientGid, uid: clientUid } = identities[client.secret] || {}
+    if (clientGid === gid && clientUid !== uid && client.readyState === WebSocket.OPEN) {
       client.send(data)
     }
   })
@@ -32,6 +38,11 @@ const echo = (data) => { // to eveyone except origin
 const status = () => { // broadcast state of the world to everyone
   const data = JSON.stringify({
     groups: groups.map(uids => [...uids]),
+    names: groups.map((_, group) => // [0: {0: 'draho'}, 3: {}]
+      Object.values(identities)
+      .filter(({ gid }) => gid === group)
+      .reduce((map, {uid, name}) => ({...map, [uid]: name}), {})
+    ),
     // TODO additional data in the future
   })
   wss.clients.forEach(client => {
@@ -47,13 +58,14 @@ wss.status = status
 wss.groups = groups
 
 groups[ROOT_GRP].add(ROOT_USR) // add ghost player to main room permanently
+identities[ROOT_SECRET] = { name: 'draho', gid: 0, uid: 0 }
 
 
 // return uid which is not yet in the group
 const genUid = (gid) => {
   let uid
   do {
-    uid = Math.floor(Math.random()*255) // 0-254 - 255 is ghost
+    uid = rand(255) // 0-254 - 255 is ghost
   } while (uid === ROOT_USR || groups[gid].has(uid))
   return uid
 }
@@ -68,8 +80,8 @@ wss.on('connection', async function connection(ws) {
     if (message instanceof Buffer) {
       echo(message) // <--- this is the most important
       // ghost:
-      const isDirectApi = ws.gid === undefined
-      if (ws.gid === ROOT_GRP || isDirectApi) { // gopiano should trigger this also
+      const isDirectApi = ws.secret === undefined
+      if (ws.secret === ROOT_SECRET || isDirectApi) { // gopiano should trigger this also
         const [gid, uid, cmd] = new Uint8Array(message)
         if (fromCmd(cmd) === CMD_NOTE_ON) { // note on
           autoplayers[ROOT_GRP].resetGhost({
@@ -79,32 +91,60 @@ wss.on('connection', async function connection(ws) {
           })
         }
       }
-    } 
+    }
     if (typeof message === "string") {
       const [cmd, ...values] = message.split(' ')
       if (cmd === 'ping') {
         ws.send('pong')
       }
       if (cmd === "regroup") {
-        const [oldGid, oldUid, newGid] = values.map(Number)
-        if (groups[newGid].size === 255) {
-          ws.send(`regroup ${oldGid} ${oldUid}`)
-          wss.status()
-          return
-        }
-        if (oldUid !== 0) {
+        const [, , newGid] = values.map(Number)
+        let [secret, name] = values.slice(3)
+
+        const { uid: oldUid, gid: oldGid } = identities[secret] || {}
+
+        // remove old values
+        if (oldUid) {
           autoplayers[oldGid].stop(oldUid)
           groups[oldGid] && groups[oldGid].delete(oldUid)
         }
-        const newUid = genUid(newGid)
+        // prepare new values:
+        let { uid: newUid } = identities[secret] || {} // possibly unchanged
+        if (oldGid !== newGid) { // only change uid when changing gid
+          if (groups[newGid].size === 255) {
+            ws.send(`group full ${newGid} ${newUid}`)
+            wss.status()
+            return
+          }
+          newUid = genUid(newGid)
+        }
+        if (!secret) {
+          if (ws.secret) {
+            return console.error('cant change secret of ws')
+          }
+          secret = randomString(16)
+        }
+        if (!name) {
+          name = `anon${newUid}`
+        }
+        // set new values
         groups[newGid].add(newUid)
-        ws.send(`regroup ${newGid} ${newUid}`)
-        ws.gid = newGid
-        ws.uid = newUid
-        console.log(`${oldUid}@${oldGid} => ${newUid}@${newGid}`)
+        identities[secret] = { name, gid: newGid, uid: newUid }
+
+        // update sockets
+        ws.secret = secret
+        wss.clients
+        .forEach(ws => {
+          const { uid, gid } = identities[secret]
+          // send response to all ws from device
+          if (ws.secret === secret && ws.readyState === WebSocket.OPEN) {
+            ws.send(`regroup ${newGid} ${newUid} ${secret} ${name}`)
+            console.log(`${secret}:${name} - ${uid}@${gid} => ${newUid}@${newGid}`)
+          }
+        })
         wss.status()
-        if (ws.gid === 0) {
-          autoplayers[ws.gid].resetGhost({
+        if (newGid === 0) {
+          autoplayers[newGid].resetGhost({
             delay: 60,
             stopCurrent: false,
           })
@@ -144,7 +184,7 @@ wss.on('connection', async function connection(ws) {
 
 const healthInterval = setInterval(() => {
   wss.clients.forEach(ws => {
-    if (ws.gid === undefined) { // ignore health of gopiano connection
+    if (ws.secret === undefined) { // ignore health of gopiano connection
       return 
     }
     if (ws.isAlive === false) {
