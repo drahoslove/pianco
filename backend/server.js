@@ -178,7 +178,7 @@ wss.on('connection', async function connection(ws) {
   })
 
   ws.on('close', () => {
-    const { gid, uid } = ws
+    const { gid, uid } = identities[ws.secret] || {}
     if (gid !== undefined && uid !== undefined) {
       autoplayers[gid].stop(uid)
       groups[gid].delete(uid)
