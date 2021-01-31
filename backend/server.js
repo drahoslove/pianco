@@ -99,10 +99,12 @@ wss.on('connection', async function connection(ws) {
         ws.send('pong')
       }
       if (cmd === "regroup") {
+
         const [boldGid, boldUid , newGid] = values.map(Number)
+
         let [secret, name] = values.slice(3)
 
-        const { uid: oldUid = boldUid, gid: oldGid=boldGid} = identities[secret] || {}
+        const { uid: oldUid, gid: oldGid} = identities[secret] || { uid: boldUid, gid: boldGid }
 
         // remove old values
         if (oldUid) {
@@ -126,7 +128,7 @@ wss.on('connection', async function connection(ws) {
           secret = randomString(16)
         }
         if (!name) {
-          name = `anon${newUid}`
+          name = `anon${rand(255)+1}`
         }
         // set new values
         groups[newGid].add(newUid)
