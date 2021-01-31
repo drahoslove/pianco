@@ -104,7 +104,10 @@ wss.on('connection', async function connection(ws) {
 
         let [secret, name] = values.slice(3)
 
-        const { uid: oldUid, gid: oldGid} = identities[secret] || { uid: boldUid, gid: boldGid }
+        const { uid: oldUid, gid: oldGid} = identities[secret] || (secret
+          ? {} // after reset
+          : { uid: boldUid, gid: boldGid } // fallback for old clients
+        )
 
         // remove old values
         if (oldUid) {
