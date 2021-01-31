@@ -82,7 +82,7 @@ wss.on('connection', async function connection(ws) {
       // ghost:
       const isDirectApi = ws.secret === undefined
 
-      if (ws.secret in identities && identities[ws.secret].gid === 0 || isDirectApi) { // gopiano should trigger this also
+      if ((ws.secret in identities && identities[ws.secret].gid === 0) || isDirectApi) { // gopiano should trigger this also
         const [gid, uid, cmd] = new Uint8Array(message)
         if (fromCmd(cmd) === CMD_NOTE_ON) { // note on
           autoplayers[ROOT_GRP].resetGhost({
@@ -99,10 +99,10 @@ wss.on('connection', async function connection(ws) {
         ws.send('pong')
       }
       if (cmd === "regroup") {
-        const [, , newGid] = values.map(Number)
+        const [boldUid, boldGid , newGid] = values.map(Number)
         let [secret, name] = values.slice(3)
 
-        const { uid: oldUid, gid: oldGid } = identities[secret] || {}
+        const { uid: oldUid = boldUid, gid: oldGid=boldGid} = identities[secret] || {}
 
         // remove old values
         if (oldUid) {
