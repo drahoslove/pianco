@@ -58,7 +58,7 @@ wss.status = status
 wss.groups = groups
 
 groups[ROOT_GRP].add(ROOT_USR) // add ghost player to main room permanently
-identities[ROOT_SECRET] = { name: 'draho', gid: 0, uid: 0 }
+identities[ROOT_SECRET] = { name: 'pianco', gid: 0, uid: 0 }
 
 
 // return uid which is not yet in the group
@@ -98,8 +98,8 @@ wss.on('connection', async function connection(ws) {
       if (cmd === 'ping') {
         ws.send('pong')
       }
-      if (cmd === "regroup") {
 
+      if (cmd === "regroup") {
         const [boldGid, boldUid , newGid] = values.map(Number)
 
         let [secret, name] = values.slice(3)
@@ -178,10 +178,14 @@ wss.on('connection', async function connection(ws) {
   })
 
   ws.on('close', () => {
-    const { gid, uid } = identities[ws.secret] || {}
+    const { gid, uid } = identities[ws.secret]
     if (gid !== undefined && uid !== undefined) {
       autoplayers[gid].stop(uid)
       groups[gid].delete(uid)
+      if (ws.secret in identities) {
+        identities[ws.secret].uid = undefined
+        identities[ws.secret].gid = undefined
+      }
       console.log(`${uid}@${gid} => close`)
       wss.status()
     }
