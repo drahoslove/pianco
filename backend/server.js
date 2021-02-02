@@ -100,12 +100,12 @@ wss.on('connection', async function connection(ws) {
       }
 
       if (cmd === "regroup") {
-        const [boldGid, boldUid , newGid] = values.map(Number)
+        const [boldGid, boldUid, newGid] = values.map(Number)
 
         let [secret, name] = values.slice(3)
 
         const { uid: oldUid, gid: oldGid} = identities[secret] || (secret
-          ? {} // after reset
+          ? { uid: undefined, gid: boldUid} // after reset - to force gen of new uid
           : { uid: boldUid, gid: boldGid } // fallback for old clients
         )
 
@@ -139,8 +139,7 @@ wss.on('connection', async function connection(ws) {
 
         // update sockets
         ws.secret = secret
-        wss.clients
-        .forEach(ws => {
+        wss.clients.forEach(ws => {
           const { uid, gid } = identities[secret]
           // send response to all ws from device
           if (ws.secret === secret && ws.readyState === WebSocket.OPEN) {

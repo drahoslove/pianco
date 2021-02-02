@@ -75,7 +75,7 @@ class Autoplay {
   }
 
   stop = (uid) => {
-    while (this.timers[uid].length > 0) { // empty current timers
+    while (this.timers[uid] && this.timers[uid].length > 0) { // empty current timers
       clearTimeout(this.timers[uid].shift())
     }
     for (let note = A0_NOTE; note <= C8_NOTE; note++) {
