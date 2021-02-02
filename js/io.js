@@ -119,10 +119,12 @@ const pingPong = () => {
   let now
   let pings = 0
   let pongs = 0
+  let timeout = 0
   const ping = () => {
     if (pings !== pongs) {
       // networkingApp.isOnline = false
       ws.close()
+      clearTimeout(timeout)
       return
     }
     now = performance.now()
@@ -130,7 +132,7 @@ const pingPong = () => {
       ws.send('ping')
     }
     pings++
-    setTimeout(ping, 5000 + Math.floor(Math.random()*2000))
+    timeout = setTimeout(ping, 5000 + Math.floor(Math.random()*2000))
   }
   ws.addEventListener('message', ({ data }) => {
     if (data === 'pong') {

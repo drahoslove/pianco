@@ -104,10 +104,8 @@ wss.on('connection', async function connection(ws) {
 
         let [secret, name] = values.slice(3)
 
-        const { uid: oldUid, gid: oldGid} = identities[secret] || (secret
-          ? { uid: undefined, gid: boldUid} // after reset - to force gen of new uid
-          : { uid: boldUid, gid: boldGid } // fallback for old clients
-        )
+        const { uid: oldUid, gid: oldGid } = identities[secret] ||
+          { uid: undefined, gid: boldGid } // after reset, or for new users - to force gen of new uid
 
         // remove old values
         if (oldUid) {
@@ -116,7 +114,7 @@ wss.on('connection', async function connection(ws) {
         }
         // prepare new values:
         let { uid: newUid } = identities[secret] || {} // possibly unchanged
-        if (oldGid !== newGid) { // only change uid when changing gid
+        if (oldGid !== newGid || oldUid === undefined) { // only change uid when changing gid
           if (groups[newGid].size === 255) {
             ws.send(`group full ${newGid} ${newUid}`)
             wss.status()
@@ -197,6 +195,7 @@ const healthInterval = setInterval(() => {
       return 
     }
     if (ws.isAlive === false) {
+      console.log(`ws.secret`, ws.secret)
       ws.terminate()
       return
     }
