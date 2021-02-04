@@ -6,8 +6,6 @@ const { normalRand, rand } = require('./rand.js')
 
 const MIDI_CACHE_DIR = '../audio/midi'
 
-const GHOST_UID = 255
-
 // TODO move to common file
 const CC_BANK_0 = 0
 const CC_BANK_1 = 32
@@ -15,7 +13,10 @@ const CC_SUTAIN = 64
 const A0_NOTE = 21
 const C8_NOTE = 108
 
-const toCmd = (x) => (1<<3 | x)<<4
+const CHANNEL = 1
+// chan 3 is used for notes played by person, so we use 1 for notes played from replay to distuinguis them on frontend
+
+const toCmd = (x, ch=CHANNEL) => (1<<3 | x)<<4 | (ch & 15)
 const fromCmd = (cmd) => (cmd>>4) & 7
 const toVal = (x) => Math.round(x*127)
 const fromVal = (val) => val/127
@@ -36,18 +37,18 @@ class Autoplay {
 
   resetGhost = ({delay=60, stopCurrent, pretendScared}) => {
     if (stopCurrent) {
-      if (this.timers[GHOST_UID].filter(id => !id._destroyed).length > 0) {
+      if (this.timers[this.uid].filter(id => !id._destroyed).length > 0) {
         setTimeout(() => {
-          this.stop(GHOST_UID)
+          this.stop(this.uid)
           if (pretendScared) {
-            this.playRandomNotes(GHOST_UID, 5, 7)
+            this.playRandomNotes(this.uid, 5, 7)
           }
         }, 500)
       }
     }
     clearTimeout(this.ghostTimer)
     this.ghostTimer = setTimeout(() => {
-      this.playRandomFile(GHOST_UID)
+      this.playRandomFile(this.uid)
     }, 1000 * delay)
   }
 
@@ -57,8 +58,8 @@ class Autoplay {
       const midi = A0_NOTE + normalRand(C8_NOTE-A0_NOTE)
       const note = { midi, velocity: 0.5, duration: 0.5/tempo + normalRand(0.25), time: (i + rand(7)/7)/tempo }
 
-      this.timers[uid].push(setTimeout(this.sendNoteOn, note.time*1000, note))
-      this.timers[uid].push(setTimeout(this.sendNoteOff, note.time*1000 + note.duration*1000, note))
+      this.timers[uid].push(setTimeout(this.sendNoteOn, note.time*1000, note, uid))
+      this.timers[uid].push(setTimeout(this.sendNoteOff, note.time*1000 + note.duration*1000, note, uid))
     }
   }
 
@@ -115,11 +116,11 @@ class Autoplay {
     for (let track of tracks) {
       console.log(' - scheduling notes')
       track.notes.forEach(note => {
-        this.timers[uid].push(setTimeout(this.sendNoteOn, note.time*1000, note))
-        this.timers[uid].push(setTimeout(this.sendNoteOff, note.time*1000 + note.duration*1000, note))
+        this.timers[uid].push(setTimeout(this.sendNoteOn, note.time*1000, note, uid))
+        this.timers[uid].push(setTimeout(this.sendNoteOff, note.time*1000 + note.duration*1000, note, uid))
       })
       track.controlChanges.sustain && track.controlChanges.sustain.forEach(cc => {
-        this.timers[uid].push(setTimeout(this.sendSustain, cc.time*1000, cc.value))
+        this.timers[uid].push(setTimeout(this.sendSustain, cc.time*1000, cc.value, uid))
       })
       console.log(` - will play ${track.notes.length} ${track.instrument.family} notes`)
     }
@@ -157,16 +158,16 @@ class Autoplay {
       })
   )
 
-  sendSustain = (value) => {
-    Autoplay.wss.broadcast([this.gid, this.uid, toCmd(3), 64, toVal(value)])
+  sendSustain = (value, uid) => {
+    Autoplay.wss.broadcast([this.gid, uid || this.uid, toCmd(3), 64, toVal(value)])
   }
   
-  sendNoteOn = (note) => {
-    Autoplay.wss.broadcast([this.gid, this.uid, toCmd(1), note.midi, toVal(note.velocity)])
+  sendNoteOn = (note, uid) => {
+    Autoplay.wss.broadcast([this.gid, uid || this.uid, toCmd(1), note.midi, toVal(note.velocity)])
   }
   
-  sendNoteOff = (note) => {
-    Autoplay.wss.broadcast([this.gid, this.uid, toCmd(0), note.midi])
+  sendNoteOff = (note, uid) => {
+    Autoplay.wss.broadcast([this.gid, uid || this.uid, toCmd(0), note.midi])
   }
 
 }

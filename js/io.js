@@ -9,6 +9,8 @@ import {
   fromCmd, toCmd, fromVal, toVal,
   CMD_NOTE_ON, CMD_NOTE_OFF, CMD_CONTROL_CHANGE,
   CC_SUTAIN,
+  CHANNEL,
+  chanFromCmd,
 } from './midi.js'
 import { networkingApp } from './vue/networking.js'
 import { recorderApp } from './vue/recorder.js'
@@ -79,7 +81,8 @@ const onBlob = async ({ data }) => {
   if (gid !== GID) { // another group
     return 
   }
-  if (uid === UID) { // your notes
+
+  if (uid === UID && chanFromCmd(cmd) === CHANNEL) { // your notes
     return
   }
   const note = Tone.Midi(val1).toNote()
