@@ -176,7 +176,15 @@ wss.on('connection', async function connection(ws) {
 
   ws.on('close', () => {
     const { gid, uid } = identities[ws.secret]
-    if (gid !== undefined && uid !== undefined) {
+    const isLast = true
+    wss.clients.forEach((client) => {
+      if (client !== ws && client.readyState === WebSocket.OPEN
+        && client.secret === ws.secret
+      ) {
+        isLast = false
+      }
+    })
+    if (isLast && gid !== undefined && uid !== undefined) {
       autoplayers[gid].stop(uid)
       groups[gid].delete(uid)
       if (ws.secret in identities) {
