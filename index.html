@@ -156,11 +156,12 @@
 	</div>
 	<footer class="bar" id="networking-app" v-cloak>
 		<div>
-			<button :content="isOnline ? 'connected' : 'disconnected'" v-tippy>
-				<span v-if="isOnline" class="mdi mdi-check-network"></span>
+			<button v-if="!isOnline" content="disconnected" v-tippy>
+				<!-- <span v-if="isOnline" class="mdi mdi-check-network"></span> -->
 				<span v-if="!isOnline" class="mdi mdi-close-network"></span>
 			</button>
 			<label
+				v-if="isOnline"
 				v-for="u of users"
 				@click="userClick(u)"
 				:content="userName(u)" v-tippy
