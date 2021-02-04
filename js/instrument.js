@@ -169,6 +169,7 @@ volumeSelector.oninput = updateVolume
 
 /* ==== note controll === */
 
+// change color of key and actually play/stop the audio of the note
 const updateNote = (note, velocity, action) => (source) => {
 	if (!(note in pressedNotes)){
 		return
@@ -212,12 +213,33 @@ const pressNote = (note, velocity=0.5, uid) => updateNote(note, velocity, () => 
 	if (sustainState[uid]) {
 		sustainedNotes[note].add(uid)
 	}
+	// indicate which user played the note
+	const userIcon = document.querySelector(`[data-uid="${uid}"]`)
+	if (userIcon) {
+		userIcon.classList.remove('active')
+		setTimeout(() => {
+			const isFirstRelease = Object.values(pressedNotes).some(uids => uids.has(uid))
+			// if (isFirstRelease) {
+				userIcon.classList.add('active')
+			// }
+		})
+	}
 })
 
 const releaseNote = (note, uid) => updateNote(note, undefined, () => {
 	pressedNotes[note].delete(uid)
 	if (!sustainState[uid]) {
 		sustainedNotes[note].delete(uid) // unsustain note (if was sustained)
+	}
+	const userIcon = document.querySelector(`[data-uid="${uid}"]`)
+	if (userIcon) {
+		userIcon.classList.add('active')
+		setTimeout(() => {
+			const isLastRelease = !Object.values(pressedNotes).some(uids => uids.has(uid))
+			// if (isLastRelease) {
+				userIcon.classList.remove('active')
+			// }
+		})
 	}
 })
 

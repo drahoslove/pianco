@@ -286,10 +286,28 @@ footer.bar button.on {
 .bar .user-icon {
 	color: inherit;
 	transition: color .5s ease;
+	position: relative;
+	animation: letgo 0.1s ease 0s 1;
 }
 
 .bar:hover .user-icon {
 	color: var(--color) !important;
+}
+
+.bar .user-icon.active {
+	animation: hit 0.12s ease 0s 1;
+}
+
+@keyframes hit {
+	0%   { bottom: 0}
+	50%  { bottom: -2px}
+	100% { bottom: -1px}
+}
+
+@keyframes letgo {
+	0%   { bottom: -1px}
+	50%  { bottom: 1px}
+	100% { bottom: 0}
 }
 
 

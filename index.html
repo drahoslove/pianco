@@ -165,7 +165,11 @@
 				@click="userClick(u)"
 				:content="userName(u)" v-tippy
 			>
-				<span :style="{'--color': userColor(u)}" class="mdi mdi-account-network user-icon"></span>
+				<span
+					:data-uid="u"
+					:style="{'--color': userColor(u)}"
+					class="mdi mdi-account-network user-icon"
+				></span>
 			</label>
 		</div>
 		<div class="tabs">
