@@ -129,13 +129,17 @@ window.addEventListener('keydown', (e) => {
 if (!('ontouchstart' in document.documentElement)) { // only for nontouch devices
   keys.forEach(key => {
     const { note } = key.dataset
-    key.addEventListener('mousedown', _(pressNote(note)))
-    key.addEventListener('mouseup', _(releaseNote(note)))
+    key.addEventListener('mousedown', (e) => {
+      if (e.button === 0) _(pressNote(note))(e)
+    })
+    key.addEventListener('mouseup', (e) => {
+      if (e.button === 0) _(releaseNote(note))(e)
+    })
     key.addEventListener('mouseenter', (e) => {
-      if (e.buttons === 1) pressNote(note)(e)
+      if (e.buttons & 1 === 1) _(pressNote(note))(e)
     })
     key.addEventListener('mouseleave', (e) => {
-      if (e.buttons === 1) releaseNote(note)(e)
+      if (e.buttons & 1 === 1) _(releaseNote(note))(e)
     })
     key.onselect = _()
     key.onselectstart = _()
