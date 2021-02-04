@@ -176,7 +176,7 @@ wss.on('connection', async function connection(ws) {
 
   ws.on('close', () => {
     const { gid, uid } = identities[ws.secret]
-    const isLast = true
+    let isLast = true
     wss.clients.forEach((client) => {
       if (client !== ws && client.readyState === WebSocket.OPEN
         && client.secret === ws.secret
