@@ -25,14 +25,11 @@ let GID = 0
 
 // WS!
 let ws
- 
-networkingApp.userClick = function(uid) {
-  if (uid == this.uid) {
-    const { name, secret } = localStorage
-    const newName = window.prompt('Your name', name)
-    if (newName) {
-      ws.send(`regroup ${GID} ${UID} ${GID} ${secret||''} ${newName||''}`)
-    }
+
+export const rename = (newName) => {
+  const { secret } = localStorage
+  if (newName) {
+    ws.send(`regroup ${GID} ${UID} ${GID} ${secret||''} ${newName||''}`)
   }
 }
 
@@ -82,16 +79,18 @@ const onBlob = async ({ data }) => {
     return 
   }
 
+  const isMuted = networkingApp.isMuted(uid)
+
   if (uid === UID && chanFromCmd(cmd) === CHANNEL) { // your notes
     return
   }
   const note = Tone.Midi(val1).toNote()
   if (fromCmd(cmd) === CMD_NOTE_ON) {
     const velocity = fromVal(val2)
-    pressNote(note, velocity, uid)()
+    pressNote(note, velocity, uid)(isMuted ? "mutedIO" : "IO")
   } 
   if (fromCmd(cmd) === CMD_NOTE_OFF) {
-    releaseNote(note, uid)()
+    releaseNote(note, uid)(isMuted ? "mutedIO" : "IO")
   }
   if (fromCmd(cmd) === CMD_CONTROL_CHANGE) { // control command
     if (val1 === CC_SUTAIN) {
@@ -205,8 +204,8 @@ const sendNoteOff = (note) => (source) => {
   ws.send(new Uint8Array([GID, UID, toCmd(0), midiNote]))
 }
 
-const sendOffAll = () => (e) => {
-  releaseAll(UID)().forEach((note) => sendNoteOff(note))
+const sendOffAll = () => (source) => {
+  releaseAll(UID)(source).forEach((note) => sendNoteOff(note))
 }
 
 const sendSustain = (value, source) => {

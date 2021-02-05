@@ -129,26 +129,26 @@ window.addEventListener('keydown', (e) => {
 if (!('ontouchstart' in document.documentElement)) { // only for nontouch devices
   keys.forEach(key => {
     const { note } = key.dataset
-    key.addEventListener('mousedown', (e) => {
-      if (e.button === 0) _(pressNote(note))(e)
-    })
-    key.addEventListener('mouseup', (e) => {
-      if (e.button === 0) _(releaseNote(note))(e)
-    })
-    key.addEventListener('mouseenter', (e) => {
-      if (e.buttons & 1 === 1) _(pressNote(note))(e)
-    })
-    key.addEventListener('mouseleave', (e) => {
-      if (e.buttons & 1 === 1) _(releaseNote(note))(e)
-    })
+    key.addEventListener('mousedown', _((e) => {
+      if (e.button === 0) pressNote(note)("mouse")
+    }))
+    key.addEventListener('mouseup', _((e) => {
+      if (e.button === 0) releaseNote(note)("mouse")
+    }))
+    key.addEventListener('mouseenter', _((e) => {
+      if (e.buttons & 1 === 1) pressNote(note)("mouse")
+    }))
+    key.addEventListener('mouseleave', _((e) => {
+      if (e.buttons & 1 === 1) releaseNote(note)("mouse")
+    }))
     key.onselect = _()
     key.onselectstart = _()
   })
-  keyboard.addEventListener('mouseout', e => {
+  keyboard.addEventListener('mouseout', _(e => {
     if (e.target === keyboard) {
-      releaseAll()(e)
+      releaseAll()("mouse")
     }
-  })
+  }))
 }
 
 // init touch input 
@@ -166,7 +166,7 @@ if ('ontouchstart' in document.documentElement) { // only for touch devices
       let key = keyFromTouchPoint(touch)
       if (key) {
         const { note } = key.dataset
-        pressNote(note)(e)
+        pressNote(note)("touch")
         keysByTouches[touch.identifier] = key
       }
     })
@@ -177,11 +177,11 @@ if ('ontouchstart' in document.documentElement) { // only for touch devices
       const key = keyFromTouchPoint(touch)
       if (key) {
         const { note } = key.dataset
-        pressNote(note)(e)
+        pressNote(note)("touch")
       }
       if (keysByTouches[id] && key !== keysByTouches[id]) {
         const { note } = keysByTouches[id].dataset
-        releaseNote(note)(e)
+        releaseNote(note)("touch")
       }
       if (key) {
         keysByTouches[id] = key
@@ -194,12 +194,14 @@ if ('ontouchstart' in document.documentElement) { // only for touch devices
       const key = keyFromTouchPoint(touch)
       if (keysByTouches[id]) {
         const { note } = keysByTouches[id].dataset
-        releaseNote(note)(e)
+        releaseNote(note)("touch")
       }
       keysByTouches[id] = null
     })
   }))
-  keyboard.addEventListener('touchcancel', releaseAll())
+  keyboard.addEventListener('touchcancel', (e) => {
+    releaseAll()("touch")
+  })
 }
 
 // init keyboard input
@@ -230,13 +232,13 @@ window.addEventListener('keydown', e => {
   }
   const note = keyMap(transposition)[e.code]
   if (note) {
-    pressNote(note)(e)
+    pressNote(note)("keyboard")
   }
 })
 window.addEventListener('keyup', e => {
   const note = keyMap(transposition)[e.code]
   if (note) {
-    releaseNote(note)(e)
+    releaseNote(note)("keyboard")
   }
 })
 

@@ -1,3 +1,10 @@
+import {
+  releaseAll, releaseSustain,
+} from '../instrument.js'
+import {
+  rename as ioRename,
+} from '../io.js'
+
 export const networkingApp = new Vue({
   el: '#networking-app',
   data: {
@@ -6,6 +13,7 @@ export const networkingApp = new Vue({
     uid: 0,
     groups: [],
     names: [],
+    muted: [{}],
   },
   computed: {
     users: function () {
@@ -13,10 +21,39 @@ export const networkingApp = new Vue({
     },
   },
   methods: {
-    userClick: function (uid) { },
+    isMuted: function (uid) {
+      return (this.muted[this.gid] || {})[uid]
+    },
+    toggleMute: function (uid) {
+      const gid = this.gid
+      if (!this.muted[gid]) {
+        this.$set(this.muted, gid, {})
+      }
+      if (this.muted[gid][uid]) {
+        this.$set(this.muted[gid], uid, false)
+      } else {
+        this.$set(this.muted[gid], uid, true)
+        releaseAll(uid)("UI")
+        releaseSustain(uid, "UI")
+      }
+    },
+    userClick: function (uid) {
+      if (uid == this.uid) {
+        const { name } = localStorage
+        // const notMuted = [...this.groups[this.gid]].filter(this.isMuted.bind(this))
+        // notMuted.forEach((u) => { this.toggleMute(u)}) // mute
+        const newName = window.prompt('Your name', name)
+        // notMuted.forEach((u) => { this.toggleMute(u)}) // unmute
+        ioRename(newName)
+      } else {
+        this.toggleMute(uid)
+      }
+    },
     userName: function (uid) {
       const name = (this.names[this.gid]||[])[uid] || 'anon'
-      return name + (uid === this.uid ? ' (you)' : '')
+      return name 
+        + (uid === this.uid ? ' (you)' : '')
+        + (this.isMuted(uid) ? ' (muted)' : '')
     },
     userColor: function (uid) {
       return uid === this.uid

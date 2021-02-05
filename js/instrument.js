@@ -125,9 +125,16 @@ instrumentSelector.addEventListener('change', function () {
 	this.blur()
 })
 
-const getInstrument = (source) => (source !== 'midiin' || instrumentSelector.value !== 'midiout') // if source is midi, we don't want to send play the note twice
-	? instruments[instrumentSelector.value]
-	: instruments.none
+const getInstrument = (source) => {
+	const isMidiLoop = (source === 'midiin' && instrumentSelector.value === 'midiout')	
+	// if source is midi, we don't want to send play the note twice
+
+	return (
+		!isMidiLoop && source !== "mutedIO"
+	)
+		? instruments[instrumentSelector.value]
+		: instruments.none
+}
 
 // volume controller
 const volumeIcon = document.getElementById('volume-icon')
@@ -182,14 +189,14 @@ const updateNote = (note, velocity, action) => (source) => {
 
 	if (!wasPressed && isPressed) {
 		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList, style }) => {
-			classList.add('pressed')
+			source !== 'mutedIO' && classList.add('pressed')
 			style.setProperty('--velocity', velocity)
 		})  
 		if (isSustained) { // repressing sustained note
-			releaseRect(note)
+			releaseRect(note, source)
 			getInstrument(source).triggerRelease([note])
 		}
-		addRect(note)
+		addRect(note, source)
 		getInstrument(source).triggerAttack(note, "+0", velocity)
 	}
 	if (wasPressed && !isPressed) {
@@ -198,12 +205,12 @@ const updateNote = (note, velocity, action) => (source) => {
 			style.setProperty('--velocity', 0)
 		})
 		if (!isSustained) {
-			releaseRect(note)
+			releaseRect(note, source)
 			getInstrument(source).triggerRelease(note, "+0.001")
 		}
 	}
 	if (wasSustained && !isSustained && !wasPressed && !isPressed) {
-		releaseRect(note)
+		releaseRect(note, source)
 		getInstrument(source).triggerRelease(note, "+0.001")
 	}
 }
@@ -218,10 +225,7 @@ const pressNote = (note, velocity=0.5, uid) => updateNote(note, velocity, () => 
 	if (userIcon) {
 		userIcon.classList.remove('active')
 		setTimeout(() => {
-			const isFirstRelease = Object.values(pressedNotes).some(uids => uids.has(uid))
-			// if (isFirstRelease) {
-				userIcon.classList.add('active')
-			// }
+			userIcon.classList.add('active')
 		})
 	}
 })
@@ -235,24 +239,21 @@ const releaseNote = (note, uid) => updateNote(note, undefined, () => {
 	if (userIcon) {
 		userIcon.classList.add('active')
 		setTimeout(() => {
-			const isLastRelease = !Object.values(pressedNotes).some(uids => uids.has(uid))
-			// if (isLastRelease) {
-				userIcon.classList.remove('active')
-			// }
+			userIcon.classList.remove('active')
 		})
 	}
 })
 
-const releaseAll = (uid) => () => {
+const releaseAll = (uid) => (source) => {
   return allNotes.filter(note => {
     if (pressedNotes[note].has(uid)) {
-      releaseNote(note, uid)()
+      releaseNote(note, uid)(source)
       return true
     }
   })
 }
 
-const pressSustain = (uid) => {
+const pressSustain = (uid, source) => {
 	sustainState[uid] = true
 	// console.log('sustain ON')
 }
@@ -279,13 +280,15 @@ const allOff = () => {
 }
 
 
-function addRect(note) {
+function addRect(note, source) {
+	if (source === 'mutedIO') return
   const rect = document.createElement('div')
 	const column = document.querySelector(`.pianoroll [data-note="${note}"]`)
 	rect.className = "pressed"
   column.appendChild(rect)
 }
-function releaseRect(note) {
+function releaseRect(note, source) {
+	// if (source === 'mutedIO') return
 	const column = document.querySelector(`.pianoroll [data-note="${note}"]`)
 	const rect = column.lastChild
 	if (rect) {
