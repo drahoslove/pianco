@@ -52,8 +52,8 @@ export const networkingApp = new Vue({
     userName: function (uid) {
       const name = (this.names[this.gid]||[])[uid] || 'anon'
       return name 
-        + (uid === this.uid ? ' (you)' : '')
-        + (this.isMuted(uid) ? ' (muted)' : '')
+        + (uid === this.uid ? ' <small>- you</small>' : '')
+        + (this.isMuted(uid) ? ' <small>- muted</small>' : '')
     },
     userColor: function (uid) {
       return uid === this.uid
