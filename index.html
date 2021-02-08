@@ -22,9 +22,8 @@
 	gtag('config', 'UA-21351225-3')
 </script>
 <script>
-	if ('serviceWorker' in window.navigator) {
-		window.navigator.serviceWorker
-			.register('/service-worker.js')
+	if ('serviceWorker' in window.navigator && location.protocol === 'https:') {
+		window.navigator.serviceWorker.register('/service-worker.js')
 	}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
