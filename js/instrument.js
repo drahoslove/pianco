@@ -188,6 +188,7 @@ const updateNote = (note, velocity, action) => (source) => {
 	const isSustained = sustainedNotes[note].size > 0
 
 	if (!wasPressed && isPressed) {
+		// style as pressed
 		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList, style }) => {
 			source !== 'mutedIO' && classList.add('pressed')
 			style.setProperty('--velocity', velocity)
@@ -200,6 +201,7 @@ const updateNote = (note, velocity, action) => (source) => {
 		getInstrument(source).triggerAttack(note, "+0", velocity)
 	}
 	if (wasPressed && !isPressed) {
+		// remove pressed styles
 		document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList, style }) => {
 			classList.remove('pressed')
 			style.setProperty('--velocity', 0)
@@ -217,9 +219,6 @@ const updateNote = (note, velocity, action) => (source) => {
 
 const pressNote = (note, velocity=0.5, uid) => updateNote(note, velocity, () => {
 	pressedNotes[note].add(uid)
-	if (sustainState[uid]) {
-		sustainedNotes[note].add(uid)
-	}
 	// indicate which user played the note
 	const userIcon = document.querySelector(`[data-uid="${uid}"]`)
 	if (userIcon) {
@@ -232,8 +231,10 @@ const pressNote = (note, velocity=0.5, uid) => updateNote(note, velocity, () => 
 
 const releaseNote = (note, uid) => updateNote(note, undefined, () => {
 	pressedNotes[note].delete(uid)
-	if (!sustainState[uid]) {
-		sustainedNotes[note].delete(uid) // unsustain note (if was sustained)
+	if (sustainState[uid]) {
+		sustainedNotes[note].add(uid)
+	} else {
+		sustainedNotes[note].delete(uid) // probably redundant
 	}
 	const userIcon = document.querySelector(`[data-uid="${uid}"]`)
 	if (userIcon) {
@@ -260,7 +261,7 @@ const pressSustain = (uid, source) => {
 const releaseSustain = (uid, source) => {
 	sustainState[uid] = false
 	// console.log('sustain OFF')
-	Object.entries(sustainedNotes).forEach(([note, noteset]) => {
+	Object.entries(sustainedNotes).forEach(([note, noteset]) => { // release all sustained notes
 		updateNote(note, undefined, () => {
 			noteset.delete(uid)
 		})(source)
