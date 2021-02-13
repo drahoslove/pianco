@@ -1,3 +1,5 @@
+import { recorder } from '../io.js'
+
 export const recorderApp = new Vue({
   el: '#recorder-app',
   data: {
@@ -5,21 +7,23 @@ export const recorderApp = new Vue({
     isPlaying: false,
   },
   methods: {
-    toggleRecord: function () {
-      // TODO
-    },
     reset: function () {
       this.isRecording = false
       this.isPlaying = false
     },
-    togglePlay: function () {
-      window.interrupt()
-      if (this.isPlaying) {
-        window.stopplay()
+    toggleRecord: function () {
+      if (this.isRecording || this.isPlaying) {
+        recorder.stop()
       } else {
-        window.randomfile()
+        recorder.record()
       }
-      this.isPlaying = !this.isPlaying
+    },
+    togglePlay: function () {
+      if (this.isPlaying) {
+        recorder.pause()
+      } else {
+        recorder.replay()
+      }
     },
   }
 })

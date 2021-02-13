@@ -141,16 +141,23 @@
 			<button id="go-up" title="shift right"><span class="mdi mdi-chevron-right"></span></button>
 		</div>
 
-		<div id="recorder-app" v-cloak>
-			<button title="record" @click="toggleRecord" disabled>
-				<span v-if="!isRecording" class="mdi mdi-record-circle-outline"></span>
-				<span v-if="isRecording" class="mdi mdi-stop-circle-outline"></span>
-			</button>
-			<button @click="togglePlay" v-tippy :content="!isPlaying ? 'Random replay' : 'Stop'">
-				<span v-if="!isPlaying" class="mdi mdi-play-circle-outline"></span>
-				<!-- <span v-if="isPlaying" class="mdi mdi-pause-circle-outline"></span> -->
-				<span v-if="isPlaying" class="mdi mdi-stop-circle-outline"></span>
-			</button>
+		<div id="recorder-app" v-cloak >
+			<div
+				:class="{ isRecording, isPlaying }"
+			>
+				<button @click="toggleRecord"
+					v-tippy :content="(isRecording || isPlaying) ? 'stop' : 'record'"
+				>
+					<span v-if="!isRecording && !isPlaying" class="mdi mdi-record"></span>
+					<span v-if="isRecording || isPlaying" class="mdi mdi-stop"></span>
+				</button>
+				<button @click="togglePlay"
+					v-tippy :content="!isPlaying ? 'replay' : 'pause'"
+				>
+					<span v-if="!isPlaying" class="mdi mdi-play"></span>
+					<span v-if="isPlaying" class="mdi mdi-pause"></span>
+				</button>
+			</div>
 		</div>
 	</div>
 	<footer class="bar" id="networking-app" v-cloak>

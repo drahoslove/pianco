@@ -64,11 +64,34 @@ const onRegroup = onCmd('regroup', (values) => {
   console.log(`${UID}@${GID} changed`)
 })
 
-const onStatus =  onCmd('status', (values) => {
+const onUserStatus = onCmd('status', (values) => {
   const status = JSON.parse(values.join(''))
   networkingApp.groups = status.groups || []
   networkingApp.names = status.names || {}
 })
+
+const onRecorderStatus = ({ data: message }) => {
+  if (typeof message !== 'string') {
+    return
+  }
+  const [cmd, val] = message.split(' ')
+  if (!['isRecording', 'isPlaying'].includes(cmd)) {
+    return
+  }
+  const isTrue = val === 'true'
+  const isFalse = val === 'false'
+  if (!isTrue && !isFalse) {
+    return
+  }
+
+  // set vue states
+  if (cmd === 'isRecording') {
+    recorderApp.isRecording = isTrue
+  }
+  if (cmd === 'isPlaying') {
+    recorderApp.isPlaying = isTrue
+  }
+}
 
 const onBlob = async ({ data }) => {
   if (!(data instanceof Blob)) {
@@ -106,8 +129,8 @@ const onBlob = async ({ data }) => {
 
 window.addEventListener('hashchange', () => { // chagning group
   const newGid = (parseInt(location.hash.slice(1))) % 256 || 0
-  sendOffAll() // to mute self for other before leaving
-  sendSustain(0) // to mute self for other efore leaving
+  sendOffAll() // to mute self for others before leaving
+  sendSustain(0) // to mute self for others before leaving
   allOff() // to mute others
   if (ws.readyState !== WebSocket.OPEN) {
     return
@@ -160,7 +183,9 @@ const connect = () => {
     // hanlde incomming notes
     ws.addEventListener('message', onBlob)
     // handle status
-    ws.addEventListener('message', onStatus)
+    ws.addEventListener('message', onUserStatus)
+    // handle recorder status
+    ws.addEventListener('message', onRecorderStatus)
     
     ws.onopen = () => {
       const newGid = (parseInt(location.hash.slice(1))) % 256 || 0
@@ -186,7 +211,7 @@ const connect = () => {
 
 connect()
 
-const sendNoteOn = (note, velocity=0.5,) => (source) => {
+const sendNoteOn = (note, velocity=0.5) => (source) => {
   pressNote(note, velocity, UID)(source)
   if (ws.readyState !== WebSocket.OPEN) {
     return
@@ -201,7 +226,7 @@ const sendNoteOff = (note) => (source) => {
     return
   }
   const midiNote = Tone.Midi(note).toMidi()
-  ws.send(new Uint8Array([GID, UID, toCmd(0), midiNote]))
+  ws.send(new Uint8Array([GID, UID, toCmd(0), midiNote, toVal(0)]))
 }
 
 const sendOffAll = () => (source) => {
@@ -220,19 +245,32 @@ const sendSustain = (value, source) => {
   ws.send(new Uint8Array([GID, UID, toCmd(3), CC_SUTAIN, toVal(value)]))
 }
 
+const recorder = ['record', 'stop', 'replay', 'pause'].reduce((recorder, action) => ({
+  ...recorder,
+  [action]: () => {
+    ws.send(action)
+  },
+}), {})
+
+window.recorder = recorder
+
 export {
+  recorder,
   sendNoteOn,
   sendNoteOff,
   sendOffAll,
   sendSustain,
 }
 
-// hidden feature
-window.autoplay = (url='/audio/midi/blues.mid') => {
+
+// hidden features
+// debug only:
+
+window.autoplay = (url) => {
   if (url.startsWith('/')) {
     url = location.origin + url
   }
-  ws.send(`autoplay ${GID} ${UID} ${url}`)
+  ws.send(`autoplayurl ${GID} ${UID} ${url}`)
   console.log('will play', url, 'soon')
   const selectOptions = ({ data: msg }) => {
     if (typeof msg !== 'string') {
@@ -256,19 +294,15 @@ window.autoplay = (url='/audio/midi/blues.mid') => {
   }
   ws.addEventListener('message', selectOptions)
 }
-
 window.randomfile = () => {
   ws.send(`playrandomfile ${GID} ${UID}`)
 }
-
 window.randomnotes = (count=16) => {
   ws.send(`playrandomnotes ${GID} ${UID} ${count}`)
 }
-
 window.stopplay = () => {
   ws.send(`stopplay ${GID} ${UID}`)
 }
-
 window.interrupt = () => {
   sendNoteOn('C4', 0)({})
   sendNoteOff('C4')({})

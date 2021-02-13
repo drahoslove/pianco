@@ -123,8 +123,18 @@ footer.bar {
 	justify-content: center;
 }
 
-header.bar>div>div {
+.bar>div>div {
 	display: flex;
+}
+.bar>div>div.staffs {
+	display: block;
+}
+
+.bar>div>div.isRecording {
+	box-shadow: 0 0 5px 1px #b00;
+}
+.bar>div>div.isPlaying {
+	box-shadow: 0 0 5px 1px #099;
 }
 
 /* tabs */

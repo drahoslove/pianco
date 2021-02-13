@@ -6,21 +6,13 @@ const { normalRand, rand } = require('./rand.js')
 
 const MIDI_CACHE_DIR = '../audio/midi'
 
-// TODO move to common file
-const CC_BANK_0 = 0
-const CC_BANK_1 = 32
-const CC_SUTAIN = 64
-const A0_NOTE = 21
-const C8_NOTE = 108
-
-const CHANNEL = 1
-// chan 3 is used for notes played by person, so we use 1 for notes played from replay to distuinguis them on frontend
-
-const toCmd = (x, ch=CHANNEL) => (1<<3 | x)<<4 | (ch & 15)
-const fromCmd = (cmd) => (cmd>>4) & 7
-const toVal = (x) => Math.round(x*127)
-const fromVal = (val) => val/127
-
+const {
+  CC_SUTAIN,
+  NOTE_A0,
+  NOTE_C8,
+  toCmd,
+  toVal,
+} = require('./midi.js')
 
 class Autoplay {
   static midis = {}
@@ -30,8 +22,8 @@ class Autoplay {
   gid = 0
   uid = 0
 
-  constructor (room, user) {
-    this.gid = room
+  constructor (group, user) {
+    this.gid = group
     this.uid = user
   }
 
@@ -55,7 +47,7 @@ class Autoplay {
   playRandomNotes = (uid, count, tempo=1.0) => {
     this.stop(uid)
     for (let i = 0; i < count; i++) {
-      const midi = A0_NOTE + normalRand(C8_NOTE-A0_NOTE)
+      const midi = NOTE_A0 + normalRand(NOTE_C8-NOTE_A0)
       const note = { midi, velocity: 0.5, duration: 0.5/tempo + normalRand(0.25), time: (i + rand(7)/7)/tempo }
 
       this.timers[uid].push(setTimeout(this.sendNoteOn, note.time*1000, note, uid))
@@ -79,7 +71,7 @@ class Autoplay {
     while (this.timers[uid] && this.timers[uid].length > 0) { // empty current timers
       clearTimeout(this.timers[uid].shift())
     }
-    for (let note = A0_NOTE; note <= C8_NOTE; note++) {
+    for (let note = NOTE_A0; note <= NOTE_C8; note++) {
       this.sendNoteOff({midi: note}, uid)
     }
     this.sendSustain(0, uid)
@@ -159,7 +151,7 @@ class Autoplay {
   )
 
   sendSustain = (value, uid) => {
-    Autoplay.wss.broadcast([this.gid, uid || this.uid, toCmd(3), 64, toVal(value)])
+    Autoplay.wss.broadcast([this.gid, uid || this.uid, toCmd(3), CC_SUTAIN, toVal(value)])
   }
   
   sendNoteOn = (note, uid) => {
@@ -167,11 +159,10 @@ class Autoplay {
   }
   
   sendNoteOff = (note, uid) => {
-    Autoplay.wss.broadcast([this.gid, uid || this.uid, toCmd(0), note.midi])
+    Autoplay.wss.broadcast([this.gid, uid || this.uid, toCmd(0), note.midi,toVal(0)])
   }
 
 }
-
 
 
 module.exports = (server) => {
