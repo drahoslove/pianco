@@ -1,5 +1,5 @@
 # pianco
-## https://pianco.online
+## https://pian.co
 
 🎹 Online multiplayer virtual piano with MIDI support
 
