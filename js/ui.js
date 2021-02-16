@@ -222,8 +222,15 @@ const reorient = () => {
   }
 }
 
-if (window.screen.orientation.lock) {
-  window.screen.orientation.lock('landscape')
+if (window.screen.orientation && window.screen.orientation.lock) {
+  window.screen.orientation.lock('landscape').then(() => {
+    console.log('Orienation changed')
+  }, (err) => {
+    if (err) { // fallback to css rotation
+      window.onorientationchange = reorient
+      reorient()
+    }
+  })
 } else {
   window.onorientationchange = reorient
   reorient()

@@ -23,7 +23,8 @@ html body *[hidden] {
 html, body {
 	display: flex;
 	overflow: hidden;
-	justify-content: space-between;
+	/* justify-content: space-between; */
+	justify-content: center;
 	align-items: center;
 	height: 100vh;
 	width: 100vw;
@@ -46,6 +47,7 @@ body.rotated {
 }
 
 header, footer {
+	overflow: hidden; /* fixes unwanted scrolling in rotated mobile mode */
 	display: flex;
 	flex-direction: row;
 	align-items: center;
