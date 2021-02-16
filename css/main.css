@@ -1049,7 +1049,7 @@ input[type=range]::-ms-thumb {
 	}
 	.staffs {
 		font-size: 2em;
-		flex-direction: row;
+		flex-direction: row-reverse;
 	}
 	h1#logo {
 		font-size: 1.5em;

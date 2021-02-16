@@ -222,9 +222,12 @@ const reorient = () => {
   }
 }
 
-window.onorientationchange = reorient
-reorient()
-
+if (window.screen.orientation.lock) {
+  window.screen.orientation.lock('landscape')
+} else {
+  window.onorientationchange = reorient
+  reorient()
+}
 
 // mouse idle
 
