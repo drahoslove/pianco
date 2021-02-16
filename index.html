@@ -69,95 +69,95 @@
 			</div>
 		</div>
 	</header>
-	<div class="bar info">
-		<div>
-		</div>
-		<div>
-			<div class="staffs">
-				<div class="staff treble" hidden>
-					<span><i>𝄞</i>𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚</span>
-					<span>𝅗</span>
+	<div class="content">
+		<div class="chat-sidebar"></div>
+		<div class="main-content">
+			<div class="info-row"> <!-- info row  -->
+				<div class="staff-paper">
+					<div class="staffs">
+						<div class="staff treble" hidden>
+							<span><i>𝄞</i>𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚</span>
+							<span>𝅗</span>
+						</div>
+						<div class="staff bass" hidden>
+							<span><i>𝄢</i>𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚</span>
+							<span>𝅗</span>
+						</div>
+					</div>
 				</div>
-				<div class="staff bass" hidden>
-					<span><i>𝄢</i>𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚</span>
-					<span>𝅗</span>
+			</div> <!-- end info row -->
+			<div class="keyboard letters"> <!-- piano row -->
+				<div class="pianoroll"></div>
+				<div class="top-keys"></div>
+				<div class="bottom-keys"></div>
+				<div class="hint" hidden>
+					<button data-note="C">A</button>
+					<button data-note="C#">W</button>
+					<button data-note="D">S</button>
+					<button data-note="D#">E</button>
+					<button data-note="E">D</button>
+					<button data-note="F">F</button>
+					<button data-note="F#">T</button>
+					<button data-note="G">G</button>
+					<button data-note="G#">Y</button>
+					<button data-note="A">H</button>
+					<button data-note="A#">U</button>
+					<button data-note="B">J</button>
+					<button data-note="C">K</button>
+					<button data-note="C#">O</button>
+					<button data-note="D">L</button>
+					<button data-note="D#">P</button>
+					<button data-note="E">;</button>
+					<button data-note="F">'</button>
 				</div>
-			</div>
-		</div>
-		<div>
-
-		</div>
-	</div>
-	<div class="keyboard letters">
-		<div class="pianoroll"></div>
-		<div class="top-keys"></div>
-		<div class="bottom-keys"></div>
-		<div class="hint" hidden>
-			<button data-note="C">A</button>
-			<button data-note="C#">W</button>
-			<button data-note="D">S</button>
-			<button data-note="D#">E</button>
-			<button data-note="E">D</button>
-			<button data-note="F">F</button>
-			<button data-note="F#">T</button>
-			<button data-note="G">G</button>
-			<button data-note="G#">Y</button>
-			<button data-note="A">H</button>
-			<button data-note="A#">U</button>
-			<button data-note="B">J</button>
-			<button data-note="C">K</button>
-			<button data-note="C#">O</button>
-			<button data-note="D">L</button>
-			<button data-note="D#">P</button>
-			<button data-note="E">;</button>
-			<button data-note="F">'</button>
-		</div>
-	</div>
-	<div class="bar">
-		<div>
-			<button id="midi" title="MIDI in">
-				<span class="mdi mdi-midi"></span>
-			</button>
-			<label for="instrument" id="instrument-label" title="output voice">
-				<span id="out-icon" class="mdi mdi-dots-horizontal"></span>
-				<select name="instrument" id="instrument" hidden>
-					<option value="sampledPiano"> piano</option>
-					<option value="polySynth" class="mid mid-waveform"> synth</option>
-					<option value="midiout" hidden>MIDI out</option>
-					<option value="none" selected hidden>...</option>
-					<!-- <option value="AMSynth">AM synth</option>
-					<option value="FMSynth">FM synt</option> -->
-				</select>
-			</label>
-			<label id="volume-label" title="volume">
-				<span id="volume-icon" class="mdi mdi-volume-high"></span>
-				<input id="volume" type="range" min="-40" value="0" max="0" step="2.5" />
-			</label>
-		</div>
-
-		<div>
-			<button id="go-down" title="shift left"><span class="mdi mdi-chevron-left"></span></button>
-			<button id="go-mid" title="shift to middle"><span class="mdi mdi-chevron-up"></span></button>
-			<button id="go-up" title="shift right"><span class="mdi mdi-chevron-right"></span></button>
-		</div>
-
-		<div id="recorder-app" v-cloak >
-			<div
-				:class="{ isRecording, isPlaying }"
-			>
-				<button @click="toggleRecord"
-					v-tippy :content="(isRecording || isPlaying) ? 'stop' : 'record'"
-				>
-					<span v-if="!isRecording && !isPlaying" class="mdi mdi-record"></span>
-					<span v-if="isRecording || isPlaying" class="mdi mdi-stop"></span>
-				</button>
-				<button @click="togglePlay"
-					v-tippy :content="!isPlaying ? 'replay' : 'pause'"
-				>
-					<span v-if="!isPlaying" class="mdi mdi-play"></span>
-					<span v-if="isPlaying" class="mdi mdi-pause"></span>
-				</button>
-			</div>
+			</div> <!-- end piano row -->
+			<div class="bar tool-bar"> <!-- tool bar row -->
+				<div>
+					<button id="midi" title="MIDI in">
+						<span class="mdi mdi-midi"></span>
+					</button>
+					<label for="instrument" id="instrument-label" title="output voice">
+						<span id="out-icon" class="mdi mdi-dots-horizontal"></span>
+						<select name="instrument" id="instrument" hidden>
+							<option value="sampledPiano"> piano</option>
+							<option value="polySynth" class="mid mid-waveform"> synth</option>
+							<option value="midiout" hidden>MIDI out</option>
+							<option value="none" selected hidden>...</option>
+							<!-- <option value="AMSynth">AM synth</option>
+							<option value="FMSynth">FM synt</option> -->
+						</select>
+					</label>
+					<label id="volume-label" title="volume">
+						<span id="volume-icon" class="mdi mdi-volume-high"></span>
+						<input id="volume" type="range" min="-40" value="0" max="0" step="2.5" />
+					</label>
+				</div>
+		
+				<div>
+					<button id="go-down" title="shift left"><span class="mdi mdi-chevron-left"></span></button>
+					<button id="go-mid" title="shift to middle"><span class="mdi mdi-chevron-up"></span></button>
+					<button id="go-up" title="shift right"><span class="mdi mdi-chevron-right"></span></button>
+				</div>
+		
+				<div v id="recorder-app" v-cloak >
+					<div
+						:class="{ isRecording, isPlaying }"
+					>
+						<button @click="toggleRecord"
+							v-tippy :content="(isRecording || isPlaying) ? 'stop' : 'record'"
+						>
+							<span v-if="!isRecording && !isPlaying" class="mdi mdi-record"></span>
+							<span v-if="isRecording || isPlaying" class="mdi mdi-stop"></span>
+						</button>
+						<button @click="togglePlay"
+							v-tippy :content="!isPlaying ? 'replay' : 'pause'"
+						>
+							<span v-if="!isPlaying" class="mdi mdi-play"></span>
+							<span v-if="isPlaying" class="mdi mdi-pause"></span>
+						</button>
+					</div>
+				</div>
+			</div> <!-- end toolbar row -->
 		</div>
 	</div>
 	<footer class="bar" id="networking-app" v-cloak>

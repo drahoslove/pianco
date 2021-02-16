@@ -28,8 +28,10 @@ const actions = {
     hintBox.hidden = !val
   },
   score: (val) => {
+    const staffPaper = document.querySelector('.staff-paper')
     const staff1 = document.querySelector('.staff.treble')
     const staff2 = document.querySelector('.staff.bass')
+    staffPaper.hidden = val === 0
     staff1.hidden = val < 1
     staff2.hidden = val < 2
   },

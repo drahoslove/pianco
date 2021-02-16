@@ -23,19 +23,19 @@ html body *[hidden] {
 html, body {
 	display: flex;
 	overflow: hidden;
-	justify-content: center;
+	justify-content: space-between;
 	align-items: center;
 	height: 100vh;
 	width: 100vw;
 	font-family: Arial, Helvetica, sans-serif;
 }
 body {
-	margin: 0 0 2rem;
+	margin: 0;
 	flex-direction: column;
 	background: #aee;
 	/* background-color: #faa499;
 	background-image: linear-gradient(319deg, #faa499 0%, #f7dd85 37%, #ffc55c 100%); */
-	background-color: #aaa;
+	background-color: #999;
 	overflow: hidden;
 }
 body.rotated {
@@ -46,12 +46,10 @@ body.rotated {
 }
 
 header, footer {
-	z-index: 10;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
-	position: fixed;
 	width: 100%;
 	background: rgba(30%, 30%, 30%, 0.5);
 	height: 4rem;
@@ -59,10 +57,8 @@ header, footer {
 	color: #fdfdfd;
 }
 header {
-	top: 0;
 }
 footer {
-	bottom: 0;
 	box-shadow: inset 0px 12px 10px -10px #000;
 }
 
@@ -88,6 +84,25 @@ header h1#logo {
 	text-decoration: underline;
 }
 
+.content {
+	width: 100%;
+	flex-grow: 1;
+	display: flex;
+	flex-direction: row;
+}
+
+.chat-sidebar {
+
+}
+
+.main-content {
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
 .bar {
 	padding: 2rem;
 	display: flex;
@@ -98,8 +113,10 @@ header h1#logo {
 	transition: opacity 0.1s ease 0.2s, display 0 linear 0.3s;
 }
 
-.bar.info {
-	min-height: 6rem;
+.info-row {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
 }
 
 header.bar,
@@ -145,7 +162,7 @@ footer.bar {
 .bar>.tabs button {
 	border: none;
 	background-color: #888;
-	color: #666;
+	color: #5a5a5a;
 	border-bottom-left-radius: .5rem;
 	border-bottom-right-radius: .5rem;
 	box-shadow: inset 0px 12px 10px -10px #555;
@@ -167,7 +184,7 @@ footer.bar {
 	color: #555;
 }
 .bar>.tabs button.on {
-	background-color: #aaa;
+	background-color: #999;
 	color: #555;
 	box-shadow: 0px 12px 10px -10px #000;
 	box-shadow: 0px 5px 5px -2px #000;
@@ -186,7 +203,7 @@ footer.bar {
 	text-align: center;
 	text-align-last: center;
 	display: flex;
-	border: 1px solid #aaa;
+	border: 1px solid #999;
 	outline: none;
 	cursor: pointer;
 	margin: 0;
@@ -223,11 +240,13 @@ header.bar button.onon,
 footer.bar button.on {
 	color: #ddd;
 }
-.bar div>:first-child {
+.bar button:first-child,
+.bar label:first-child {
 	border-top-left-radius: .5rem;
 	border-bottom-left-radius: .5rem;
 }
-.bar div>:last-child {
+.bar button:last-child,
+.bar label:last-child {
 	border-top-right-radius: .5rem;
 	border-bottom-right-radius: .5rem;
 	border-right-width: 1px;
@@ -324,7 +343,7 @@ footer.bar button.on {
 /*  ===============  keboard  =============== */
 
 .keyboard {
-	width: 156rem; /* (7*7+3)*3 */
+	width: 156rem; 	/* (7*7+3)*3 */
 	position: relative;
 	height: 17.5rem;
 	transition:
@@ -377,6 +396,7 @@ footer.bar button.on {
 	border-bottom-left-radius: 10% 2%;
 	border-bottom-right-radius: 10% 2%;
 	z-index: 1;
+	box-shadow: 2px 2px 3px 1px #777;
 }
 .bottom-keys button.pressed {
 	/* background: #ffeab4; */
@@ -566,12 +586,24 @@ div.hint {
 }
 
 /* =============== staff =============== */
+.staff-paper {
+	margin: -1.5em 1.5em 1.5em 1.5em;
+	padding: 1.5em 1.5em 1.5em 1em;
+	border-radius: 2px;
+	background-color: #aaa;
+	box-shadow: 1px 1px 5px 0px #666;
+}
+.staff-paper[hidden] {
+	display: none;
+}
 .staffs {
 	font-family: Bravura;
-	position: absolute;
+	position: relative;
 	font-size: 3.25rem;
 	bottom: .75em;
 	margin-bottom: -0em;
+	display: flex;
+	flex-direction: column;
 }
 .staff {
 	margin-bottom: -2.5em;
@@ -702,13 +734,14 @@ body.idle .cinema-bar button {
 	cursor: none;
 }
 
-.cinema .bar {
+.cinema .bar,
+.cinema .staff-paper {
 	transition-delay: 0s;
 	opacity: 0;
 	display: none;
 }
 .cinema .keyboard {
-	width: 100%;
+	width: 100vw;
 	left: 0 !important; /* to disable transposition in cinema mode */
 	height: 0;
 	padding-bottom: 10%;
@@ -1003,13 +1036,20 @@ input[type=range]::-ms-thumb {
 	.bar:last-child {
 		margin-bottom: 0;
 		padding-bottom: 0;
-		padding-top: 1rem;
+	}
+	.bar.tool-bar {
+		z-index: 2;
 	}
 	.keyboard {
 		height: 12rem;
 	}
+	.staff-paper {
+		margin: 0;
+		padding: 0.5em 1em 0.5em 0.5em;
+	}
 	.staffs {
-		font-size: 2.5em;
+		font-size: 2em;
+		flex-direction: row;
 	}
 	h1#logo {
 		font-size: 1.5em;
@@ -1032,9 +1072,6 @@ input[type=range]::-ms-thumb {
 		/* display: none; */
 		height: auto;
 		padding: 0;
-	}
-	.keyboard + .bar {
-		padding-bottom: 2rem;
 	}
 	.copy {
 		font-size: 75%;
