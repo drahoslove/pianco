@@ -93,7 +93,12 @@ header h1#logo {
 }
 
 .chat-sidebar {
-
+	background: red;
+	flex-basis: 0%;
+	transition: flex-basis 0.2s ease;
+}
+.chat-sidebar.open {
+	flex-basis: 50%;
 }
 
 .main-content {
@@ -102,6 +107,7 @@ header h1#logo {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	flex-basis: 100%;
 }
 
 .bar {
@@ -151,10 +157,12 @@ footer.bar {
 }
 
 .bar>div>div.isRecording {
-	box-shadow: 0 0 5px 1px #b00;
+	box-shadow: 0 0 6px 2px #b00;
+	border-radius: 0.5rem;
 }
 .bar>div>div.isPlaying {
-	box-shadow: 0 0 5px 1px #099;
+	box-shadow: 0 0 6px 2px #099;
+	border-radius: 0.5rem;
 }
 
 /* tabs */
@@ -390,7 +398,7 @@ footer.bar button.on {
 
 .bottom-keys button {
 	border-left-width: .25px;
-	border-right-width: .75px; 
+	border-right-width: .75px;
 	height: 100%;
 	text-align: center;
 	/* background-color: #fff7e2; */
@@ -399,7 +407,7 @@ footer.bar button.on {
 	border-bottom-left-radius: 10% 2%;
 	border-bottom-right-radius: 10% 2%;
 	z-index: 1;
-	box-shadow: 2px 2px 3px 1px #777;
+	box-shadow: 3px 3px 6px 1px #777;
 }
 .bottom-keys button.pressed {
 	/* background: #ffeab4; */
@@ -447,6 +455,7 @@ footer.bar button.on {
 	background-color: #212121;
 	position: relative;
 	flex: 1 0;
+	box-shadow: 1.5px 1.5px 4px 0.5px #777;
 }
 .top-keys button.pressed {
 	background-color: #000;
@@ -594,7 +603,7 @@ div.hint {
 	padding: 1.5em 1.5em 1.5em 1em;
 	border-radius: 2px;
 	background-color: #aaa;
-	box-shadow: 1px 1px 5px 0px #666;
+	/* box-shadow: 1px 1px 5px 0px #666; */
 	position: absolute;
 	bottom: 0;
 }
@@ -759,6 +768,7 @@ body.idle .cinema-bar button {
 	transition-delay: 0s;
 	color: transparent;
 	font-size: 0;
+	box-shadow: none;
 }
 .cinema .top-keys button {
 	background: #333;
@@ -1030,6 +1040,15 @@ input[type=range]::-ms-thumb {
 /* mobile devices  */
 
 @media screen and (max-height: 500px), (max-width: 500px) {
+	.smoke:nth-child(even) { /* reduce gpu stress */
+		display: none;
+	}
+	.pianoroll>div>div {
+		box-shadow:
+		/* 0 0 5px hsla(var(--hue), 70%, 50%, 0.9), */
+		/* 0 0 15px hsla(var(--hue), 70%, 50%, 0.8), */
+		0 0 25px hsla(var(--hue), 70%, 50%, 0.7);
+	}
 	html {
 		font-size: 100%;
 	}
