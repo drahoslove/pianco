@@ -175,7 +175,7 @@
 				<span
 					:data-uid="u"
 					:style="{'--color': userColor(u)}"
-					:class="`mdi mdi-account${isMuted(u) ? '-cancel' : ''} user-icon`"
+					:class="`mdi mdi-account${u===uid ? '-settings' : isMuted(u) ? '-cancel' : !u ? '-tie' : ''} user-icon`"
 				></span>
 			</label>
 		</div>
