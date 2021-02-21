@@ -338,6 +338,7 @@ footer.bar button.on {
 }
 
 .bar .user-icon.active {
+	color: var(--color) !important;
 	animation: hit 0.12s ease 0s 1;
 }
 
