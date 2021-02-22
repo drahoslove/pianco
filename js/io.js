@@ -56,9 +56,13 @@ const onRegroup = onCmd('regroup', (values) => {
   if (name) {
     localStorage.name = name
   }
-  const hashRoom = (parseInt(location.hash.slice(1))) % 256 || 0
+  const hashRoom = GID === location.hash === '#-'
+    ? -1
+    : (parseInt(location.hash.slice(1))) % 255 || 0
   if (hashRoom !== newGid) {
-    location.hash = (newGid || '') + (location.hash.endsWith('m') ? 'm' : '')
+    location.hash = newGid === -1
+      ? '-'
+      : (newGid || '') // + (location.hash.endsWith('m') ? 'm' : '')
   }
   recorderApp.reset()
   console.log(`${UID}@${GID} changed`)
@@ -128,7 +132,9 @@ const onBlob = async ({ data }) => {
 }
 
 window.addEventListener('hashchange', () => { // chagning group
-  const newGid = (parseInt(location.hash.slice(1))) % 256 || 0
+  const newGid = location.hash === '#-'
+    ? -1
+    : (parseInt(location.hash.slice(1))) % 255 || 0
   sendOffAll() // to mute self for others before leaving
   sendSustain(0) // to mute self for others before leaving
   allOff() // to mute others
@@ -188,7 +194,9 @@ const connect = () => {
     ws.addEventListener('message', onRecorderStatus)
     
     ws.onopen = () => {
-      const newGid = (parseInt(location.hash.slice(1))) % 256 || 0
+      const newGid = location.hash === '#-'
+        ? -1
+        : (parseInt(location.hash.slice(1))) % 255 || 0
       const { secret, name } = localStorage
       ws.send(`regroup 0 0 ${newGid} ${secret||''} ${name||''}`)
       networkingApp.isOnline = true

@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 11088
 
 const wss = new WebSocket.Server({ port: PORT })
 
-const groups = Array.from({ length: 256 }).map(() => new Set())
+const groups = Array.from({ length: 255 }).map(() => new Set()) // 255 is offline 'room''
 const identities = {} // {[secret]: { name: 'pianco', gid: 0, uid: 0 }}
 
 const send = (gid, uid, message) => { // to specific identity
@@ -76,7 +76,6 @@ const autoplayers = groups.map((_, gid) => new Autoplay(gid, ROOT_USR)) // init 
 const Recorder = require('./recorder.js')(wss)
 const recorders = groups.map((_, gid) => new Recorder(gid)) // init recorder for each group
 
-
 // return uid which is not yet in the group
 const genUid = (gid) => {
   if (groups[gid].size >= 255) {
@@ -103,9 +102,11 @@ wss.on('connection', async function connection(ws) {
     }
 
     if (message instanceof Buffer) {
-      echo(message) // <--- this is the most important
+      if (message[0] !== 255 && message[0] !== -1) {
+        echo(message) // <--- this is the most important
+        recorders[gid].pass(message) // pass message to recorder
+      }
 
-      recorders[gid].pass(message) // pass message to recorder
 
       // interrupt ghost:
       if (gid === ROOT_GRP) { // gopiano also triggesr this
@@ -134,13 +135,17 @@ wss.on('connection', async function connection(ws) {
         let newUid = oldUid // possibly unchanged
 
         // wipe user activity in group
-        if (oldUid) {
+        if (oldUid && oldGid >=0) {
           autoplayers[oldGid].stop(oldUid)
           recorders[oldGid].stop(oldUid)
         }
         // prepare new values:
         if (oldGid !== newGid || oldUid === undefined) { // only change uid when changing gid
-          newUid = genUid(newGid)
+          if (newGid >= 0) {
+            newUid = genUid(newGid)
+          } else {
+            newUid = -1
+          }
           if (newUid === null) {
             ws.send(`group full ${newGid} ${newUid}`)
             wss.status()
@@ -158,7 +163,9 @@ wss.on('connection', async function connection(ws) {
         }
         // update stored values
         groups[oldGid] && groups[oldGid].delete(oldUid)
-        groups[newGid].add(newUid)
+        if (newGid >= 0) {
+          groups[newGid].add(newUid)
+        }
         identities[secret] = { name, gid: newGid, uid: newUid }
 
         // update sockets
@@ -185,37 +192,40 @@ wss.on('connection', async function connection(ws) {
 
       const recorder = recorders[gid]
 
-      if (cmd === 'record') {
-        recorder.record(uid)
-      }
-      if (cmd === 'stop') {
-        recorder.stop(uid)
-      }
-      if (cmd === 'replay') {
-        recorder.replay(uid)
-      }
-      if (cmd === 'pause') {
-        recorder.pause(uid)
+      if (gid !== -1) {
+        if (cmd === 'record') {
+          recorder.record(uid)
+        }
+        if (cmd === 'stop') {
+          recorder.stop(uid)
+        }
+        if (cmd === 'replay') {
+          recorder.replay(uid)
+        }
+        if (cmd === 'pause') {
+          recorder.pause(uid)
+        }
+
+        // debug only:
+        if (cmd === 'autoplayurl') {
+          const [gid, uid] = values.map(Number)
+          const url = values[2]
+          autoplayers[gid].requestHandler(ws)(url)
+        }
+        if (cmd === 'playrandomfile') {
+          const [gid, uid] = values.map(Number)
+          autoplayers[gid].playRandomFile(uid)
+        }
+        if (cmd === 'playrandomnotes') {
+          const [gid, uid, count] = values.map(Number)
+          autoplayers[gid].playRandomNotes(uid, count)
+        }
+        if (cmd === 'stopplay') {
+          const [gid, uid] = values.map(Number)
+          autoplayers[gid].stop(uid)
+        }
       }
 
-      // debug only:
-      if (cmd === 'autoplayurl') {
-        const [gid, uid] = values.map(Number)
-        const url = values[2]
-        autoplayers[gid].requestHandler(ws)(url)
-      }
-      if (cmd === 'playrandomfile') {
-        const [gid, uid] = values.map(Number)
-        autoplayers[gid].playRandomFile(uid)
-      }
-      if (cmd === 'playrandomnotes') {
-        const [gid, uid, count] = values.map(Number)
-        autoplayers[gid].playRandomNotes(uid, count)
-      }
-      if (cmd === 'stopplay') {
-        const [gid, uid] = values.map(Number)
-        autoplayers[gid].stop(uid)
-      }
       // console.log(cmd, values)
     }
   })
@@ -231,9 +241,11 @@ wss.on('connection', async function connection(ws) {
       }
     })
     if (isLast && gid !== undefined && uid !== undefined) {
-      autoplayers[gid].stop(uid)
-      recorders[gid].stop(uid)
-      groups[gid].delete(uid)
+      if (gid >=0) {
+        autoplayers[gid].stop(uid)
+        recorders[gid].stop(uid)
+        groups[gid].delete(uid)
+      }
       if (ws.secret in identities) {
         identities[ws.secret].uid = undefined
         identities[ws.secret].gid = undefined

@@ -139,7 +139,7 @@
 					<button id="go-up" title="shift right"><span class="mdi mdi-chevron-right"></span></button>
 				</div>
 		
-				<div v id="recorder-app" v-cloak >
+				<div v id="recorder-app" v-cloak>
 					<div
 						:class="{ isRecording, isPlaying }"
 					>
@@ -189,7 +189,13 @@
 			>
 			<span
 				:class="`mdi mdi-numeric-${ room }-circle`"></span>
-				<!-- {{ ['⊙','⊚','⦾',][room] }} -->
+			</button>
+			<button
+				:class="gid === -1 ? 'on' : ''"
+				v-tippy content="alone <small>- offline</small>"
+				@click="changeRoom(-1)"
+			>
+				<span class="mdi mdi-minus-circle"></span>
 			</button>
 		</div>
 		<div>

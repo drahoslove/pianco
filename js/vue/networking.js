@@ -61,7 +61,7 @@ export const networkingApp = new Vue({
         :`hsla(${(uid/256) * 360}, 50%, 50%)`
     },
     changeRoom: function (room) {
-      window.location.hash = room || ''
+      window.location.hash = room === -1 ? '-' : (room || '')
     },
     dotsOfRoom: function (gid) {
       return (this.groups[gid || 0]||[]).map(() => '.').join('')

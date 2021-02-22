@@ -41,16 +41,16 @@ const actions = {
   },
   cinema: (val) => {
     document.body.parentElement.classList[val ? 'add' : 'remove']('cinema')
-    if (val) {
-      if(!location.hash.includes('m')) {
-        location.hash += 'm'
-      }
-    } else {
-      location.hash = location.hash.replace('m', '')
-      if (location.hash === '') {
-        removeHash()
-      }
-    }
+    // if (val) {
+    //   if(!location.hash.includes('m')) {
+    //     location.hash += 'm'
+    //   }
+    // } else {
+    //   location.hash = location.hash.replace('m', '')
+    //   if (location.hash === '') {
+    //     removeHash()
+    //   }
+    // }
   },
 }
 
