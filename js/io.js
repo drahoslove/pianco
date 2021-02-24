@@ -29,7 +29,7 @@ let ws
 export const rename = (newName) => {
   const { secret } = localStorage
   if (newName) {
-    ws.send(`regroup ${GID} ${UID} ${GID} ${secret||''} ${newName||''}`)
+    send(`regroup ${GID} ${UID} ${GID} ${secret||''} ${newName||''}`)
   }
 }
 
@@ -138,11 +138,8 @@ window.addEventListener('hashchange', () => { // chagning group
   sendOffAll() // to mute self for others before leaving
   sendSustain(0) // to mute self for others before leaving
   allOff() // to mute others
-  if (ws.readyState !== WebSocket.OPEN) {
-    return
-  }
   const { secret, name } = localStorage
-  ws.send(`regroup ${GID} ${UID} ${newGid} ${secret||''} ${name||''}`)
+  send(`regroup ${GID} ${UID} ${newGid} ${secret||''} ${name||''}`)
   console.log(`${UID}@${GID} => ?@${newGid} request`)
 })
 
@@ -198,7 +195,7 @@ const connect = () => {
         ? -1
         : (parseInt(location.hash.slice(1))) % 255 || 0
       const { secret, name } = localStorage
-      ws.send(`regroup 0 0 ${newGid} ${secret||''} ${name||''}`)
+      send(`regroup 0 0 ${newGid} ${secret||''} ${name||''}`)
       networkingApp.isOnline = true
       console.log('ws open')
       pingPong()
@@ -219,26 +216,35 @@ const connect = () => {
 
 connect()
 
-const sendNoteOn = (note, velocity=0.5) => (source) => {
-  pressNote(note, velocity, UID)(source)
+const queuedMessages = []
+
+const send = (data) => {
   if (ws.readyState !== WebSocket.OPEN) {
+    queuedMessages.push(data)
     return
   }
+  while(queuedMessages.length > 0) {
+    ws.send(queuedMessages.shift())
+  }
+  if (data) {
+    ws.send(data)
+  }
+}
+
+const sendNoteOn = (note, velocity=0.5) => (source) => {
+  pressNote(note, velocity, UID)(source)
   const midiNote = Tone.Midi(note).toMidi()
-  ws.send(new Uint8Array([GID, UID, toCmd(1), midiNote, toVal(velocity)]))
+  send(new Uint8Array([GID, UID, toCmd(1), midiNote, toVal(velocity)]))
 }
 
 const sendNoteOff = (note) => (source) => {
   releaseNote(note, UID)(source)
-  if (ws.readyState !== WebSocket.OPEN) {
-    return
-  }
   const midiNote = Tone.Midi(note).toMidi()
-  ws.send(new Uint8Array([GID, UID, toCmd(0), midiNote, toVal(0)]))
+  send(new Uint8Array([GID, UID, toCmd(0), midiNote, toVal(0)]))
 }
 
 const sendOffAll = () => (source) => {
-  releaseAll(UID)(source).forEach((note) => sendNoteOff(note))
+  releaseAll(UID)(source).forEach((note) => sendNoteOff(note)(source))
 }
 
 const sendSustain = (value, source) => {
@@ -247,10 +253,7 @@ const sendSustain = (value, source) => {
   } else {
     releaseSustain(UID, source)
   }
-  if (ws.readyState !== WebSocket.OPEN) {
-    return
-  }
-  ws.send(new Uint8Array([GID, UID, toCmd(3), CC_SUTAIN, toVal(value)]))
+  send(new Uint8Array([GID, UID, toCmd(3), CC_SUTAIN, toVal(value)]))
 }
 
 const recorder = ['record', 'stop', 'replay', 'pause'].reduce((recorder, action) => ({

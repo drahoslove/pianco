@@ -90,7 +90,7 @@ const setTransposition = (n) => {
   if (transposition > +3) transposition = +3
   keyboard.style.left = `${-transposition*21}rem`
   keyboard.querySelector('.hint').style.left = `${transposition*21}rem`
-  releaseAll()()
+  releaseAll()("shift")
   goMidBtn.className = transposition === 0 ? 'on': ''
   goUpBtn.className = Array.from(new Array(Math.max(+transposition, 0)))
     .fill('on').join('')
