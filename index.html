@@ -187,12 +187,11 @@
 				v-tippy :content="`room ${room}`"
 				:data-user-dots="dotsOfRoom(room)"
 			>
-			<span
-				:class="`mdi mdi-numeric-${ room }-circle`"></span>
+				<span :class="`mdi mdi-numeric-${ room }-circle`"></span>
 			</button>
 			<button
 				:class="gid === -1 ? 'on' : ''"
-				v-tippy content="alone <small>- offline</small>"
+				v-tippy content="isolation"
 				@click="changeRoom(-1)"
 			>
 				<span class="mdi mdi-minus-circle"></span>
