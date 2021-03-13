@@ -81,6 +81,7 @@ header h1#logo {
 	border-radius: 10px;
 	padding: 8px 0 12px;
 	box-shadow: 2px 2px 10px #666;
+	z-index: 5;
 }
 .reacter>span {
 	outline: none;
@@ -101,6 +102,7 @@ header h1#logo {
 .reaction {
 	position: absolute;
 	bottom: 62px;
+	z-index: 5;
 	font-size: 28pt;
 	animation: reaction 5s ease-in 0s 1;
 	text-shadow: 2px 2px 10px #666;
@@ -112,7 +114,12 @@ header h1#logo {
 	90%  { opacity: 1.0; transform: translateY(-40px) scale(1.0);}
 	100% { opacity: 0.0; transform: translateY(-80px) scale(2.0);}
 }
-
+@keyframes minireaction { /* mobile version - reduced travel distance*/
+	0%   { opacity: 0.0; transform: translateY(40px) scale(0.5);}
+	5%   { opacity: 1.0; transform: translateY(0px)  scale(1.0);}
+	90%  { opacity: 1.0; transform: translateY(0px) scale(1.0);}
+	100% { opacity: 0.0; transform: translateY(10px) scale(1.5);}
+}
 
 .copy {
 	color: #888;
@@ -1147,6 +1154,13 @@ input[type=range]::-ms-thumb {
 		/* display: none; */
 		height: auto;
 		padding: 0;
+	}
+	.reacter,
+	.reaction {
+		bottom: 32px;
+	}
+	.reaction {
+		animation: minireaction 5s ease-in 0s 1;
 	}
 	.copy {
 		font-size: 75%;
