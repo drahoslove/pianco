@@ -27,7 +27,7 @@ export const networkingApp = new Vue({
       return this.groups[this.gid]
     },
     lastEmojisMap () {
-      return this.lastEmojis.reduce((map, symbol, i) => ({
+      return this.lastEmojis.slice(this.lastEmojis.length === 4 ? 1 : 0).reduce((map, symbol, i) => ({
         ...map,
         [symbol]: `custom ${i+1}`,
       }), {})
@@ -43,22 +43,23 @@ export const networkingApp = new Vue({
       }
       if (!symbol) {
         symbol = String.fromCodePoint(
-          window.prompt(
+          (window.prompt(
             'Insert one custom emoji character',
             this.lastEmojis.length ? this.lastEmojis[0] : '💯',
-          ).codePointAt(0)
+          ) || ' ').codePointAt(0)
         )
         if (!isEmoji(symbol)) {
           return
         }
         // add last emoji
-        if (!this.lastEmojis.includes(symbol)) {
-          this.lastEmojis = [...this.lastEmojis, symbol]
-          if (this.lastEmojis.length > 3) {
-            this.lastEmojis  = [ ...this.lastEmojis.slice(1) ]
-          }
-          localStorage.lastEmojis = this.lastEmojis.join(",")
+        if (this.lastEmojis.includes(symbol)) {
+          this.lastEmojis = [...this.lastEmojis.filter(s => s !== symbol)] // remove exisiting
         }
+        this.lastEmojis = [...this.lastEmojis, symbol] // add
+        if (this.lastEmojis.length > 4) {
+          this.lastEmojis = [ ...this.lastEmojis.slice(1) ] // remove overflow
+        }
+        localStorage.lastEmojis = this.lastEmojis.join(",") // persist
       }
       react(symbol)
       this.showReacter = false
