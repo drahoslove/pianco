@@ -58,8 +58,8 @@ export const networkingApp = new Vue({
         if (!isEmoji(symbol)) {
           return
         }
+        symbol = normalizeEmoji(symbol)
       }
-      symbol = normalizeEmoji(symbol)
 
       // add last emoji
       if (this.lastEmojis.includes(symbol)) {

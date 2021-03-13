@@ -170,7 +170,7 @@
 						...lastEmojisMap,
 					}"
 					:content="label"
-					v-tippy="{ placement : 'right',  arrow: true }"
+					v-tippy="label ? { placement : 'right',  arrow: true } : false"
 					tabindex="-1"
 					:disabled="!!reactions[uid]"
 					@click="react(symbol)"
