@@ -79,7 +79,7 @@ header h1#logo {
 	bottom: 62px;
 	background: #aaa;
 	border-radius: 10px;
-	padding: 8px 0 12px;
+	padding: 8px 0 4px;
 	box-shadow: 2px 2px 10px #666;
 	z-index: 5;
 }
@@ -99,7 +99,12 @@ header h1#logo {
 	opacity: 0.4;
 	transform: none;
 }
+.reacter>span.sep {
+	height: 0;
+	border-bottom: 1px #fff solid;
+}
 .reaction {
+	color: #111;
 	position: absolute;
 	bottom: 62px;
 	z-index: 5;

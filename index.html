@@ -171,14 +171,26 @@
 						'👌🏻': 'okay',
 						'👎🏻': 'bad',
 						'🍅': 'boo!',
+						'': '',
+						...lastEmojisMap,
 					}"
 					:content="label"
 					v-tippy="{ placement : 'right',  arrow: true }"
 					tabindex="-1"
 					:disabled="!!reactions[uid]"
 					@click="react(symbol)"
+					:class="!symbol ? 'sep': ''"
 				>
 					{{symbol}}
+				</span>
+				<span
+					content="custom"
+					v-tippy="{ placement : 'right',  arrow: true }"
+					tabindex="-1"
+					:disabled="!!reactions[uid]"
+					@click="react()"
+				>
+					<span class="mdi mdi-dots-horizontal"></span>
 				</span>
 			</div>
 			<div>

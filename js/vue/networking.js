@@ -6,6 +6,9 @@ import {
   react,
 } from '../io.js'
 
+
+const isEmoji = (s) => /\p{Extended_Pictographic}/u.test(s)
+
 export const networkingApp = new Vue({
   el: '#networking-app',
   data: {
@@ -17,11 +20,18 @@ export const networkingApp = new Vue({
     names: [],
     reactions: [],
     muted: [{}],
+    lastEmojis: localStorage.lastEmojis ? localStorage.lastEmojis.split(",") : [],
   },
   computed: {
-    users: function () {
+    users () {
       return this.groups[this.gid]
     },
+    lastEmojisMap () {
+      return this.lastEmojis.reduce((map, symbol, i) => ({
+        ...map,
+        [symbol]: `custom ${i+1}`,
+      }), {})
+    }
   },
   methods: {
     toggleReacter () {
@@ -30,6 +40,25 @@ export const networkingApp = new Vue({
     react (symbol) {
       if (this.reactions[this.uid]) { // disallow multiple reaction
         return
+      }
+      if (!symbol) {
+        symbol = String.fromCodePoint(
+          window.prompt(
+            'Insert one custom emoji character',
+            this.lastEmojis.length ? this.lastEmojis[0] : '💯',
+          ).codePointAt(0)
+        )
+        if (!isEmoji(symbol)) {
+          return
+        }
+        // add last emoji
+        if (!this.lastEmojis.includes(symbol)) {
+          this.lastEmojis = [...this.lastEmojis, symbol]
+          if (this.lastEmojis.length > 3) {
+            this.lastEmojis  = [ ...this.lastEmojis.slice(1) ]
+          }
+          localStorage.lastEmojis = this.lastEmojis.join(",")
+        }
       }
       react(symbol)
       this.showReacter = false
