@@ -162,7 +162,7 @@
 	</div>
 	<footer class="bar" id="networking-app" v-cloak>
 		<div>
-			<div class="emotes" v-if="showEmotes">
+			<div class="reacter" v-if="showReacter">
 				<span
 					v-for="(label, symbol) of {
 						'❤️': 'lovely',
@@ -182,7 +182,7 @@
 				</span>
 			</div>
 			<div>
-				<button content="react!" v-tippy @click="toggleEmotes()">
+				<button content="react!" v-tippy @click="toggleReacter()">
 					<span class="mdi mdi-chat"></span>
 				</button>
 			</div>

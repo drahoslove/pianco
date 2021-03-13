@@ -9,7 +9,7 @@ import {
 export const networkingApp = new Vue({
   el: '#networking-app',
   data: {
-    showEmotes: false,
+    showReacter: false,
     isOnline: false,
     gid: 0,
     uid: 0,
@@ -24,15 +24,15 @@ export const networkingApp = new Vue({
     },
   },
   methods: {
-    toggleEmotes () {
-      this.showEmotes = !this.showEmotes
+    toggleReacter () {
+      this.showReacter = !this.showReacter
     },
     react (symbol) {
       if (this.reactions[this.uid]) { // disallow multiple reaction
         return
       }
       react(symbol)
-      this.showEmotes = false
+      this.showReacter = false
     },
     showReaction (gid, uid, symbol) {
       if (gid !== this.gid) {
@@ -89,4 +89,12 @@ export const networkingApp = new Vue({
       return (this.groups[gid || 0]||[]).map(() => '.').join('')
     }
   },
+})
+
+window.addEventListener('load', () => {
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#networking-app')) {
+      networkingApp.showReacter = false
+    }
+  })
 })
