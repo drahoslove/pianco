@@ -24,7 +24,7 @@ const send = (gid, uid, message) => { // to specific identity
   })
 }
 
-const broadcast = (data) => { // to everyone
+const broadcast = (data) => { // to everyone in group
   const [gid, uid] = data
   wss.clients.forEach(client => {
     const { gid: clientGid } = identities[client.secret] || {}
@@ -34,7 +34,16 @@ const broadcast = (data) => { // to everyone
   })
 }
 
-const echo = (data) => { // to eveyone except origin
+const broadcastText = (gid, text) => {
+  wss.clients.forEach(client => {
+    const { gid: clientGid } = identities[client.secret] || {}
+    if (clientGid === gid && client.readyState === WebSocket.OPEN) {
+      client.send(text)
+    }
+  })
+}
+
+const echo = (data) => { // to eveyone in group except origin
   const [gid, uid] = data
   wss.clients.forEach(client => {
     const { gid: clientGid, uid: clientUid } = identities[client.secret] || {}
@@ -107,7 +116,6 @@ wss.on('connection', async function connection(ws) {
         recorders[gid].pass(message) // pass message to recorder
       }
 
-
       // interrupt ghost:
       if (gid === ROOT_GRP) { // gopiano also triggesr this
         const [_, __, cmd] = new Uint8Array(message)
@@ -120,11 +128,17 @@ wss.on('connection', async function connection(ws) {
         }
       }
     }
+
     if (typeof message === "string") {
       const [cmd, ...values] = message.split(' ')
 
       if (cmd === 'ping') {
         ws.send('pong')
+      }
+
+      if (cmd === 'reaction') {
+        const [gid, uid] = values.map(Number)
+        broadcastText(gid, message)
       }
 
       if (cmd === "regroup") {

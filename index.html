@@ -49,7 +49,7 @@
 		</div>
 		<div>
 			<div>
-				<button id="toggle-score"  title="show staff" >
+				<button id="toggle-score" title="show staff" >
 					<span class="mdi mdi-music-clef-treble"></span>
 				</button>
 				<button id="toggle-qwerty" hidden  title="show kayboard mapping">
@@ -162,22 +162,48 @@
 	</div>
 	<footer class="bar" id="networking-app" v-cloak>
 		<div>
-			<button v-if="!isOnline" content="disconnected" v-tippy>
-				<!-- <span v-if="isOnline" class="mdi mdi-check-network"></span> -->
-				<span v-if="!isOnline" class="mdi mdi-close-network"></span>
-			</button>
-			<label
-				v-if="isOnline"
-				v-for="u of users"
-				@click="userClick(u)"
-				:content="userName(u)" v-tippy
-			>
+			<div class="emotes" v-if="showEmotes">
 				<span
-					:data-uid="u"
-					:style="{'--color': userColor(u)}"
-					:class="`mdi mdi-account${u===uid ? '-settings' : isMuted(u) ? '-cancel' : !u ? '-tie' : ''} user-icon`"
-				></span>
-			</label>
+					v-for="(label, symbol) of {
+						'❤️': 'lovely',
+						'👏🏻': 'bravo!',
+						'👍🏻': 'good',
+						'👌🏻': 'okay',
+						'👎🏻': 'bad',
+						'🍅': 'boo!',
+					}"
+					:content="label"
+					v-tippy="{ placement : 'right',  arrow: true }"
+					tabindex="-1"
+					:disabled="!!reactions[uid]"
+					@click="react(symbol)"
+				>
+					{{symbol}}
+				</span>
+			</div>
+			<div>
+				<button content="react!" v-tippy @click="toggleEmotes()">
+					<span class="mdi mdi-chat"></span>
+				</button>
+			</div>
+			<div>
+				<button v-if="!isOnline" content="disconnected" v-tippy>
+					<span v-if="!isOnline" class="mdi mdi-close-network"></span>
+				</button>
+				<label
+					v-if="isOnline"
+					v-for="u of users"
+					@click="userClick(u)"
+					:content="userName(u)" v-tippy
+				>
+					<span
+						:data-uid="u"
+						:style="{'--color': userColor(u)}"
+						:class="`mdi mdi-account${u===uid ? '-settings' : isMuted(u) ? '-cancel' : !u ? '-tie' : ''} user-icon`"
+					></span>
+					<span v-if="reactions[u]" class="reaction">{{reactions[u]}}</span>
+				</label>
+			</div>
 		</div>
 		<div class="tabs">
 			<button

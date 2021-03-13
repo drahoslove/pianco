@@ -3,16 +3,19 @@ import {
 } from '../instrument.js'
 import {
   rename as ioRename,
+  react,
 } from '../io.js'
 
 export const networkingApp = new Vue({
   el: '#networking-app',
   data: {
+    showEmotes: false,
     isOnline: false,
     gid: 0,
     uid: 0,
     groups: [],
     names: [],
+    reactions: [],
     muted: [{}],
   },
   computed: {
@@ -21,10 +24,29 @@ export const networkingApp = new Vue({
     },
   },
   methods: {
-    isMuted: function (uid) {
+    toggleEmotes () {
+      this.showEmotes = !this.showEmotes
+    },
+    react (symbol) {
+      if (this.reactions[this.uid]) { // disallow multiple reaction
+        return
+      }
+      react(symbol)
+      this.showEmotes = false
+    },
+    showReaction (gid, uid, symbol) {
+      if (gid !== this.gid) {
+        return
+      }
+      this.$set(this.reactions, uid, symbol)
+      setTimeout(() => {
+        this.$set(this.reactions, uid, null)
+      }, 5000)
+    },
+    isMuted (uid) {
       return (this.muted[this.gid] || {})[uid]
     },
-    toggleMute: function (uid) {
+    toggleMute (uid) {
       const gid = this.gid
       if (!this.muted[gid]) {
         this.$set(this.muted, gid, {})
@@ -37,7 +59,7 @@ export const networkingApp = new Vue({
         releaseSustain(uid, "UI")
       }
     },
-    userClick: function (uid) {
+    userClick (uid) {
       if (uid == this.uid) {
         const { name } = localStorage
         // const notMuted = [...this.groups[this.gid]].filter(this.isMuted.bind(this))
@@ -49,21 +71,21 @@ export const networkingApp = new Vue({
         this.toggleMute(uid)
       }
     },
-    userName: function (uid) {
+    userName (uid) {
       const name = (this.names[this.gid]||[])[uid] || 'anon'
       return name 
         + (uid === this.uid ? ' <small>- you</small>' : '')
         + (this.isMuted(uid) ? ' <small>- muted</small>' : '')
     },
-    userColor: function (uid) {
+    userColor (uid) {
       return uid === this.uid
         ? '#eee'
         :`hsla(${(uid/256) * 360}, 50%, 50%)`
     },
-    changeRoom: function (room) {
+    changeRoom (room) {
       window.location.hash = room === -1 ? '-' : (room || '')
     },
-    dotsOfRoom: function (gid) {
+    dotsOfRoom (gid) {
       return (this.groups[gid || 0]||[]).map(() => '.').join('')
     }
   },

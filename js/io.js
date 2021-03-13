@@ -33,6 +33,10 @@ export const rename = (newName) => {
   }
 }
 
+export const react = (symbol) => {
+  send(`reaction ${GID} ${UID} ${symbol}`)
+}
+
 // ws message handlers
 
 const onCmd = (cmdName, callback) => async ({ data: message }) => {
@@ -44,6 +48,12 @@ const onCmd = (cmdName, callback) => async ({ data: message }) => {
     callback(values)
   }
 }
+
+const onReaction = onCmd('reaction', (values) => {
+  const [gid, uid] = values.map(Number)
+  const symbol = values[2]
+  networkingApp.showReaction(gid, uid, symbol)
+})
 
 const onRegroup = onCmd('regroup', (values) => {
   const [newGid, newUid] = values.map(Number)
@@ -189,6 +199,8 @@ const connect = () => {
     ws.addEventListener('message', onUserStatus)
     // handle recorder status
     ws.addEventListener('message', onRecorderStatus)
+    // handle reaction
+    ws.addEventListener('message', onReaction)
     
     ws.onopen = () => {
       const newGid = location.hash === '#-'
