@@ -162,15 +162,10 @@
 	</div>
 	<footer class="bar" id="networking-app" v-cloak>
 		<div>
-			<div class="reacter" v-if="showReacter">
+			<div class="reacter" v-if="showReacter && gid !== -1">
 				<span
 					v-for="(label, symbol) of {
-						'❤️': 'lovely',
-						'👏🏻': 'bravo!',
-						'👍🏻': 'good',
-						'👌🏻': 'okay',
-						'👎🏻': 'bad',
-						'🍅': 'boo!',
+						...defaultEmojis,
 						'': '',
 						...lastEmojisMap,
 					}"
@@ -193,7 +188,7 @@
 					<span class="mdi mdi-dots-horizontal"></span>
 				</span>
 			</div>
-			<div>
+			<div v-if="gid !== -1">
 				<button content="react!" v-tippy @click="toggleReacter()">
 					<span class="mdi mdi-chat"></span>
 				</button>

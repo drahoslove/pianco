@@ -8,6 +8,7 @@ import {
 
 
 const isEmoji = (s) => /\p{Extended_Pictographic}/u.test(s)
+const normalizeEmoji = (s) => String.fromCodePoint(s.codePointAt(0))
 
 export const networkingApp = new Vue({
   el: '#networking-app',
@@ -21,6 +22,14 @@ export const networkingApp = new Vue({
     reactions: [],
     muted: [{}],
     lastEmojis: localStorage.lastEmojis ? localStorage.lastEmojis.split(",") : [],
+    defaultEmojis: {
+      '❤️': 'lovely',
+      '👏🏻': 'bravo!',
+      '👍🏻': 'good',
+      '👌🏻': 'okay',
+      '👎🏻': 'bad',
+      '🍅': 'boo!',
+    },
   },
   computed: {
     users () {
@@ -42,19 +51,21 @@ export const networkingApp = new Vue({
         return
       }
       if (!symbol) {
-        symbol = String.fromCodePoint(
-          (window.prompt(
-            'Insert one custom emoji character',
-            this.lastEmojis.length ? this.lastEmojis[0] : '💯',
-          ) || ' ').codePointAt(0)
-        )
+        symbol = window.prompt(
+          'Insert one custom emoji character',
+          this.lastEmojis.length ? this.lastEmojis[0] : '💯',
+        ) || ' '
         if (!isEmoji(symbol)) {
           return
         }
-        // add last emoji
-        if (this.lastEmojis.includes(symbol)) {
-          this.lastEmojis = [...this.lastEmojis.filter(s => s !== symbol)] // remove exisiting
-        }
+      }
+      symbol = normalizeEmoji(symbol)
+
+      // add last emoji
+      if (this.lastEmojis.includes(symbol)) {
+        this.lastEmojis = [...this.lastEmojis.filter(s => s !== symbol)] // remove exisiting
+      }
+      if (!(symbol in this.defaultEmojis)) {
         this.lastEmojis = [...this.lastEmojis, symbol] // add
         if (this.lastEmojis.length > 4) {
           this.lastEmojis = [ ...this.lastEmojis.slice(1) ] // remove overflow
