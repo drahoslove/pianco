@@ -286,11 +286,17 @@ function addRect(note, source) {
   const rect = document.createElement('div')
 	const column = document.querySelector(`.pianoroll [data-note="${note}"]`)
 	rect.className = "pressed"
-  column.appendChild(rect)
+  if (!column) { // document not fully loaded?
+		return
+	}
+	column.appendChild(rect)
 }
 function releaseRect(note, source) {
 	// if (source === 'mutedIO') return
 	const column = document.querySelector(`.pianoroll [data-note="${note}"]`)
+	if (!column) {
+		return
+	}
 	const rect = column.lastChild
 	if (rect) {
 		rect.className = "released"

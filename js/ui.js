@@ -124,13 +124,13 @@ if (!('ontouchstart' in document.documentElement)) {
 
 // cinema off
 const cinemaOffButton = document.getElementById('cinema-off')
-const offCinema = function () {
+const offCinema = async function() {
   this && this.blur()
   document.getElementById('toggle-cinema').classList.remove('on')
   actions.cinema(false)
   saveSetting('cinema', false)
-  if (document.fullscreenElement !== null) {
-    document.exitFullscreen()
+  if (document.fullscreenElement !== null && document.exitFullscreen) {
+    await document.exitFullscreen()
     fullscreenButton.className = 'mdi mdi-fullscreen'
   }
 }
@@ -145,13 +145,15 @@ window.addEventListener('keydown', (e) => {
 const fullscreenButton = document.getElementById('fullscreen')
 const toggleFullscreen = async function () {
   this && this.blur()
-  if (document.fullscreenElement) {
+  if (document.fullscreenElement && document.exitFullscreen) {
     await document.exitFullscreen()
   } else {
     if (!loadSetting('cinema')) {
       actions.cinema(true)
     }
-    await document.body.parentElement.requestFullscreen()
+    if ( document.body.parentElement.requestFullscreen) {
+      await document.body.parentElement.requestFullscreen()
+    }
   }
   if (document.fullscreenElement !== null){
     fullscreenButton.className = 'mdi mdi-fullscreen-exit'
