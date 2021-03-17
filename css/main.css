@@ -1,6 +1,7 @@
 @font-face {
 	font-family: Bravura;
 	src: url(/font/Bravura.woff2);
+	font-display: swap;
 }
 
 
