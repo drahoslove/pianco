@@ -868,7 +868,7 @@ body.idle .cinema-bar button {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background-image: url('/img/smoke_blur-min.png');
+	background-image: url('/img/smoke_blur.webp');
 	background-position: center center;
 	background-repeat: repeat;
 	background-size: contain;
@@ -876,21 +876,21 @@ body.idle .cinema-bar button {
 	animation-direction: alternate;
 }
 .background .smoke:nth-child(1) {
-	background-image: url('/img/smoke_layer1_blur-min.png');
+	background-image: url('/img/smoke_layer1_blur.webp');
 	animation: flow-1 38s ease-in-out -10s infinite alternate;
 }
 .background .smoke:nth-child(2) {
-	background-image: url('/img/smoke_layer2_blur-min.png');
+	background-image: url('/img/smoke_layer1_blur.webp');
 	transform: scale(1, -1);	
 	animation: flow-2 33s ease-in-out -9s infinite alternate;
 }
 .background .smoke:nth-child(3) {
-	background-image: url('/img/smoke_layer3_blur-min.png');
+	background-image: url('/img/smoke_layer1_blur.webp');
 	transform: scale(-1, 1);
 	animation: flow-3 38s ease-in-out -8s infinite alternate;
 }
 .background .smoke:nth-child(4) {
-	background-image: url('/img/smoke_layer4_blur-min.png');
+	background-image: url('/img/smoke_layer1_blur.webp');
 	transform: scale(-1, -1);
 	animation: flow-4 31s ease-in-out -2s infinite alternate;
 }
