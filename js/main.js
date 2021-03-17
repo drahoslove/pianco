@@ -170,7 +170,7 @@ if ('ontouchstart' in document.documentElement) { // only for touch devices
         keysByTouches[touch.identifier] = key
       }
     })
-  }))
+  }), {passive: true})
   keyboard.addEventListener('touchmove', _((e) => {
     ;[...e.targetTouches].forEach((touch) => {
       const id = touch.identifier
@@ -187,7 +187,7 @@ if ('ontouchstart' in document.documentElement) { // only for touch devices
         keysByTouches[id] = key
       }
     })
-  }))
+  }), {passive: true})
   keyboard.addEventListener('touchend', _((e) => {
     ;[...e.changedTouches].forEach((touch, i) => {
       const id = touch.identifier
@@ -198,10 +198,10 @@ if ('ontouchstart' in document.documentElement) { // only for touch devices
       }
       keysByTouches[id] = null
     })
-  }))
+  }), {passive: true})
   keyboard.addEventListener('touchcancel', (e) => {
     releaseAll()("touch")
-  })
+  }, {passive: true})
 }
 
 // init keyboard input

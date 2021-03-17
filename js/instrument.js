@@ -166,11 +166,11 @@ volumeIcon.onclick = () => {
   }
 	volumeIcon.className = valToIcon(+volumeSelector.value)
 }
-volumeSelector.parentElement.onwheel = function (e) {
+volumeSelector.parentElement.addEventListener('wheel', function (e) {
   const val =  Math.max(+this.min, Math.min(Math.sign(-e.deltaY) * +this.step + +this.value, +this.max))
   volumeSelector.value = val
   updateVolume.bind(this)(e)
-}.bind(volumeSelector)
+}.bind(volumeSelector), {passive: true})
 volumeSelector.oninput = updateVolume
 
 
