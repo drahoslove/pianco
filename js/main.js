@@ -8,8 +8,8 @@ import {
 import {
   sendNoteOn as pressNote,
   sendNoteOff as releaseNote,
-  sendOffAll as releaseAll,
   sendSustain as sustain,
+  sendOffAll as releaseAll,
 } from './io.js'
 import {
   fromCmd, fromVal,
@@ -203,6 +203,16 @@ if ('ontouchstart' in document.documentElement) { // only for touch devices
     releaseAll()("touch")
   }, {passive: true})
 }
+
+// special cases
+document.addEventListener('visibilitychange', (e) => { // release all when
+  if (document.visibilityState !== 'visible') {
+    releaseAll()('visibilitychange')
+  }
+})
+window.addEventListener('beforeunload', (e) => {
+  releaseAll()('beforeunload')
+})
 
 // init keyboard input
 const keyMap = (n) => ({

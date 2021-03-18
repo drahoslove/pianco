@@ -79,8 +79,15 @@ const onRegroup = onCmd('regroup', (values) => {
 
 const onUserStatus = onCmd('status', (values) => {
   const status = JSON.parse(values.join(''))
+  const removedUsers = (networkingApp.groups[GID]||[])
+    .filter(uid => !status.groups[GID].includes(uid))
   networkingApp.groups = status.groups || []
   networkingApp.names = status.names || {}
+  
+  removedUsers.forEach(uid => {
+    releaseAll(uid)('cleanage')
+    releaseSustain(uid, 'cleanage')
+  })
 })
 
 const onRecorderStatus = ({ data: message }) => {
@@ -132,9 +139,9 @@ const onBlob = async ({ data }) => {
     if (val1 === CC_SUTAIN) {
       const sustain = fromVal(val2)
       if (sustain >= 0.5) {
-        pressSustain(uid)
+        pressSustain(uid, 'IO')
       } else {
-        releaseSustain(uid)
+        releaseSustain(uid, 'IO')
       }
     }
   }
@@ -254,10 +261,6 @@ const sendNoteOff = (note) => (source) => {
   send(new Uint8Array([GID, UID, toCmd(0), midiNote, toVal(0)]))
 }
 
-const sendOffAll = () => (source) => {
-  releaseAll(UID)(source).forEach((note) => sendNoteOff(note)(source))
-}
-
 const sendSustain = (value, source) => {
   if (value >= 0.5) {
     pressSustain(UID, source)
@@ -265,6 +268,11 @@ const sendSustain = (value, source) => {
     releaseSustain(UID, source)
   }
   send(new Uint8Array([GID, UID, toCmd(3), CC_SUTAIN, toVal(value)]))
+}
+
+const sendOffAll = () => (source) => {
+  releaseAll(UID)(source).forEach((note) => sendNoteOff(note)(source))
+  sendSustain(0, source)
 }
 
 const recorder = ['record', 'stop', 'replay', 'pause'].reduce((recorder, action) => ({
