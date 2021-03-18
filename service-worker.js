@@ -32,9 +32,12 @@ const solidFiles = [ // these will not ever change
   '/audio/salamander/Fs5.mp3',
   '/audio/salamander/Fs6.mp3',
   '/audio/salamander/Fs7.mp3',
+  '/font/Bravura.woff2',
   'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
   'https://cdn.jsdelivr.net/npm/vue-tippy/dist/vue-tippy.min.js',
   'https://cdn.jsdelivr.net/npm/@mdi/font@5.9.55/css/materialdesignicons.min.css',
+  'https://cdn.jsdelivr.net/npm/@mdi/font@5.9.55/fonts/materialdesignicons-webfont.woff?v=5.9.55',
+  'https://cdn.jsdelivr.net/npm/@mdi/font@5.9.55/fonts/materialdesignicons-webfont.ttf?v=5.9.55',
   'https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js',
   'https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js',
@@ -44,7 +47,7 @@ const solidFiles = [ // these will not ever change
   'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js',
 ]
-const filesToCache = [
+const filesToPrecache = [
   '/',
   '/css/main.css',
   '/js/main.js',
@@ -55,14 +58,17 @@ const filesToCache = [
   '/js/io.js',
   '/js/midi.js',
   '/js/ui.js',
-  '/font/Bravura.woff2',
-  ...solidFiles,
+
   '/rc',
   '/js/rc.js',
   '/js/roland.js',
   '/js/pianoteq.js',
-
 ]
+const filesToCache = [
+  ...solidFiles,
+  ...filesToPrecache,
+]
+
 self.addEventListener('install', e => {
   e.waitUntil(precache())
 })
@@ -80,7 +86,7 @@ self.addEventListener('fetch', e => {
 
 function precache() {
   return caches.open(CACHE).then((cache) => 
-    cache.addAll(filesToCache)
+    cache.addAll(filesToPrecache)
   )
 }
 
