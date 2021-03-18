@@ -142,27 +142,27 @@ const volumeIcon = document.getElementById('volume-icon')
 const volumeSelector = document.getElementById('volume')
 
 const valToIcon = (value) =>
-	(Tone.Master.mute && 'mdi mdi-volume-mute') ||
+	(Tone.getDestination().mute && 'mdi mdi-volume-mute') ||
 	(value > -15 && 'mdi mdi-volume-high') ||
 	(value > -30 && 'mdi mdi-volume-medium') ||
 	'mdi mdi-volume-low'
 
 function updateVolume() {
   const value = +this.value
-  Tone.Master.volume.value = value
+  Tone.getDestination().volume.value = value
   if (value === +this.min) {
-		Tone.Master.mute = true
+		Tone.getDestination().mute = true
   } else {
-		Tone.Master.mute = false
+		Tone.getDestination().mute = false
   }
 	volumeIcon.className = valToIcon(value)
 }
 volumeIcon.onclick = () => {
-  if (Tone.Master.mute) {
-    Tone.Master.mute = false
+  if (Tone.getDestination().mute) {
+    Tone.getDestination().mute = false
     volumeSelector.disabled = false
   } else {
-    Tone.Master.mute = true
+    Tone.getDestination().mute = true
     volumeSelector.disabled = true
   }
 	volumeIcon.className = valToIcon(+volumeSelector.value)
