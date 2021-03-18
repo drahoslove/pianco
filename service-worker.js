@@ -40,6 +40,7 @@ const solidFiles = [ // these will not ever change
   'https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js',
   'https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css',
   'https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js',
   'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js',
 ]
@@ -54,7 +55,6 @@ const filesToCache = [
   '/js/io.js',
   '/js/midi.js',
   '/js/ui.js',
-  '/lib/Tone.js',
   '/font/Bravura.woff2',
   ...solidFiles,
   '/rc',

@@ -1,4 +1,3 @@
-import '../lib/Tone.js'
 import {
   pressNote, releaseNote, releaseAll,
   pressSustain, releaseSustain,

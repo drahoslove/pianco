@@ -1,6 +1,5 @@
 import * as R from "./roland.js"
 import * as Ptq from './pianoteq.js'
-import '../lib/Tone.js'
 import {
   toCmd, fromCmd, toVal, fromVal, chanFromCmd,
   CMD_NOTE_ON, CMD_NOTE_OFF,

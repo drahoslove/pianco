@@ -1,4 +1,3 @@
-import '../lib/Tone.js'
 import {
 	toCmd,
 	toVal,
@@ -6,8 +5,10 @@ import {
 	CMD_NOTE_OFF,
 } from './midi.js'
 
-Tone.context.latencyHint = 'fastest' // improve sheduling latency
-Tone.context.lookAhead = 0.025
+Tone.setContext(new Tone.Context({
+	latencyHint: 'interactive', // improve sheduling latency
+	lookAhead: 0.025,
+}))
 
 const pressedNotes = {}
 const sustainedNotes = {}
@@ -32,46 +33,48 @@ allNotes.forEach(note => {
 
 
 const instruments = {
-  polySynth: new Tone.PolySynth(16, Tone.Synth, {
+  polySynth: new Tone.PolySynth(Tone.Synth, {
     envelope: {
       attack: 0.01,
       release: .5,
     }
-  }).toMaster(),
-  AMSynth: new Tone.AMSynth().toMaster(),
-  FMSynth: new Tone.FMSynth().toMaster(),
+  }).toDestination(),
+  AMSynth: new Tone.AMSynth().toDestination(),
+  FMSynth: new Tone.FMSynth().toDestination(),
   sampledPiano: new Tone.Sampler({
-    "A0" : "A0.[mp3|ogg]",
-    "C1" : "C1.[mp3|ogg]",
-    "D#1" : "Ds1.[mp3|ogg]",
-    "F#1" : "Fs1.[mp3|ogg]",
-    "A1" : "A1.[mp3|ogg]",
-    "C2" : "C2.[mp3|ogg]",
-    "D#2" : "Ds2.[mp3|ogg]",
-    "F#2" : "Fs2.[mp3|ogg]",
-    "A2" : "A2.[mp3|ogg]",
-    "C3" : "C3.[mp3|ogg]",
-    "D#3" : "Ds3.[mp3|ogg]",
-    "F#3" : "Fs3.[mp3|ogg]",
-    "A3" : "A3.[mp3|ogg]",
-    "C4" : "C4.[mp3|ogg]",
-    "D#4" : "Ds4.[mp3|ogg]",
-    "F#4" : "Fs4.[mp3|ogg]",
-    "A4" : "A4.[mp3|ogg]",
-    "C5" : "C5.[mp3|ogg]",
-    "D#5" : "Ds5.[mp3|ogg]",
-    "F#5" : "Fs5.[mp3|ogg]",
-    "A5" : "A5.[mp3|ogg]",
-    "C6" : "C6.[mp3|ogg]",
-    "D#6" : "Ds6.[mp3|ogg]",
-    "F#6" : "Fs6.[mp3|ogg]",
-    "A6" : "A6.[mp3|ogg]",
-    "C7" : "C7.[mp3|ogg]",
-    "D#7" : "Ds7.[mp3|ogg]",
-    "F#7" : "Fs7.[mp3|ogg]",
-    "A7" : "A7.[mp3|ogg]",
-    "C8" : "C8.[mp3|ogg]"
-  }, {
+		urls: {
+			"A0" : "A0.[mp3|ogg]",
+			"C1" : "C1.[mp3|ogg]",
+			"D#1" : "Ds1.[mp3|ogg]",
+			"F#1" : "Fs1.[mp3|ogg]",
+			"A1" : "A1.[mp3|ogg]",
+			"C2" : "C2.[mp3|ogg]",
+			"D#2" : "Ds2.[mp3|ogg]",
+			"F#2" : "Fs2.[mp3|ogg]",
+			"A2" : "A2.[mp3|ogg]",
+			"C3" : "C3.[mp3|ogg]",
+			"D#3" : "Ds3.[mp3|ogg]",
+			"F#3" : "Fs3.[mp3|ogg]",
+			"A3" : "A3.[mp3|ogg]",
+			"C4" : "C4.[mp3|ogg]",
+			"D#4" : "Ds4.[mp3|ogg]",
+			"F#4" : "Fs4.[mp3|ogg]",
+			"A4" : "A4.[mp3|ogg]",
+			"C5" : "C5.[mp3|ogg]",
+			"D#5" : "Ds5.[mp3|ogg]",
+			"F#5" : "Fs5.[mp3|ogg]",
+			"A5" : "A5.[mp3|ogg]",
+			"C6" : "C6.[mp3|ogg]",
+			"D#6" : "Ds6.[mp3|ogg]",
+			"F#6" : "Fs6.[mp3|ogg]",
+			"A6" : "A6.[mp3|ogg]",
+			"C7" : "C7.[mp3|ogg]",
+			"D#7" : "Ds7.[mp3|ogg]",
+			"F#7" : "Fs7.[mp3|ogg]",
+			"A7" : "A7.[mp3|ogg]",
+			"C8" : "C8.[mp3|ogg]"
+		},
+		baseUrl: "/audio/salamander/",
     release: 1,
     onload: () => {
 			console.log('piano samples loaded')
@@ -80,11 +83,10 @@ const instruments = {
 				instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
 			}
     },
-    baseUrl: "/audio/salamander/",
-  }).toMaster(),
+  }).toDestination(),
   none: {
-    triggerAttack: Tone.noOp,
-    triggerRelease: Tone.noOp,
+    triggerAttack: () => {},
+    triggerRelease: () => {},
 	},
 	midiout: {
 		triggerAttack: (note, _, velocity) => {
@@ -128,7 +130,6 @@ instrumentSelector.addEventListener('change', function () {
 const getInstrument = (source) => {
 	const isMidiLoop = (source === 'midiin' && instrumentSelector.value === 'midiout')	
 	// if source is midi, we don't want to send play the note twice
-
 	return (
 		!isMidiLoop && source !== "mutedIO"
 	)
