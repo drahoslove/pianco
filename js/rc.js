@@ -452,8 +452,8 @@ const connectMidi = async () => {
     return
   }
   const midiAccess = await navigator.requestMIDIAccess({ sysex: true })
-    .catch(() => {
-      setMidiStatus(false, '')
+    .catch((e) => {
+      setMidiStatus(false, `Access request failed: ${e.message}`)
     })
   const isAllowedDevice = ({ name }) =>
     name.includes('Roland Digital Piano') || name.includes('FP-')
