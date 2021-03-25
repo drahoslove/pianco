@@ -9,4 +9,4 @@
 aconnect 24:0 20:0
 aconnect 20:0 24:0
 # connect piano with gopiano service
-aconnect 20:0 129:0
+aconnect 24:0 129:0
