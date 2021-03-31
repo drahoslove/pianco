@@ -5,11 +5,18 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   id="svg44"
-   version="1.1"
-   height="512"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   viewBox="0 0 512 512"
    width="512"
-   viewBox="0 0 512 512">
+   height="512"
+   version="1.1"
+   id="svg44"
+   sodipodi:docname="logo.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   inkscape:export-filename="D:\IT\js\pianco\img\logo-192.png"
+   inkscape:export-xdpi="36"
+   inkscape:export-ydpi="36">
   <metadata
      id="metadata50">
     <rdf:RDF>
@@ -24,6 +31,26 @@
   </metadata>
   <defs
      id="defs48" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1137"
+     id="namedview46"
+     showgrid="false"
+     inkscape:zoom="1.8359375"
+     inkscape:cx="261.17447"
+     inkscape:cy="256"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g37" />
   <style
      id="style10">
 		tspan { white-space:pre }
@@ -40,59 +67,73 @@
     <g
        id="g37">
       <path
-         id="&lt;Path&gt;"
-         class="shp0"
+         style="fill:#1a1a1a"
+         inkscape:connector-curvature="0"
          d="m 155.68,302.69 c 0,5.5 -4.5,10 -10,10 h -40.8 c -5.5,0 -10,-4.5 -10,-10 V 53.33 c 0,-5.5 4.5,-10 10,-10 h 40.8 c 5.5,0 10,4.5 10,10 z"
-         style="fill:#1a1a1a" />
-      <path
-         id="path15"
          class="shp0"
+         id="&lt;Path&gt;"
+         sodipodi:nodetypes="sssssssss" />
+      <path
+         style="fill:#1a1a1a"
+         inkscape:connector-curvature="0"
          d="m 286.4,302.69 c 0,5.5 -4.5,10 -10,10 h -40.8 c -5.5,0 -10,-4.5 -10,-10 V 53.33 c 0,-5.5 4.5,-10 10,-10 h 40.8 c 5.5,0 10,4.5 10,10 z"
-         style="fill:#1a1a1a" />
+         class="shp0"
+         id="path15"
+         sodipodi:nodetypes="sssssssss" />
       <g
-         style="fill:#f9f9f9"
-         id="g19">
+         id="g19"
+         style="fill:#f9f9f9">
         <path
-           style="fill:#f9f9f9"
+           id="path17"
+           class="shp1"
            d="m 225.6,322.69 c -5.5,0 -10,-4.5 -10,-10 V 53.33 c 0,-5.5 -4.5,-10 -10,-10 h -29.92 c -5.5,0 -10,4.5 -10,10 v 259.36 c 0,5.5 -4.5,10 -10,10 h -1.65 c -5.5,0 -10,4.5 -10,10 v 125.98 c 0,5.5 4.5,10 10,10 h 85.22 c 5.5,0 10,-4.5 10,-10 V 332.69 c 0,-5.5 -4.5,-10 -10,-10 z"
-           class="shp1"
-           id="path17" />
+           inkscape:connector-curvature="0"
+           style="fill:#f9f9f9"
+           sodipodi:nodetypes="sssssssssssssssss" />
       </g>
       <g
-         style="fill:#f9f9f9"
-         id="g23">
+         id="g23"
+         style="fill:#f9f9f9">
         <path
-           style="fill:#f9f9f9"
+           id="path21"
+           class="shp1"
            d="m 94.88,322.69 c -5.5,0 -10,-4.5 -10,-10 V 53.33 c 0,-5.5 -4.5,-10 -10,-10 H 35.3 c -5.5,0 -10,4.5 -10,10 v 405.34 c 0,5.5 4.5,10 10,10 h 85.23 c 5.5,0 10,-4.5 10,-10 V 332.69 c 0,-5.5 -4.5,-10 -10,-10 z"
-           class="shp1"
-           id="path21" />
+           inkscape:connector-curvature="0"
+           style="fill:#f9f9f9"
+           sodipodi:nodetypes="sssssssssssss" />
       </g>
       <g
-         style="fill:#f9f9f9"
-         id="g27">
+         id="g27"
+         style="fill:#f9f9f9">
         <path
-           style="fill:#f9f9f9"
+           id="path25"
+           class="shp1"
            d="m 356.32,322.69 c -5.5,0 -10,-4.5 -10,-10 V 53.33 c 0,-5.5 -4.5,-10 -10,-10 H 306.4 c -5.5,0 -10,4.5 -10,10 v 259.36 c 0,5.5 -4.5,10 -10,10 h -13.65 c -5.5,0 -10,4.5 -10,10 v 125.98 c 0,5.5 4.5,10 10,10 h 85.22 c 5.5,0 10,-4.5 10,-10 V 332.69 c 0,-5.5 -4.5,-10 -10,-10 z"
-           class="shp1"
-           id="path25" />
+           inkscape:connector-curvature="0"
+           style="fill:#f9f9f9"
+           sodipodi:nodetypes="sssssssssssssssss" />
       </g>
       <g
-         style="fill:#f9f9f9"
-         id="g31">
+         id="g31"
+         style="fill:#f9f9f9">
         <path
-           style="fill:#f9f9f9"
-           d="m 437.13,43.33 c -5.5,0 -10,4.5 -10,10 v 259.36 c 0,5.5 -4.5,10 -10,10 h -25.66 c -5.5,0 -10,4.5 -10,10 v 125.98 c 0,5.5 4.5,10 10,10 h 85.23 c 5.5,0 10,-4.5 10,-10 V 53.33 c 0,-5.5 -4.5,-10 -10,-10 z"
+           id="path29"
            class="shp1"
-           id="path29" />
+           d="m 437.13,43.33 c -5.5,0 -10,4.5 -10,10 v 259.36 c 0,5.5 -4.5,10 -10,10 h -25.66 c -5.5,0 -10,4.5 -10,10 v 125.98 c 0,5.5 4.5,10 10,10 h 85.23 c 5.5,0 10,-4.5 10,-10 V 53.33 c 0,-5.5 -4.5,-10 -10,-10 z"
+           inkscape:connector-curvature="0"
+           style="fill:#f9f9f9"
+           sodipodi:nodetypes="sssssssssssss" />
       </g>
       <path
-         id="path35"
-         class="shp0"
+         style="fill:#1a1a1a"
+         inkscape:connector-curvature="0"
          d="m 417.13,302.69 c 0,5.5 -4.5,10 -10,10 h -40.81 c -5.5,0 -10,-4.5 -10,-10 V 53.33 c 0,-5.5 4.5,-10 10,-10 h 40.81 c 5.5,0 10,4.5 10,10 z"
-         style="fill:#1a1a1a" />
+         class="shp0"
+         id="path35"
+         sodipodi:nodetypes="sssssssss" />
     </g>
   </g>
   <text
-     style="transform: matrix(1,0,0,1,920,234)"
-     id="text42" />
+     id="text42"
+     style="transform: matrix(1,0,0,1,920,234)" />
 </svg>

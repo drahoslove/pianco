@@ -3,7 +3,7 @@
   "name": "Pianco",
   "short_name": "Pianco",
   "scope": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "start_url": "https://pian.co/",
   "background_color": "#212121",
   "theme_color": "transparent",
@@ -24,7 +24,8 @@
     },
     {
       "src": "img/logo.svg",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "type": "image/svg"
     },
     {
       "src": "img/logo-maskable.png",
