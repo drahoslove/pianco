@@ -25,6 +25,11 @@ let GID = 0
 // WS!
 let ws
 
+const gidFromHash = () => location.hash === '#-'
+  ? -1
+  : (parseInt(location.hash.slice(1))) % 255 || 0
+
+
 export const rename = (newName) => {
   const { secret } = localStorage
   if (newName) {
@@ -65,9 +70,7 @@ const onRegroup = onCmd('regroup', (values) => {
   if (name) {
     localStorage.name = name
   }
-  const hashRoom = GID === location.hash === '#-'
-    ? -1
-    : (parseInt(location.hash.slice(1))) % 255 || 0
+  const hashRoom = GID === gidFromHash()
   if (hashRoom !== newGid) {
     location.hash = newGid === -1
       ? '-'
@@ -148,9 +151,7 @@ const onBlob = async ({ data }) => {
 }
 
 window.addEventListener('hashchange', () => { // chagning group
-  const newGid = location.hash === '#-'
-    ? -1
-    : (parseInt(location.hash.slice(1))) % 255 || 0
+  const newGid = gidFromHash()
   sendOffAll() // to mute self for others before leaving
   sendSustain(0) // to mute self for others before leaving
   allOff() // to mute others
@@ -209,12 +210,11 @@ const connect = () => {
     ws.addEventListener('message', onReaction)
     
     ws.onopen = () => {
-      const newGid = location.hash === '#-'
-        ? -1
-        : (parseInt(location.hash.slice(1))) % 255 || 0
+      const newGid = gidFromHash()
       const { secret, name } = localStorage
       send(`regroup 0 0 ${newGid} ${secret||''} ${name||''}`)
       networkingApp.isOnline = true
+      networkingApp.gid = newGid
       console.log('ws open')
       pingPong()
     }
@@ -224,6 +224,16 @@ const connect = () => {
     ws.onclose = () => {
       console.log('ws close')
       networkingApp.isOnline = false
+      networkingApp.gid = -1
+      // unpress keys of all users in group
+      const leavingUsers = (networkingApp.groups[GID]||[]) 
+        .filter(uid => uid !== UID)
+      leavingUsers.forEach(uid => {
+        releaseAll(uid)('cleanage')
+        releaseSustain(uid, 'cleanage')
+      })
+      networkingApp.groups = []
+      networkingApp.names = {}
       setTimeout(connect, 3000)
     }
   

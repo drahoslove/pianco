@@ -219,6 +219,7 @@
 			<button
 				v-for="room of [0,1,2,3]"
 				@click="changeRoom(room)"
+				:disabled="!isOnline"
 				:class="gid === room ? 'on' : ''"
 				v-tippy :content="`room ${room}`"
 				:data-user-dots="dotsOfRoom(room)"
