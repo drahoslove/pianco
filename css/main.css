@@ -268,7 +268,8 @@ footer.bar {
 }
 
 /* other buttons */
-.bar :is(button,select,input,label) {
+.bar :is(button, select, label),
+.bar input[type=text] {
 	min-width: 3.5rem;
 	text-align: center;
 	text-align-last: center;
@@ -299,7 +300,8 @@ div.bar button:disabled:hover {
 	background-color: #fdfdfd;
 }
 header.bar button,
-footer.bar :is(button,input,label) {
+footer.bar :is(button, label),
+footer.bar input[type=text] {
 	border-color: #212112;
 	background: #333;
 	color: #888;
@@ -1106,10 +1108,10 @@ input[type=range]::-ms-thumb {
 	left: 0;
 	right: 0;
 	z-index: 100;
-	background: rgb(178 178 178 / 50%);
+	background: rgb(0 0 0 / 60%);
 }
 .modal {
-	background: #212121;
+	background: #fdfdfd;
 	display: flex;
 	/* width: 40%; */
 	/* height: 150px; */
@@ -1125,15 +1127,15 @@ input[type=range]::-ms-thumb {
 	flex-grow: 1;
 }
 
-div.modal *:is(button,label,input) {
-	color: #bbb;
-	background: #333333;
+div.modal *:is(button,label,input[type=text]) {
+	color: #aaaaaa;
+	background: #212121;
 }
 div.modal input {
 	color: #ddd;
 }
 div.modal input:focus {
-	box-shadow: inset 0 0 0 3px #666;
+	box-shadow: inset 0px 0px 0 3px #808080;
 	outline: none;
 }
 div.modal input::selection {

@@ -45,9 +45,11 @@
 					<slot></slot>
 				</label>
 				<input
+					class="prompt"
 					id="prompt"
 					type="text"
 					autocomplete="off"
+					size="12"
 					ref="input"
 					v-model:value="value"
 					@keydown.esc="$emit('submit', null)"
@@ -270,7 +272,7 @@
 			Your name
 		</prompt>
 		<prompt v-if="showCustomEmoji" @submit="react" :name="showCustomEmoji">
-			Insert single custom emoji character
+			Insert custom emoji
 		</prompt>
 	</footer>
 	<div class="cinema-bar">
