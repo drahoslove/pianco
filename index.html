@@ -51,6 +51,7 @@
 					autocomplete="off"
 					size="12"
 					ref="input"
+					:maxlength="singleChar ? 3 : 24"
 					v-model:value="value"
 					@keydown.esc="$emit('submit', null)"
 					@keyup.stop
@@ -194,7 +195,7 @@
 	</div>
 	<footer class="bar" id="networking-app" v-cloak>
 		<div>
-			<div class="reacter" v-if="showReacter && gid !== -1">
+			<div class="reacter" v-show="showReacter && gid !== -1">
 				<span
 					v-for="(label, symbol) of {
 						...defaultEmojis,
@@ -203,7 +204,7 @@
 					}"
 					:content="label"
 					v-tippy="label ? { placement : 'right',  arrow: true } : false"
-					tabindex="-1"
+					:tabindex="showReacter ? 0 : -1"
 					:disabled="!!reactions[uid]"
 					@click="react(symbol)"
 					:class="!symbol ? 'sep': ''"
@@ -273,7 +274,7 @@
 		<prompt v-if="showRename" @submit="userRename" :name="showRename">
 			Your name
 		</prompt>
-		<prompt v-if="showCustomEmoji" @submit="react" :name="showCustomEmoji">
+		<prompt v-if="showCustomEmoji" @submit="react" :name="showCustomEmoji" single-char>
 			Insert custom emoji
 		</prompt>
 	</footer>

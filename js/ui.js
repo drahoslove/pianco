@@ -307,7 +307,7 @@ instrumentLabel.onmouseup = (e) => {
 }
 
 window.addEventListener('load', () => {
-  document.querySelectorAll('button, label').forEach(el => {
+  document.querySelectorAll('button, label, span[tabIndex]').forEach(el => {
     el.addEventListener('mousedown', (e) => {
       e.preventDefault()
     })

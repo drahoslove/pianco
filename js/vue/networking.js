@@ -7,14 +7,16 @@ import {
 } from '../io.js'
 
 
+const emojiReg = /\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F/gu;
 const isEmoji = (s) => /\p{Extended_Pictographic}/u.test(s)
-const normalizeEmoji = (s) => String.fromCodePoint(s.codePointAt(0))
+const normalizeEmoji = (s) => s.match(emojiReg) && s.match(emojiReg)[0]
 
 
 Vue.component('prompt', {
   template: '#prompt-template',
   props: {
     name: String,
+    singleChar: Boolean,
   },
   emits: ['submit'],
   model: {
@@ -87,9 +89,8 @@ export const networkingApp = new Vue({
           ? this.lastEmojis[0]
           : '💯'
         return
-      } else {
-        this.showCustomEmoji = false
       }
+      this.showCustomEmoji = false
       symbol = normalizeEmoji(symbol)
       if (!isEmoji(symbol)) {
         return
