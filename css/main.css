@@ -59,7 +59,9 @@ header, footer {
 	background: #212121;
 	color: #fdfdfd;
 }
-header {
+header a {
+	color: inherit;
+	text-decoration: none;
 }
 footer {
 	box-shadow: inset 0px 12px 10px -10px #000;
@@ -86,7 +88,6 @@ header h1#logo {
 	z-index: 5;
 }
 .reacter>span {
-	outline: none;
 	display: inline-block;
 	font-size: 20pt;
 	padding: 4px;
@@ -275,7 +276,6 @@ footer.bar {
 	text-align-last: center;
 	display: flex;
 	border: 1px solid #999;
-	outline: none;
 	cursor: pointer;
 	margin: 0;
 	padding: .6rem 1rem 0.4rem;
@@ -287,6 +287,10 @@ footer.bar {
 	color: #212121;
 	justify-content: center;
 	border-radius: 0;
+}
+.bar :is(button, select, label):focus {
+	box-shadow:	inset 0px 0px 0 3px #666;
+	outline: none;
 }
 div.bar button:hover,
 div.bar label:hover {
@@ -1113,11 +1117,9 @@ input[type=range]::-ms-thumb {
 .modal {
 	background: #fdfdfd;
 	display: flex;
-	/* width: 40%; */
-	/* height: 150px; */
 	border-radius: 9px;
-	box-shadow: 5px 5px 30px #333;
-	padding: 3em 5em;
+	box-shadow: 5px 5px 20px #222;
+	padding: 3em 4em;
 }
 .modal-content {
 	display: flex;
@@ -1125,25 +1127,33 @@ input[type=range]::-ms-thumb {
 	justify-content: center;
 	align-items: center;
 	flex-grow: 1;
+	border-radius: 9px;
+	box-shadow: 0 0 0 1px #212121;
 }
 
-div.modal *:is(button,label,input[type=text]) {
-	color: #aaaaaa;
-	background: #212121;
+div.modal label {
+	color: #212121;
+	background: #eee;
 }
-div.modal input {
-	color: #ddd;
+div.modal input[type=text] {
+	background: #fafafa;
+	color: #212121;
 }
-div.modal input:focus {
-	box-shadow: inset 0px 0px 0 3px #808080;
+div.modal input:focus,
+div.modal button:focus  {
+	box-shadow:	inset 0px 0px 0 3px #999;
 	outline: none;
 }
 div.modal input::selection {
-	background: #adadad;
-	color: #000;
+	background: #999;
+	color: #212121;
 }
-div.modal :is(button):hover {
+div.modal button {
+	background: #212121;
 	color: #ddd;
+}
+div.modal button:hover {
+	color: #fff;
 }
 
 

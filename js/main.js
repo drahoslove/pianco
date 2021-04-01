@@ -51,6 +51,7 @@ allNotes.forEach((note, i, { length }) => {
   key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (note, n, s, i) =>
     `<span>${noteToLabel(note)}</span>`
   )
+  key.tabIndex = -1
   keyboard.querySelector('.top-keys').appendChild(key)
   const hue = 360*((i-3)/(12*4))
   key.style.setProperty('--hue', hue)

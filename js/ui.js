@@ -97,7 +97,6 @@ Object.keys(defaultSettings).forEach(key => {
   setOnClass(button, +val)
   actions[key](val)
   button.onclick = function () {
-    this.blur()
     val = loadSetting(key)
     if (['score', 'labels'].includes(key)) {
       val = (+val+1)%3
@@ -107,7 +106,6 @@ Object.keys(defaultSettings).forEach(key => {
     setOnClass(button, +val)
     actions[key](val)
     saveSetting(key, val)
-    this.blur()
   }
 })
 
@@ -125,7 +123,6 @@ if (!('ontouchstart' in document.documentElement)) {
 // cinema off
 const cinemaOffButton = document.getElementById('cinema-off')
 const offCinema = async function() {
-  this && this.blur()
   document.getElementById('toggle-cinema').classList.remove('on')
   actions.cinema(false)
   saveSetting('cinema', false)
@@ -144,7 +141,6 @@ window.addEventListener('keydown', (e) => {
 // fullscreen on
 const fullscreenButton = document.getElementById('fullscreen')
 const toggleFullscreen = async function () {
-  this && this.blur()
   if (document.fullscreenElement && document.exitFullscreen) {
     await document.exitFullscreen()
   } else {
@@ -309,3 +305,14 @@ instrumentLabel.onmouseup = (e) => {
   }
   instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
 }
+
+window.addEventListener('load', () => {
+  document.querySelectorAll('button, label').forEach(el => {
+    el.addEventListener('mousedown', (e) => {
+      e.preventDefault()
+    })
+    el.addEventListener('click', () => {
+      el.blur()
+    })
+  })
+})
