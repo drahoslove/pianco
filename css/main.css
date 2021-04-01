@@ -5,6 +5,7 @@
 }
 
 
+
 *, ::after, ::before {
 	box-sizing: border-box;
 }
@@ -267,9 +268,7 @@ footer.bar {
 }
 
 /* other buttons */
-.bar button,
-.bar select,
-.bar label {
+.bar :is(button,select,input,label) {
 	min-width: 3.5rem;
 	text-align: center;
 	text-align-last: center;
@@ -300,8 +299,7 @@ div.bar button:disabled:hover {
 	background-color: #fdfdfd;
 }
 header.bar button,
-footer.bar button,
-footer.bar label {
+footer.bar :is(button,input,label) {
 	border-color: #212112;
 	background: #333;
 	color: #888;
@@ -662,7 +660,7 @@ div.hint {
 .staff-paper {
 	margin: 1.5em 1.5em 1.5em 1.5em;
 	padding: 1.5em 1.5em 1.5em 1em;
-	border-radius: 2px;
+	border-radius: 5px;
 	background-color: #aaa;
 	/* box-shadow: 1px 1px 5px 0px #666; */
 	position: absolute;
@@ -1095,7 +1093,56 @@ input[type=range]::-ms-thumb {
 	100% { bottom: 100vh; }
 }
 
+/* modals */
 
+.modal-mask {
+	position: fixed;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 100;
+	background: rgb(178 178 178 / 50%);
+}
+.modal {
+	background: #212121;
+	display: flex;
+	/* width: 40%; */
+	/* height: 150px; */
+	border-radius: 9px;
+	box-shadow: 5px 5px 30px #333;
+	padding: 3em 5em;
+}
+.modal-content {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+}
+
+div.modal *:is(button,label,input) {
+	color: #bbb;
+	background: #333333;
+}
+div.modal input {
+	color: #ddd;
+}
+div.modal input:focus {
+	box-shadow: inset 0 0 0 3px #666;
+	outline: none;
+}
+div.modal input::selection {
+	background: #adadad;
+	color: #000;
+}
+div.modal :is(button):hover {
+	color: #ddd;
+}
 
 
 /* mobile devices  */
@@ -1142,9 +1189,7 @@ input[type=range]::-ms-thumb {
 	h1#logo {
 		font-size: 1.5em;
 	}
-	.bar button,
-	.bar select,
-	.bar label {
+	.bar :is(button,select,label,input) {
 		padding: 0.1rem;	
 		min-width: 54px;
 	}

@@ -10,9 +10,37 @@ import {
 const isEmoji = (s) => /\p{Extended_Pictographic}/u.test(s)
 const normalizeEmoji = (s) => String.fromCodePoint(s.codePointAt(0))
 
+
+Vue.component('prompt', {
+  template: '#prompt-template',
+  props: {
+    name: String,
+  },
+  emits: ['submit'],
+  model: {
+    prop: 'name',
+  },
+  data () { return {
+    value: this.name,
+  }},
+  mounted () {
+    this.focusInput()
+  },
+  methods: {
+    focusInput() {
+      setTimeout(() => {
+        this.$refs.input.select()
+      })
+    }
+  },
+})
+
+
 export const networkingApp = new Vue({
   el: '#networking-app',
   data: {
+    showCustomEmoji: false, // modal
+    showRename: false, // modal
     showReacter: false,
     isOnline: false,
     gid: 0,
@@ -47,18 +75,24 @@ export const networkingApp = new Vue({
       this.showReacter = !this.showReacter
     },
     react (symbol) {
+      if (symbol === null) {
+        this.showCustomEmoji = false
+        return
+      }
       if (this.reactions[this.uid]) { // disallow multiple reaction
         return
       }
       if (!symbol) {
-        symbol = window.prompt(
-          'Insert one custom emoji character',
-          this.lastEmojis.length ? this.lastEmojis[0] : '💯',
-        ) || ' '
-        if (!isEmoji(symbol)) {
-          return
-        }
-        symbol = normalizeEmoji(symbol)
+        this.showCustomEmoji = this.lastEmojis.length
+          ? this.lastEmojis[0]
+          : '💯'
+        return
+      } else {
+        this.showCustomEmoji = false
+      }
+      symbol = normalizeEmoji(symbol)
+      if (!isEmoji(symbol)) {
+        return
       }
 
       // add last emoji
@@ -103,13 +137,17 @@ export const networkingApp = new Vue({
     userClick (uid) {
       if (uid == this.uid) {
         const { name } = localStorage
-        // const notMuted = [...this.groups[this.gid]].filter(this.isMuted.bind(this))
-        // notMuted.forEach((u) => { this.toggleMute(u)}) // mute
-        const newName = window.prompt('Your name', name)
-        // notMuted.forEach((u) => { this.toggleMute(u)}) // unmute
-        ioRename(newName)
+        this.showRename = name
+        // const newName = window.prompt('Your name', name)
+        // ioRename(newName)
       } else {
         this.toggleMute(uid)
+      }
+    },
+    userRename (newName) {
+      this.showRename = false
+      if (newName) {
+        ioRename(newName)
       }
     },
     userName (uid) {

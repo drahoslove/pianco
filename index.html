@@ -34,6 +34,31 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.9.55/css/materialdesignicons.min.css">
 <link rel="stylesheet" href="/css/main.css" />
 <script type="module" src="js/main.js"></script>
+<script type="text/x-template" id="prompt-template">
+	<section class="modal-mask" @keypress.esc="$emit('submit', null)" @click="$emit('submit', null)">
+		<div class="modal" @click.stop>
+			<div class="modal-header">
+				<slot name="header"></slot>
+			</div>
+			<form class="modal-content" @submit="$emit('submit', value)">
+				<label for="prompt">
+					<slot></slot>
+				</label>
+				<input
+					id="prompt"
+					type="text"
+					autocomplete="off"
+					ref="input"
+					v-model:value="value"
+					@keydown.esc="$emit('submit', null)"
+					@keyup.stop
+					@keydown.stop
+				>
+				<button type="submit"><slot name="ok">OK</slot></button>
+			</form>
+		</div>
+	</section>
+</script>
 </head>
 <body id="app">
 	<div class="background">
@@ -241,6 +266,12 @@
 				<a href="#about">about</a>
 			</span> -->
 		</div>
+		<prompt v-if="showRename" @submit="userRename" :name="showRename">
+			Your name
+		</prompt>
+		<prompt v-if="showCustomEmoji" @submit="react" :name="showCustomEmoji">
+			Insert single custom emoji character
+		</prompt>
 	</footer>
 	<div class="cinema-bar">
 		<button id="fullscreen" class="mdi mdi-fullscreen" title="toggle fullscreen" data-placement="bottom"></button>
