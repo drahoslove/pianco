@@ -104,9 +104,9 @@ const goMid = () => setTransposition(0)
 const goUp = () => setTransposition(transposition+1)
 const goTop = () => setTransposition(+3)
 
-goUpBtn.onmousedown = goUp
-goDownBtn.onmousedown = goDown
-goMidBtn.onmousedown = goMid
+goUpBtn.onclick = goUp
+goDownBtn.onclick = goDown
+goMidBtn.onclick = goMid
 window.addEventListener('keydown', (e) => {
   switch(e.code) {
     case 'ArrowRight':
@@ -262,8 +262,9 @@ const reloadMidi = (isFrist) => {
     console.log('This browser supports Web MIDI!')
     updateTooltip(midiEl, 'MIDI in: supported', isFrist !== true)
     midiEl.className="unknown"
-    navigator.requestMIDIAccess()
-      .then(onMIDISuccess(isFrist === true), (err) => {
+    navigator.requestMIDIAccess({ sysex: false })
+      .then(onMIDISuccess(isFrist === true))
+      .catch((err) => {
         console.error(`Could not access your MIDI devices. ${err}`)
         updateTooltip(midiEl, 'MIDI in: failed', true)
         midiEl.className="err"

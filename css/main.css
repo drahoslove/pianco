@@ -269,7 +269,8 @@ footer.bar {
 }
 
 /* other buttons */
-.bar :is(button, select, label),
+.bar :is(button, select),
+.bar.tool-bar label,
 .bar input[type=text] {
 	min-width: 3.5rem;
 	text-align: center;
@@ -325,6 +326,14 @@ footer.bar button.on {
 	border-top-right-radius: .5rem;
 	border-bottom-right-radius: .5rem;
 	border-right-width: 1px;
+}
+.bar label>button:first-child {
+	border-top-left-radius: inherit;
+	border-bottom-left-radius: inherit;
+}
+.bar label>button:last-child {
+	border-top-right-radius: inherit;
+	border-bottom-right-radius: inherit;
 }
 .bar button:active {
 	border-color: transparent;

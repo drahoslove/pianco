@@ -85,21 +85,21 @@
 		</div>
 		<div>
 			<div>
-				<button id="toggle-score" title="show staff" >
+				<button id="toggle-score" title="show staff" aria-label="toggle show staff">
 					<span class="mdi mdi-music-clef-treble"></span>
 				</button>
-				<button id="toggle-qwerty" hidden  title="show kayboard mapping">
+				<button id="toggle-qwerty" hidden  title="show kayboard mapping" aria-label="toggle show keyboard mapping">
 					<span class="mdi mdi-keyboard-outline"></span>
 				</button>
-				<button id="toggle-labels" title="show note labels">
+				<button id="toggle-labels" title="show note labels" aria-label="toggle show note labels">
 					<span class="mdi mdi-label-outline"></span>
 				</button>
-				<button id="toggle-velocity" title="show velocity">
+				<button id="toggle-velocity" title="show velocity" aria-label="toggle show velocity">
 					<span class="mdi mdi-glass-stange"></span>
 				</button>
 			</div>
 			<div>
-				<button id="toggle-cinema"  title="cinema mode">
+				<button id="toggle-cinema"  title="cinema mode" aria-label="enter cinema mode">
 					<span class="mdi mdi-television-clean"></span>
 				</button>
 			</div>
@@ -170,9 +170,9 @@
 				</div>
 		
 				<div>
-					<button id="go-down" title="shift left"><span class="mdi mdi-chevron-left"></span></button>
-					<button id="go-mid" title="shift to middle"><span class="mdi mdi-chevron-up"></span></button>
-					<button id="go-up" title="shift right"><span class="mdi mdi-chevron-right"></span></button>
+					<button id="go-down" title="shift left" aria-label="shift octave down"><span class="mdi mdi-chevron-left"></span></button>
+					<button id="go-mid" title="shift to middle" aria-label="return to mid octave"><span class="mdi mdi-chevron-up"></span></button>
+					<button id="go-up" title="shift right" aria-label="=shift octave up"><span class="mdi mdi-chevron-right"></span></button>
 				</div>
 		
 				<div v id="recorder-app" v-cloak>
@@ -181,12 +181,14 @@
 					>
 						<button @click="toggleRecord"
 							v-tippy :content="(isRecording || isPlaying) ? 'stop' : 'record'"
+							:aria-label="(isRecording || isPlaying) ? 'stop' : 'record'"
 						>
 							<span v-if="!isRecording && !isPlaying" class="mdi mdi-record"></span>
 							<span v-if="isRecording || isPlaying" class="mdi mdi-stop"></span>
 						</button>
 						<button @click="togglePlay"
 							v-tippy :content="!isPlaying ? 'replay' : 'pause'"
+							:aria-label="!isPlaying ? 'replay' : 'pause'"
 						>
 							<span v-if="!isPlaying" class="mdi mdi-play"></span>
 							<span v-if="isPlaying" class="mdi mdi-pause"></span>
@@ -225,25 +227,29 @@
 				</span>
 			</div>
 			<div v-if="gid !== -1">
-				<button content="react!" v-tippy @click="toggleReacter()">
+				<button content="react" v-tippy @click="toggleReacter()" aria-label="make raction">
 					<span class="mdi mdi-chat"></span>
 				</button>
 			</div>
 			<div>
-				<button v-if="!isOnline" content="disconnected" v-tippy>
-					<span v-if="!isOnline" class="mdi mdi-close-network"></span>
+				<button v-if="!isOnline" content="disconnected" v-tippy tabindex="-1" >
+					<span class="mdi mdi-close-network"></span>
 				</button>
 				<label
 					v-if="isOnline"
 					v-for="u of users"
-					@click="userClick(u)"
-					:content="userName(u)" v-tippy
 				>
-					<span
-						:data-uid="u"
-						:style="{'--color': userColor(u)}"
-						:class="`mdi mdi-account${u===uid ? '-settings' : isMuted(u) ? '-cancel' : !u ? '-tie' : ''} user-icon`"
-					></span>
+					<button		
+						@click="userClick(u)"
+						:content="userName(u)" v-tippy
+						:aria-label="`${isMuted(u) ? 'un': ''}mute ${userName(u)}`"
+					>
+						<span
+							:data-uid="u"
+							:style="{'--color': userColor(u)}"
+							:class="`mdi mdi-account${u===uid ? '-settings' : isMuted(u) ? '-cancel' : !u ? '-tie' : ''} user-icon`"
+						></span>
+					</button>
 					<span v-if="reactions[u]" class="reaction">{{reactions[u]}}</span>
 				</label>
 			</div>
@@ -255,6 +261,7 @@
 				:disabled="!isOnline"
 				:class="gid === room ? 'on' : ''"
 				v-tippy :content="`room ${room}`"
+				:aria-label="`go to room ${room}`"
 				:data-user-dots="dotsOfRoom(room)"
 			>
 				<span :class="`mdi mdi-numeric-${ room }-circle`"></span>
@@ -262,6 +269,7 @@
 			<button
 				:class="gid === -1 ? 'on' : ''"
 				v-tippy content="isolation"
+				aria-label="go to isolation"
 				@click="changeRoom(-1)"
 			>
 				<span class="mdi mdi-minus-circle"></span>

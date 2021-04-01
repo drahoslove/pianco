@@ -103,22 +103,26 @@ let output = null
 const send = (data) => {
 	output && output.send(new Uint8Array(data))
 }
-navigator.requestMIDIAccess && navigator.requestMIDIAccess().then((midiAccess) => {
-  const reconnectOutputs = () => {
-		for (let out of midiAccess.outputs.values()) {
-			output = out
-			console.log('MIDI out available:', out.name)
-			instrumentSelector.value = 'midiout'
-			instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
-			const option = [...instrumentSelector.options].find(({ value }) => value === 'midiout')
-			if (option) {
-				option.hidden = false
+navigator.requestMIDIAccess && navigator.requestMIDIAccess({ sysex: false })
+	.then((midiAccess) => {
+		const reconnectOutputs = () => {
+			for (let out of midiAccess.outputs.values()) {
+				output = out
+				console.log('MIDI out available:', out.name)
+				instrumentSelector.value = 'midiout'
+				instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
+				const option = [...instrumentSelector.options].find(({ value }) => value === 'midiout')
+				if (option) {
+					option.hidden = false
+				}
 			}
 		}
-  }
-  midiAccess.onstatechange = reconnectOutputs
-  setTimeout(reconnectOutputs, 100)
-})
+		midiAccess.onstatechange = reconnectOutputs
+		setTimeout(reconnectOutputs, 100)
+	})
+	.catch((err) => {
+		console.log('midi out request failed', err)
+	})
 
 // instrument selector
 const instrumentSelector = document.getElementById('instrument')
