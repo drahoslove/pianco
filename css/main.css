@@ -613,6 +613,7 @@ div.hint {
 	margin-left: 69rem;
 	position: absolute;
 	top: 0;
+	pointer-events: none; /* click through */
 }
 .hint button {
 	background-color: transparent;
