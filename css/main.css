@@ -271,6 +271,7 @@ footer.bar {
 /* other buttons */
 .bar :is(button, select),
 .bar.tool-bar label,
+.bar .modal label,
 .bar input[type=text] {
 	min-width: 3.5rem;
 	text-align: center;
@@ -1200,6 +1201,11 @@ div.modal button:hover {
 	.keyboard {
 		height: 12rem;
 	}
+	/* too much shadows is reducing performance on mobile devices */
+	.bottom-keys button,
+	.top-keys button {
+		box-shadow: none;
+	}
 	.staff-paper {
 		margin: 0;
 		padding: 0.5em 1em 0.5em 0.5em;
@@ -1211,8 +1217,14 @@ div.modal button:hover {
 	h1#logo {
 		font-size: 1.5em;
 	}
-	.bar :is(button,select,label,input) {
-		padding: 0.1rem;	
+	.bar :is(button,select,input),
+	.bar input[type=text],
+	.bar .modal label,
+	.bar.tool-bar label { /* voluma and instrument changer wrapper */
+		padding: 0.1rem;
+	}
+	.bar label#volume-label { /* volume wrapper */
+		padding: 0.1rem;
 		min-width: 54px;
 	}
 	.bar button .mdi,
