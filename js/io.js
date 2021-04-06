@@ -62,6 +62,7 @@ const onReaction = onCmd('reaction', (values) => {
 const onRegroup = onCmd('regroup', (values) => {
   const [newGid, newUid] = values.map(Number)
   const [secret, name] = values.slice(2)
+  allOff() // to mute others from old group
   networkingApp.gid = GID = newGid
   networkingApp.uid = UID = newUid
   if (secret) {
@@ -70,8 +71,8 @@ const onRegroup = onCmd('regroup', (values) => {
   if (name) {
     localStorage.name = name
   }
-  const hashRoom = GID === gidFromHash()
-  if (hashRoom !== newGid) {
+  // update url if group changed
+  if (gidFromHash() !== newGid) {
     location.hash = newGid === -1
       ? '-'
       : (newGid || '') // + (location.hash.endsWith('m') ? 'm' : '')
@@ -124,12 +125,11 @@ const onBlob = async ({ data }) => {
   if (gid !== GID) { // another group
     return 
   }
-
-  const isMuted = networkingApp.isMuted(uid)
-
   if (uid === UID && chanFromCmd(cmd) === CHANNEL) { // your notes
     return
   }
+
+  const isMuted = networkingApp.isMuted(uid)
   const note = Tone.Midi(val1).toNote()
   if (fromCmd(cmd) === CMD_NOTE_ON) {
     const velocity = fromVal(val2)
