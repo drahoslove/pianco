@@ -2,13 +2,14 @@
   "lang": "en",
   "name": "Pianco",
   "short_name": "Pianco",
+  "description": "Virtual piano - with multiplayer.\nPlay just for fun on your touch screen, try to cooperate with your friends, or connect your real piano via MIDI and share your skill with others.",
+  "url": "https://pian.co",
   "scope": "/",
+  "start_url": "/",
   "display": "fullscreen",
-  "start_url": "https://pian.co/",
+  "orientation": "landscape",
   "background_color": "#212121",
   "theme_color": "#212121",
-  "description": "Virtual piano - with multiplayer.\nPlay just for fun on your touch screen, try to cooperate with your friends, or connect your real piano via MIDI and share your skill with others.",
-  "orientation": "landscape",
   "related_applications": [],
   "prefer_related_applications": false,
   "icons": [
@@ -39,6 +40,5 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ],
-  "url": "https://pian.co"
+  ]
 }
