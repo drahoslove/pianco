@@ -106,8 +106,12 @@ function update(request) {
     return
   }
   return caches.open(CACHE).then(cache =>
-    fetch(request).then(response =>
-      cache.put(request, response)
-    )
+    fetch(request)
+      .then(response =>
+        cache.put(request, response)
+      )
+      .catch(e => {
+        console.warn(e, request)
+      })
   )
 }
