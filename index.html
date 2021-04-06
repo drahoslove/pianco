@@ -32,11 +32,11 @@
 	}
 </script>
 <link rel="stylesheet" href="/css/main.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.9.55/css/materialdesignicons.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/vue-tippy/dist/vue-tippy.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
 <script defer type="module" src="js/main.js"></script>
+<script src="https://code.iconify.design/1/1.0.6/iconify.min.js"></script>
 <script type="text/x-template" id="prompt-template">
 	<section class="modal-mask" @keypress.esc="$emit('submit', null)" @click="$emit('submit', null)">
 		<div class="modal" @click.stop>
@@ -86,21 +86,21 @@
 		<div>
 			<div>
 				<button id="toggle-score" title="show staff" aria-label="toggle show staff">
-					<span class="mdi mdi-music-clef-treble"></span>
+					<span class="iconify" data-icon="mdi-music-clef-treble"></span>
 				</button>
 				<button id="toggle-qwerty" hidden  title="show kayboard mapping" aria-label="toggle show keyboard mapping">
-					<span class="mdi mdi-keyboard-outline"></span>
+					<span class="iconify" data-icon="mdi-keyboard-outline"></span>
 				</button>
 				<button id="toggle-labels" title="show note labels" aria-label="toggle show note labels">
-					<span class="mdi mdi-label-outline"></span>
+					<span class="iconify" data-icon="mdi-label-outline"></span>
 				</button>
 				<button id="toggle-velocity" title="show velocity" aria-label="toggle show velocity">
-					<span class="mdi mdi-glass-stange"></span>
+					<span class="iconify" data-icon="mdi-glass-stange"></span>
 				</button>
 			</div>
 			<div>
 				<button id="toggle-cinema"  title="cinema mode" aria-label="enter cinema mode">
-					<span class="mdi mdi-television-clean"></span>
+					<span class="iconify" data-icon="mdi-television-clean"></span>
 				</button>
 			</div>
 		</div>
@@ -148,34 +148,62 @@
 				</div>
 			</div> <!-- end piano row -->
 			<div class="bar tool-bar"> <!-- tool bar row -->
-				<div>
-					<button id="midi" title="MIDI in">
-						<span class="mdi mdi-midi"></span>
+				<div id="instrument-app" v-cloak>
+					<button id="midi" v-tippy :content="midiTooltip">
+						<span class="iconify" data-icon="mdi-midi"></span>
 					</button>
-					<label for="instrument" id="instrument-label" title="output voice">
-						<span id="out-icon" class="mdi mdi-dots-horizontal"></span>
-						<select name="instrument" id="instrument" hidden>
+					<label for="instrument" v-tippy :content="`out: ${instrument}`"
+						@keyup.enter.space="changeInstrument"
+					>
+						<span>
+							<span v-if="instrument === 'sampledPiano'" class="iconify" data-icon="mdi-piano"></span>
+							<span v-if="instrument === 'polySynth'" class="iconify" data-icon="mdi-sine-wave"></span>
+							<span v-if="instrument === 'midiout'" class="iconify" data-icon="mdi-midi"></span>
+							<span v-if="instrument === 'none'" class="iconify" data-icon="mdi-dots-horizontal"></span>
+						</span>
+						<select id="instrument" name="instrument" hidden v-model="instrument" @click="changeInstrument">
 							<option value="sampledPiano"> piano</option>
-							<option value="polySynth" class="mid mid-waveform"> synth</option>
-							<option value="midiout" hidden>MIDI out</option>
+							<option value="polySynth" class="iconify"> synth</option>
+							<option value="midiout" :hidden="!midiEnabled">MIDI out</option>
 							<option value="none" selected hidden>...</option>
 							<!-- <option value="AMSynth">AM synth</option>
 							<option value="FMSynth">FM synt</option> -->
 						</select>
 					</label>
-					<label id="volume-label" title="volume">
-						<span id="volume-icon" class="mdi mdi-volume-high"></span>
-						<input id="volume" type="range" min="-40" value="0" max="0" step="2.5" />
+					<label class="volume-label" title="volume" @wheel="scrollVolume" tabindex="0"
+						@keyup.enter.space="toggleMute"
+					>
+						<span class="volume-icon" id="mute-span" @click="toggleMute">
+							<span class="iconify" data-icon="mdi-volume-mute" v-if="muted" ></span>
+							<span class="iconify" data-icon="mdi-volume-high" v-else-if="volume > -15" ></span>
+							<span class="iconify" data-icon="mdi-volume-medium" v-else-if="volume > -30" ></span>
+							<span class="iconify" data-icon="mdi-volume-low" v-else ></span>
+						</span>
+						<input
+							id="volume"
+							type="range"
+							class="volume"
+							:min="minVolume" :max="maxVolume" :step="stepVolume"
+							v-model.number="volume"
+							:disabled="muted"
+							tabindex="-1"
+						/>
 					</label>
 				</div>
 		
 				<div>
-					<button id="go-down" title="shift left" aria-label="shift octave down"><span class="mdi mdi-chevron-left"></span></button>
-					<button id="go-mid" title="shift to middle" aria-label="return to mid octave"><span class="mdi mdi-chevron-up"></span></button>
-					<button id="go-up" title="shift right" aria-label="=shift octave up"><span class="mdi mdi-chevron-right"></span></button>
+					<button id="go-down" title="shift left" aria-label="shift octave down">
+						<span class="iconify" data-icon="mdi-chevron-left"></span>
+					</button>
+					<button id="go-mid" title="shift to middle" aria-label="return to mid octave">
+						<span class="iconify" data-icon="mdi-chevron-up"></span>
+					</button>
+					<button id="go-up" title="shift right" aria-label="=shift octave up">
+						<span class="iconify" data-icon="mdi-chevron-right"></span>
+					</button>
 				</div>
 		
-				<div v id="recorder-app" v-cloak>
+				<div id="recorder-app" v-cloak>
 					<div
 						:class="{ isRecording, isPlaying }"
 					>
@@ -183,15 +211,15 @@
 							v-tippy :content="(isRecording || isPlaying) ? 'stop' : 'record'"
 							:aria-label="(isRecording || isPlaying) ? 'stop' : 'record'"
 						>
-							<span v-if="!isRecording && !isPlaying" class="mdi mdi-record"></span>
-							<span v-if="isRecording || isPlaying" class="mdi mdi-stop"></span>
+							<span v-if="!isRecording && !isPlaying" class="iconify" data-icon="mdi-record"></span>
+							<span v-if="isRecording || isPlaying" class="iconify" data-icon="mdi-stop"></span>
 						</button>
 						<button @click="togglePlay"
 							v-tippy :content="!isPlaying ? 'replay' : 'pause'"
 							:aria-label="!isPlaying ? 'replay' : 'pause'"
 						>
-							<span v-if="!isPlaying" class="mdi mdi-play"></span>
-							<span v-if="isPlaying" class="mdi mdi-pause"></span>
+							<span v-if="!isPlaying" class="iconify" data-icon="mdi-play"></span>
+							<span v-if="isPlaying" class="iconify" data-icon="mdi-pause"></span>
 						</button>
 					</div>
 				</div>
@@ -223,32 +251,37 @@
 					:disabled="!!reactions[uid]"
 					@click="react()"
 				>
-					<span class="mdi mdi-dots-horizontal"></span>
+					<span class="iconify" data-icon="mdi-dots-horizontal"></span>
 				</span>
 			</div>
 			<div v-if="gid !== -1">
 				<button content="react" v-tippy @click="toggleReacter()" aria-label="make raction">
-					<span class="mdi mdi-chat"></span>
+					<span class="iconify" data-icon="mdi-chat"></span>
 				</button>
 			</div>
 			<div>
 				<button v-if="!isOnline" content="disconnected" v-tippy tabindex="-1" >
-					<span class="mdi mdi-close-network"></span>
+					<span class="iconify" data-icon="mdi-close-network"></span>
 				</button>
 				<label
 					v-if="isOnline"
 					v-for="u of users"
 				>
 					<button		
-						@click="userClick(u)"
+						@click="userClick(u, $event)"
 						:content="userName(u)" v-tippy
 						:aria-label="`${isMuted(u) ? 'un': ''}mute ${userName(u)}`"
 					>
 						<span
-							:data-uid="u"
+							class="user-icon"
 							:style="{'--color': userColor(u)}"
-							:class="`mdi mdi-account${u===uid ? '-settings' : isMuted(u) ? '-cancel' : !u ? '-tie' : ''} user-icon`"
-						></span>
+							:data-uid="u"
+						>
+							<span class="iconify" data-icon="mdi-account-settings" v-if="u===uid" ></span>
+							<span class="iconify" data-icon="mdi-account-cancel"v-else-if="isMuted(u)" ></span>
+							<span class="iconify" data-icon="mdi-account-tie"	v-else-if="u===0"	></span>
+							<span class="iconify" data-icon="mdi-account"	v-else ></span>
+						</span>
 					</button>
 					<span v-if="reactions[u]" class="reaction">{{reactions[u]}}</span>
 				</label>
@@ -264,7 +297,7 @@
 				:aria-label="`go to room ${room}`"
 				:data-user-dots="dotsOfRoom(room)"
 			>
-				<span :class="`mdi mdi-numeric-${ room }-circle`"></span>
+				<span class="iconify" :data-icon="`mdi-numeric-${ room }-circle`"></span>
 			</button>
 			<button
 				:class="gid === -1 ? 'on' : ''"
@@ -272,7 +305,7 @@
 				aria-label="go to isolation"
 				@click="changeRoom(-1)"
 			>
-				<span class="mdi mdi-minus-circle"></span>
+				<span class="iconify" data-icon="mdi-minus-circle"></span>
 			</button>
 		</div>
 		<div>
@@ -290,8 +323,13 @@
 		</prompt>
 	</footer>
 	<div class="cinema-bar">
-		<button id="fullscreen" class="mdi mdi-fullscreen" title="toggle fullscreen" data-placement="bottom"></button>
-		<button id="cinema-off" class="mdi mdi-close" title="close cinema mode" data-placement="bottom"></button>
+		<button id="fullscreen" title="toggle fullscreen" data-placement="bottom">
+			<span class="iconify" data-icon="mdi-fullscreen" ></span>
+			<span class="iconify" data-icon="mdi-fullscreen-exit" hidden ></span>
+		</button>
+		<button id="cinema-off" title="close cinema mode" data-placement="bottom">
+			<span class="iconify" data-icon="mdi-close"></span>
+		</button>
 	</div>
 </body>
 </html>

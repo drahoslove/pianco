@@ -10,11 +10,15 @@
 }
 
 #networking-app[v-cloak],
+#instrument-app[v-cloak],
 #recorder-app[v-cloak] {
   visibility: hidden;
 }
 
-html body *[hidden] {
+html body *[hidden=""],
+html body *[hidden="hidden"],
+html body *[hidden="true"]
+{
 	display: none;
 }
 html, body {
@@ -371,25 +375,26 @@ footer.bar button.on {
 	font-size: 90%;
 }
 
-.bar button .mdi,
-.bar label .mdi {
+.bar button .iconify,
+.bar label .iconify {
 	font-size: 24px;
 	line-height: 28px;
 }
 
-#volume-label > #volume {
+.volume-label > input.volume {
 	width: 0.01rem; /* safari will bug if 0 */
 	padding-left: 0.3rem;
 	transition: width 400ms ease-in-out, opacity 400ms ease-in-out;
 	opacity: 0;
 }
-#volume-icon {
+.volume-icon {
 	width: 1.5rem;
+	display: flex;
 }
-#volume-label {
+.volume-label {
 	min-width: 0;
 }
-#volume-label:hover > #volume {
+.volume-label:hover > input.volume {
 	width: 4rem;
 	opacity: 1;
 }
@@ -1221,13 +1226,13 @@ div.modal button:hover {
 	.bar.tool-bar label { /* voluma and instrument changer wrapper */
 		padding: 0.1rem;
 	}
-	.bar label#volume-label { /* volume wrapper */
+	.bar label.volume-label { /* volume wrapper */
 		padding: 0.1rem;
 		min-width: 54px;
 	}
-	.bar button .mdi,
-	.bar select .mdi,
-	.bar label .mdi {
+	.bar button .iconify,
+	.bar select .iconify,
+	.bar label .iconify {
 		font-size: 22px;
 		line-height: 26px;
 	}

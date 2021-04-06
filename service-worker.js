@@ -46,6 +46,7 @@ const solidFiles = [ // these will not ever change
   'https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js',
   'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js',
+  'https://code.iconify.design/1/1.0.6/iconify.min.js',
 ]
 const filesToPrecache = [
   '/',
@@ -53,6 +54,7 @@ const filesToPrecache = [
   '/js/main.js',
   '/js/vue/init.js',
   '/js/vue/networking.js',
+  '/js/vue/instrument.js',
   '/js/vue/recorder.js',
   '/js/instrument.js',
   '/js/io.js',

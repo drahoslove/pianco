@@ -41,16 +41,6 @@ const actions = {
   },
   cinema: (val) => {
     document.body.parentElement.classList[val ? 'add' : 'remove']('cinema')
-    // if (val) {
-    //   if(!location.hash.includes('m')) {
-    //     location.hash += 'm'
-    //   }
-    // } else {
-    //   location.hash = location.hash.replace('m', '')
-    //   if (location.hash === '') {
-    //     removeHash()
-    //   }
-    // }
   },
 }
 
@@ -128,7 +118,8 @@ const offCinema = async function() {
   saveSetting('cinema', false)
   if (document.fullscreenElement !== null && document.exitFullscreen) {
     await document.exitFullscreen()
-    fullscreenButton.className = 'mdi mdi-fullscreen'
+    document.querySelector('[data-icon="mdi-fullscreen-exit"]').setAttribute('hidden', true)
+    document.querySelector('[data-icon="mdi-fullscreen"]').setAttribute('hidden', false)
   }
 }
 cinemaOffButton.onclick = offCinema
@@ -151,11 +142,9 @@ const toggleFullscreen = async function () {
       await document.body.parentElement.requestFullscreen()
     }
   }
-  if (document.fullscreenElement !== null){
-    fullscreenButton.className = 'mdi mdi-fullscreen-exit'
-  } else {
-    fullscreenButton.className = 'mdi mdi-fullscreen'
-  }
+  const exitable = document.fullscreenElement !== null
+  document.querySelector('[data-icon="mdi-fullscreen-exit"]').setAttribute('hidden', !exitable)
+  document.querySelector('[data-icon="mdi-fullscreen"]').setAttribute('hidden', exitable)
 }
 fullscreenButton.onclick = toggleFullscreen
 window.addEventListener('keydown', (e) => {
@@ -256,60 +245,12 @@ document.body.onmousemove = () => {
   el.title=''
 })
 
-export const updateTooltip = (el, title, show) => {
-  const { _tippy } = el
-  if(!_tippy) {
-    return console.log('no tippy', el)
-  }
-  _tippy.setContent(title)
-  if (show) {
-    _tippy.show()
-    _tippy
-    setTimeout(() => {
-      try {
-        _tippy.hideWithInteractivity()
-      } catch (e) {
-        _tippy.hide()
-      }
-    }, 1200)
-  }
-}
-
 // instrument
-const instrumentLabel = document.querySelector('#instrument-label')
-const instrumentSelector = document.querySelector('#instrument')
-instrumentSelector.onchange = (e) => {
-  const { value } = e.target
-  document.querySelector('#out-icon').className = {
-    'sampledPiano': 'mdi mdi-piano',
-    'polySynth': 'mdi mdi-sine-wave',
-    'midiout': 'mdi mdi-midi',
-  }[value] || 'mdi'
-  updateTooltip(instrumentLabel, `out: ${instrumentSelector.value}`, true)
-}
-
-instrumentLabel.onmouseup = (e) => {
-  const currentValue = instrumentSelector.value
-  instrumentSelector.dispatchEvent(new Event('change', { bubbles: false }))
-  if([...instrumentSelector.options].some(({ value, hidden }) => value === 'midiout' && hidden)) { // midi not enabled
-    instrumentSelector.value = {
-      'sampledPiano': 'polySynth',
-      'polySynth': 'sampledPiano',
-    }[currentValue] || 'none'
-  } else { // midi enabled
-    instrumentSelector.value ={
-      'sampledPiano': 'polySynth',
-      'polySynth': 'midiout',
-      'midiout': 'sampledPiano'
-    }[currentValue] || 'none'
-  }
-  instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
-}
 
 window.addEventListener('load', () => {
   document.querySelectorAll('button, label, span[tabIndex]').forEach(el => {
     el.addEventListener('mousedown', (e) => {
-      e.preventDefault()
+      // e.preventDefault() // will cause input range inside label to not be changeable by mouse
     })
     el.addEventListener('click', () => {
       el.blur()

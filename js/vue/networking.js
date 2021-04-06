@@ -135,7 +135,7 @@ export const networkingApp = new Vue({
         releaseSustain(uid, "UI")
       }
     },
-    userClick (uid) {
+    userClick (uid, e) {
       if (uid == this.uid) {
         const { name } = localStorage
         this.showRename = name
@@ -144,6 +144,7 @@ export const networkingApp = new Vue({
       } else {
         this.toggleMute(uid)
       }
+      e.currentTarget.blur()
     },
     userRename (newName) {
       this.showRename = false

@@ -4,6 +4,9 @@ import {
 	CMD_NOTE_ON,
 	CMD_NOTE_OFF,
 } from './midi.js'
+import {
+	instrumentApp
+} from './vue/instrument.js'
 
 Tone.setContext(new Tone.Context({
 	latencyHint: 'interactive', // improve sheduling latency
@@ -78,9 +81,8 @@ const instruments = {
     release: 1,
     onload: () => {
 			console.log('piano samples loaded')
-			if (instrumentSelector.value === 'none') {
-				instrumentSelector.value = 'sampledPiano'
-				instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
+			if (instrumentApp.instrument === 'none') {
+				instrumentApp.instrument = 'sampledPiano'
 			}
     },
   }).toDestination(),
@@ -109,12 +111,8 @@ navigator.requestMIDIAccess && navigator.requestMIDIAccess({ sysex: false })
 			for (let out of midiAccess.outputs.values()) {
 				output = out
 				console.log('MIDI out available:', out.name)
-				instrumentSelector.value = 'midiout'
-				instrumentSelector.dispatchEvent(new Event('change', { bubbles: true }))
-				const option = [...instrumentSelector.options].find(({ value }) => value === 'midiout')
-				if (option) {
-					option.hidden = false
-				}
+				instrumentApp.instrument = 'midiout'
+				instrumentApp.midiEnabled = true
 			}
 		}
 		midiAccess.onstatechange = reconnectOutputs
@@ -124,60 +122,16 @@ navigator.requestMIDIAccess && navigator.requestMIDIAccess({ sysex: false })
 		console.log('midi out request failed', err)
 	})
 
-// instrument selector
-const instrumentSelector = document.getElementById('instrument')
-instrumentSelector.addEventListener('change', function () {
-	allOff()
-	this.blur()
-})
 
 const getInstrument = (source) => {
-	const isMidiLoop = (source === 'midiin' && instrumentSelector.value === 'midiout')	
+	const isMidiLoop = (source === 'midiin' && instrumentApp.instrument === 'midiout')	
 	// if source is midi, we don't want to send play the note twice
 	return (
 		!isMidiLoop && source !== "mutedIO"
 	)
-		? instruments[instrumentSelector.value]
+		? instruments[instrumentApp.instrument]
 		: instruments.none
 }
-
-// volume controller
-const volumeIcon = document.getElementById('volume-icon')
-const volumeSelector = document.getElementById('volume')
-
-const valToIcon = (value) =>
-	(Tone.getDestination().mute && 'mdi mdi-volume-mute') ||
-	(value > -15 && 'mdi mdi-volume-high') ||
-	(value > -30 && 'mdi mdi-volume-medium') ||
-	'mdi mdi-volume-low'
-
-function updateVolume() {
-  const value = +this.value
-  Tone.getDestination().volume.value = value
-  if (value === +this.min) {
-		Tone.getDestination().mute = true
-  } else {
-		Tone.getDestination().mute = false
-  }
-	volumeIcon.className = valToIcon(value)
-}
-volumeIcon.onclick = () => {
-  if (Tone.getDestination().mute) {
-    Tone.getDestination().mute = false
-    volumeSelector.disabled = false
-  } else {
-    Tone.getDestination().mute = true
-    volumeSelector.disabled = true
-  }
-	volumeIcon.className = valToIcon(+volumeSelector.value)
-}
-volumeSelector.parentElement.addEventListener('wheel', function (e) {
-  const val =  Math.max(+this.min, Math.min(Math.sign(-e.deltaY) * +this.step + +this.value, +this.max))
-  volumeSelector.value = val
-  updateVolume.bind(this)(e)
-}.bind(volumeSelector), {passive: true})
-volumeSelector.oninput = updateVolume
-
 
 /* ==== note controll === */
 

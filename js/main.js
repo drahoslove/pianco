@@ -1,5 +1,6 @@
 import './vue/init.js'
 import './vue/networking.js'
+import { instrumentApp } from './vue/instrument.js'
 import './vue/recorder.js'
 import {
   allNotes,
@@ -15,9 +16,7 @@ import {
   fromCmd, fromVal,
   CMD_NOTE_ON, CMD_NOTE_OFF, CMD_CONTROL_CHANGE, CMD_PROGRAM,
 } from './midi.js'
-import {
-  updateTooltip
-} from './ui.js'
+import './ui.js'
 
 let transposition = 0
 
@@ -260,18 +259,18 @@ const reloadMidi = (isFrist) => {
   console.log('will reload midi')
   if (navigator.requestMIDIAccess) {
     console.log('This browser supports Web MIDI!')
-    updateTooltip(midiEl, 'MIDI in: supported', isFrist !== true)
+    instrumentApp.midiTooltip = 'MIDI in: supported'
     midiEl.className="unknown"
     navigator.requestMIDIAccess({ sysex: false })
       .then(onMIDISuccess(isFrist === true))
       .catch((err) => {
         console.error(`Could not access your MIDI devices. ${err}`)
-        updateTooltip(midiEl, 'MIDI in: failed', true)
+        instrumentApp.midiTooltip = 'MIDI in: failed'
         midiEl.className="err"
       })
   } else {
     console.warn('WebMIDI is not supported in this browser.')
-    updateTooltip(midiEl, 'MIDI in: not supported')
+    instrumentApp.midiTooltip = 'MIDI in: not supported'
     midiEl.className="err"
   }
 }
@@ -284,10 +283,10 @@ function onMIDISuccess(isFrist) {
       const input = [...midiAccess.inputs.values()].find(input => input.state === 'connected')
       if (!input) {
         midiEl.className =  "none"
-        updateTooltip(midiEl, 'MIDI in: none', !isFrist)
+        instrumentApp.midiTooltip = 'MIDI in: none'
       } else {
         input.onmidimessage = handleMIDIMessage
-        updateTooltip(midiEl, `MIDI in: ${input.name}`, true)
+        instrumentApp.midiTooltip = `MIDI in: ${input.name}`
         midiEl.className = "on"
       }
     }
