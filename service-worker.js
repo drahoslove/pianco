@@ -105,6 +105,10 @@ function update(request) {
     // do not update files which are not in the cache already
     return
   }
+  if (!request.referrer) {
+    // filter out request caused by manifets.json start_url (check of offline capability)
+    return
+  }
   return caches.open(CACHE).then(cache =>
     fetch(request)
       .then(response =>
