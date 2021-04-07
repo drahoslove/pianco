@@ -149,7 +149,7 @@
 			</div> <!-- end piano row -->
 			<div class="bar tool-bar"> <!-- tool bar row -->
 				<div id="instrument-app" v-cloak>
-					<button id="midi" v-tippy :content="midiTooltip">
+					<button id="midi" v-tippy :content="midiTooltip" :aria-label="midiTooltip">
 						<span class="iconify" data-icon="mdi-midi"></span>
 					</button>
 					<label for="instrument" v-tippy :content="`out: ${instrument}`"
