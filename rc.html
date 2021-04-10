@@ -385,21 +385,21 @@ input.checkbox:checked::before {
     <!-- pianoteq page -->
     <div id="page-pianoteq" v-show="page === 'pianoteq'" class="container mt-3">
       <div class="row">
-        <div v-for="instrument in presets" class="col-md" :key="instrument.cc">
+        <div v-for="instr in presets" class="col-md" :key="instr.cc+instr.ioff">
           <h4>
-           {{ instrument.name }}
+           {{ instr.name }}
           </h4>
           <div class="dropdown-menu d-block position-static w-100"
-            :id="`presets-${instrument.cc}`"
+            :id="`presets-${instr.cc}-${instr.ioff}`"
           >
             <button
-              v-for="(preset, i) in instrument.presets"
-              :key="i"
-              :class="['dropdown-item', { 'active bg-info': selectedPreset === `${instrument.cc}:${i+1}` }]"
-              :data-value="`${instrument.cc}:${i+1}`"
+              v-for="(preset, i) in instr.presets"
+              :key="i + instr.ioff"
+              :class="['dropdown-item', { 'active bg-info': selectedPreset === `${instr.cc}:${i+instr.ioff+1}` }]"
+              :data-value="`${instr.cc}:${i+instr.ioff+1}`"
               @click="selectPreset($event)"
             >
-              {{ presetShort(instrument.name, preset) }}
+              {{ presetShort(instr.name, preset) }}
             </button>
           </div>
         </div>

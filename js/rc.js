@@ -455,6 +455,9 @@ const connectMidi = async () => {
     .catch((e) => {
       setMidiStatus(false, `Access request failed: ${e.message}`)
     })
+  if (!midiAccess) {
+    return
+  }
   const isAllowedDevice = ({ name }) =>
     name.includes('Roland Digital Piano') || name.includes('FP-')
     || name.includes('USB') || name.includes('loop')

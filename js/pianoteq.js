@@ -2,6 +2,7 @@ export const presets = [
   // Acoustic Pianos:
   {
     cc: 104,
+    ioff: 0,
     name: 'Ant. Petrof',
     presets: [
       'Ant. Petrof Prelude',
@@ -23,7 +24,30 @@ export const presets = [
     ]
   },
   {
+    cc: 104,
+    ioff: 20, // added to index of preset
+    name: 'Petrof Mistral',
+    presets: [
+      'Petrof Mistral Prelude',
+      'Petrof Mistral Warm',
+      'Petrof Mistral Venue',
+      'Petrof Mistral 284',
+      'Petrof Mistral Classical Recording',
+      'Petrof Mistral Jazz Recording',
+      'Petrof Mistral Cinematic',
+      'Petrof Mistral Bass & Piano split',
+      'Petrof Mistral Intimate',
+      'Petrof Mistral Player',
+      'Petrof Mistral Under Lid',
+      'Petrof Mistral Gentle',
+      'Petrof Mistral Dreamy',
+      'Petrof Mistral Cosmic',
+      'Petrof Mistral Broken',
+    ]
+  },
+  {
     cc: 102,
+    ioff: 0,
     name: 'Bluethner',
     presets: [
       'Bluethner Prelude',
@@ -43,6 +67,7 @@ export const presets = [
   },
   {
     cc: 103,
+    ioff: 0,
     name: 'C. Bechstein DG',
     presets: [
       'C. Bechstein DG Prelude',
