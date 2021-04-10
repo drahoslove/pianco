@@ -1,5 +1,6 @@
 export const presets = [
   // Acoustic Pianos:
+  // (CC 102-119 udnefined by MIDI standart)
   {
     cc: 104,
     ioff: 0,
@@ -84,6 +85,55 @@ export const presets = [
       'C. Bechstein DG Under Lid',
       'C. Bechstein DG Cosmic',
       'C. Bechstein DG Broken',
+    ],
+  },
+  {
+    cc: 105,
+    ioff: 0,
+    name: 'Other Pianos',
+    presets: [
+      'Erard (1992) Close Mic',
+      'Erard (1992) Player',
+      'Erard (1992) Recording',
+      'Pleyel (1926) Close Mic',
+      'Pleyel (1926) Player',
+      'Pleyel (1926) Recording',
+      'CP-80 Line Output',
+      'CP-80 Tremolo',
+      'CP-80 Amped',
+      'CP-80 Recording',
+      'CP-80 SoundBoarded',
+    ],
+  },
+  {
+    cc: 106,
+    ioff: 0,
+    name: 'Historical',
+    presets: [
+
+    ],
+  },
+  {
+    cc: 107,
+    ioff: 0,
+    name: 'Predecessor',
+    presets: [
+
+    ],
+  },
+  {
+    cc: 108,
+    ioff: 0,
+    name: 'Bells',
+    presets: [
+      'Original',
+      'Bell-the-fly',
+      'Church - soft clapper',
+      'Church - tremolo',
+      'Church - sustain',
+      'Tubular - original',
+      'Tubular - major',
+      'Tubular - minor',
     ],
   },
 ]

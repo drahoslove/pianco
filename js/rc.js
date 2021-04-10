@@ -81,7 +81,7 @@ const app = new Vue({
       ])
     },
     presetShort: (prefix, preset) =>
-      preset.substr(prefix.length)
+      preset.startsWith(prefix) ? preset.substr(prefix.length) : preset
     ,
     toggleRolandMetronomeBeat(event) {
       event.preventDefault()

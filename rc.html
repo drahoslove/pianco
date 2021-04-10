@@ -145,11 +145,11 @@ a.nav-link {
 }
 
 @media (min-width: 768px) {
-  .col-md-6 {
+  #page-roland .col-md-6 {
     padding-left: 15px;
     padding-right: 7.5px;
   }
-  .col-md-6 + .col-md-6 {
+  #page-roland .col-md-6 + .col-md-6 {
     padding-left: 7.5px;
     padding-right: 15px;
   }
@@ -383,9 +383,9 @@ input.checkbox:checked::before {
     </nav>
 
     <!-- pianoteq page -->
-    <div id="page-pianoteq" v-show="page === 'pianoteq'" class="container mt-3">
+    <div id="page-pianoteq" v-show="page === 'pianoteq'" class="container">
       <div class="row">
-        <div v-for="instr in presets" class="col-md" :key="instr.cc+instr.ioff">
+        <div v-for="instr in presets" class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mt-3" :key="instr.cc+instr.ioff">
           <h4>
            {{ instr.name }}
           </h4>
