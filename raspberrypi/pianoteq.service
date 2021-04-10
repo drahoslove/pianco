@@ -1,3 +1,5 @@
+#/etc/systemd/system/
+
 [Unit]
 Description=Pianoteq
 Wants=multi-user.target
@@ -14,3 +16,6 @@ RestartSec=10
 #PermissionsStartOnly=true
 ExecStart=/usr/local/bin/start-pianoteq.sh
 ExecStop=/usr/local/bin/stop-pianoteq.sh
+
+[Install]
+WantedBy=multi-user.target
