@@ -1,3 +1,8 @@
-# put into '/etc/udev/rules.d'
+# put into '/etc/udev/rules.d/'
 # ids obtained from `lsusb`
-ACTION=="bind", DRIVER=="snd_seq_midi", ATTRS{idVendor}=="0582", ATTRS{idProduct}=="01b1", RUN+="/usr/local/bin/connect-midi.sh"
+
+# on connect Roland piano
+ACTION=="bind", SUBSYSTEM=="snd_seq", ATTRS{idVendor}=="0582", ATTRS{idProduct}=="01b1", RUN+="/usr/local/bin/connect-midi.sh"
+
+# on disconnect Roland piano
+ACTION=="unbind", SUBSYSTEM=="snd_seq", ATTRS{idVendor}=="0582", ATTRS{idProduct}=="01b1", RUN+="/usr/local/bin/disconnect-midi.sh"
