@@ -100,6 +100,8 @@ const instruments = {
 	}
 }
 
+const isBlacklistedDevice = ({ name }) => name.startsWith('AG0')
+
 // init midi output device
 let output = null
 const send = (data) => {
@@ -109,6 +111,9 @@ navigator.requestMIDIAccess && navigator.requestMIDIAccess({ sysex: false })
 	.then((midiAccess) => {
 		const reconnectOutputs = () => {
 			for (let out of midiAccess.outputs.values()) {
+				if (isBlacklistedDevice(out)) {
+					continue
+				}
 				output = out
 				console.log('MIDI out available:', out.name)
 				instrumentApp.instrument = 'midiout'
