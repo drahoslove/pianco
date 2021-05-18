@@ -272,18 +272,11 @@ metronomeTempoInput.onchange = (e) => {
 })
 
 /* init master tune */
-const toPitch = (h) => (h-256)/10 + 440
+const toPitch = (h) => (Math.round(h)-256)/10 + 440
 const fromPitch = (p) => (+p - 440)*10 + 256
 let masterTunePitch = 256
 const mastterTunePitchInput = document.getElementById('master-tune')
 const setMasterTunePitch = (value) => {
-  if (toPitch(value) === 440 || toPitch(value) === 442) {
-
-  } else if (value > masterTunePitch) {
-    value = masterTunePitch + 1
-  } else if (value < masterTunePitch) {
-    value = masterTunePitch - 1
-  }
   masterTunePitch = Math.max(10, Math.min(value, 512-1))
   const pitch = Math.max(toPitch(10), Math.min(toPitch(value), toPitch(512-1)))
   mastterTunePitchInput.value = pitch
