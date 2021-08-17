@@ -50,6 +50,9 @@ svg {
       <p>
         duration: <b><span id="total-duration">0 ?</span></b>
       </p>
+      <p>
+        midi files: <b><span id="total-count">0 ?</span></b>
+      </p>
     </div>
   </div>
   <div id="day-chart" class="chart">
@@ -143,8 +146,10 @@ window.onload = async () => {
   ]
 
   const archive = crossfilter(data)
+  const all = archive.groupAll()
   const all1 = archive.groupAll() // .reduceSum(d => d.duration)
   const all2 = archive.groupAll() // .reduceSum(d => d.duration)
+  const allCount = all.reduceSum((d) => d.notes ? 1 : 0)
   const allNotes = all1.reduceSum(d => d.notes)
   const allDuration = all2.reduceSum(d => +d.duration)
 
@@ -324,8 +329,22 @@ window.onload = async () => {
 
   // Whenever the brush moves, re-rendering everything.
   function renderAll() {
-    d3.select("#total-notes").text(numberFormat(allNotes.value()))
-    d3.select("#total-duration").text(durationFormat(allDuration.value()))
+    const sumNotes = data.reduce((sum, { notes }) => (sum + notes), 0)
+    const sumDuration = data.reduce((sum, { duration }) => (sum + +duration), 0)
+    const sumCount = data.filter(({ notes }) => notes > 0).length
+
+    d3.select("#total-notes").text(
+      numberFormat(allNotes.value()) ||
+      `${numberFormat(allNotes.value())} / ${numberFormat(sumNotes)}`
+    )
+    d3.select("#total-duration").text(
+      durationFormat(allDuration.value()) ||
+      `${durationFormat(allDuration.value())} / ${durationFormat(sumDuration)}`
+    )
+    d3.select("#total-count").text(
+      numberFormat(allCount.value()) ||
+      `${numberFormat(allCount.value())} / ${numberFormat(sumCount)}`
+    )
   }
 
   charts.forEach((chart) => {
