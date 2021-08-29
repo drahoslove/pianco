@@ -110,7 +110,31 @@ export const presets = [
     ioff: 0,
     name: 'Historical',
     presets: [
-
+      'J. Schantz (1790)',
+      'J. Schantz 415',
+      'J. Schantz 415 Player',
+      'J. Schantz 415 Recording',
+      'J. Schantz 392',
+      'J.E. Schmidt (1790)',
+      'J.E. Schmidt 415',
+      'J.E. Schmidt 415 Player',
+      'J.E. Schmidt 415 Recording',
+      'J.E. Schmidt 392',
+      'A. Walter (1790)',
+      'A. Walter 415',
+      'A. Walter 415 Player',
+      'A. Walter 415 Recording',
+      'A. Walter 392',
+      'D. Schöffstoss (1812)',
+      'D. Schöffstoss 415',
+      'D. Schöffstoss 415 Player',
+      'D. Schöffstoss 415 Recording',
+      'D. Schöffstoss 392',
+      'C. Graf (1826)',
+      'C. Graf 415',
+      'C. Graf 415 Player',
+      'C. Graf 415 Recording',
+      'C. Graf 392',
     ],
   },
   {
@@ -118,7 +142,6 @@ export const presets = [
     ioff: 0,
     name: 'Predecessor',
     presets: [
-
     ],
   },
   {
