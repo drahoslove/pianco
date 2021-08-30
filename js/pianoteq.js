@@ -52,8 +52,8 @@ export const presets = [
     name: 'Bluethner',
     presets: [
       'Bluethner Prelude',
-      'Bluethner Home',
-      'Bluethner Model One BA',
+      'Bluethner Improv',
+      'Bluethner Model One',
       'Bluethner Model One AB',
       'Bluethner Studio Recording BA',
       'Bluethner Studio Recording AB',
