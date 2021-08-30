@@ -385,22 +385,26 @@ input.checkbox:checked::before {
     <!-- pianoteq page -->
     <div id="page-pianoteq" v-show="page === 'pianoteq'" class="container">
       <div class="row">
-        <div v-for="instr in presets" class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mt-3" :key="instr.cc+instr.ioff">
+        <div v-for="group in presets" class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mt-3" :key="group.cc+group.ioff">
           <h4>
-           {{ instr.name }}
+           {{ group.name }}
           </h4>
           <div class="dropdown-menu d-block position-static w-100"
-            :id="`presets-${instr.cc}-${instr.ioff}`"
+            :id="`presets-${group.cc}-${group.ioff}`"
           >
-            <button
-              v-for="(preset, i) in instr.presets"
-              :key="i + instr.ioff"
-              :class="['dropdown-item', { 'active bg-info': selectedPreset === `${instr.cc}:${i+instr.ioff+1}` }]"
-              :data-value="`${instr.cc}:${i+instr.ioff+1}`"
-              @click="selectPreset($event)"
-            >
-              {{ presetShort(instr.name, preset) }}
-            </button>
+            <template
+              v-for="(preset, i) in group.presets"
+              >
+              <button
+                :key="i + group.ioff"
+                v-show="!preset.includes('392')"
+                :class="['dropdown-item', { 'active bg-info': selectedPreset === `${group.cc}:${i+group.ioff+1}` }]"
+                :data-value="`${group.cc}:${i+group.ioff+1}`"
+                @click="selectPreset($event)"
+              >
+                {{ presetShort(group.name, preset) }}
+              </button>
+            </template>
           </div>
         </div>
       </div>

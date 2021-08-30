@@ -167,11 +167,11 @@ export const presets = [
       'Harpschrd. C. Grimaldi A 415',
       'Harpschrd. C. Grimaldi A 392',
 
-      'Harpschrd. C. Grimaldi B (1697)',
+      'Harpschrd. C. Grimaldi B',
       'Harpschrd. C. Grimaldi B 415',
       'Harpschrd. C. Grimaldi B 392',
       
-      'Harpschrd. C. Grimaldi A+B (1697)',
+      'Harpschrd. C. Grimaldi A+B',
       'Harpschrd. C. Grimaldi A+B 415',
       'Harpschrd. C. Grimaldi A+B 392',
     ],
