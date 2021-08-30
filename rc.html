@@ -321,6 +321,15 @@ input.checkbox:checked::before {
   margin-bottom: 1em;
 }
 
+.year {
+  height: 0;
+  display: block;
+  float: right;
+  padding: 0 1em;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
 </style>
 </head>
 <body>
@@ -395,6 +404,9 @@ input.checkbox:checked::before {
             <template
               v-for="(preset, i) in group.presets"
               >
+              <small v-if="isPresetSubgroupStart(preset, i, group.presets)" class="year">
+                {{ presetBracket(group.presets[i]) }}
+              </small>
               <button
                 :key="i + group.ioff"
                 v-show="!preset.includes('392')"
@@ -404,6 +416,8 @@ input.checkbox:checked::before {
               >
                 {{ presetShort(group.name, preset) }}
               </button>
+              <hr v-if="isPresetSubgroupEnd(preset, i, group.presets)" class="my-2" />
+
             </template>
           </div>
           <div v-if="j == presets.length-1" class="pt-3" style="clear:both">

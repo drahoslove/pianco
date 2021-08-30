@@ -81,8 +81,30 @@ const app = new Vue({
       ])
     },
     presetShort: (prefix, preset) =>
-      preset.startsWith(prefix) ? preset.substr(prefix.length) : preset
+      preset.startsWith(prefix)
+        ? preset.substr(prefix.length)
+        : preset.replace(/\(.*\)/, '')
     ,
+    isPresetSubgroupStart: (name, i, list) => {
+      const start = name.split(' ')[0]
+      const result = i < list.length-1 
+        && start === list[i+1].split(' ')[0]
+        && (i === 0 || start !== list[i-1].split(' ')[0])
+      return result
+    },
+    isPresetSubgroupEnd: (name, i, list) => {
+      const start = name.split(' ')[0]
+      const result = i > 1 && i < list.length-1 
+        && start === list[i-1].split(' ')[0]
+        && start !== list[i+1].split(' ')[0]
+      return result
+    },
+    presetBracket: (name) => { // extract string from the bracket in the presest name
+      const match = name.match(/\((.*)\)/)
+      return match
+        ? match[1]
+        : ''
+    },
     toggleRolandMetronomeBeat(event) {
       event.preventDefault()
       setMetronomeBeatDown(!this.rolandMetronomeBeatOn)
