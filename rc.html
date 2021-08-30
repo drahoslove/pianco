@@ -383,9 +383,9 @@ input.checkbox:checked::before {
     </nav>
 
     <!-- pianoteq page -->
-    <div id="page-pianoteq" v-show="page === 'pianoteq'" class="container">
+    <div id="page-pianoteq" v-show="page === 'pianoteq'" class="container mb-3">
       <div class="row">
-        <div v-for="group in presets" class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mt-3" :key="group.cc+group.ioff">
+        <div v-for="(group, j) in presets" class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mt-3" :key="group.cc+group.ioff">
           <h4>
            {{ group.name }}
           </h4>
@@ -405,6 +405,14 @@ input.checkbox:checked::before {
                 {{ presetShort(group.name, preset) }}
               </button>
             </template>
+          </div>
+          <div v-if="j == presets.length-1" class="pt-3" style="clear:both">
+            <span class="mdi mdi-help-box"></span>
+            <a href="/raspberrypi/pianco.ptm" class="text-secondary">
+              <small>
+                Use pianco.ptm MIDI mapping file
+              </small>
+            </a>
           </div>
         </div>
       </div>
@@ -846,7 +854,7 @@ input.checkbox:checked::before {
       </div>
     </div>
 
-    <div class="container">
+    <div class="container mb-3"  v-show="page === 'roland'" >
       <hr class="my-4" />
       
       <div class="row">
