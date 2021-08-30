@@ -51,7 +51,7 @@ Vue.component('instrument-selector', {
 const app = new Vue({
   el: '#app',
   data: {
-    page: location.hash.substr(1) || localStorage['rc-page'] || 'roland',
+    page: location.hash.substr(1) || localStorage['rc-page'] || 'pianoteq',
     presets: Ptq.presets,
     rolandVoices: R.instruments,
     rolandMetronomeBeats: R.metronomeBeats,
