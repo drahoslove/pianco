@@ -8,6 +8,8 @@ export const presets = [
     presets: [
       'Ant. Petrof Prelude',
       'Ant. Petrof Warm',
+      'Ant. Petrof Felt I',
+      'Ant. Petrof Felt II',
       'Ant. Petrof Venue',
       'Ant. Petrof 275',
       'Ant. Petrof Recording 1',
@@ -31,6 +33,8 @@ export const presets = [
     presets: [
       'Petrof Mistral Prelude',
       'Petrof Mistral Warm',
+      'Petrof Mistral Felt I',
+      'Petrof Mistral Felt II',
       'Petrof Mistral Venue',
       'Petrof Mistral 284',
       'Petrof Mistral Classical Recording',
@@ -54,6 +58,8 @@ export const presets = [
       'Bluethner Prelude',
       'Bluethner Improv',
       'Bluethner Model One',
+      'Bluethner Felt I',
+      'Bluethner Felt II',
       'Bluethner Model One AB',
       'Bluethner Studio Recording BA',
       'Bluethner Studio Recording AB',
@@ -73,6 +79,8 @@ export const presets = [
     presets: [
       'C. Bechstein DG Prelude',
       'C. Bechstein DG Sweet',
+      'C. Bechstein DG Felt I',
+      'C. Bechstein DG Felt II',
       'C. Bechstein DG D 282',
       'C. Bechstein DG Recording 1',
       'C. Bechstein DG Recording 2',
