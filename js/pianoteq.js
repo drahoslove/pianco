@@ -115,11 +115,13 @@ export const presets = [
       'J. Schantz 415 Player',
       'J. Schantz 415 Recording',
       'J. Schantz 392',
+
       'J.E. Schmidt (1790)',
       'J.E. Schmidt 415',
       'J.E. Schmidt 415 Player',
       'J.E. Schmidt 415 Recording',
       'J.E. Schmidt 392',
+
       'A. Walter (1790)',
       'A. Walter 415',
       'A. Walter 415 Player',
@@ -130,6 +132,7 @@ export const presets = [
       'D. Schöffstoss 415 Player',
       'D. Schöffstoss 415 Recording',
       'D. Schöffstoss 392',
+
       'C. Graf (1826)',
       'C. Graf 415',
       'C. Graf 415 Player',
@@ -142,6 +145,35 @@ export const presets = [
     ioff: 0,
     name: 'Predecessor',
     presets: [
+      'Cimbalom Basic',
+      'Cimbalom Hard',
+      'Cimbalom Soft',
+      'Cimbalom à la piano',
+      'Cimbalom Tzigane',
+      'Cimbalom 415',
+      'Cimbalom 392',
+
+      'Clavichord single',
+      'Clavichord double',
+      'Clavichord lute',
+      'Clavichord 415',
+      'Clavichord 392',
+
+      'Harpschrd. F.E. Blanchet (1733)',
+      'Harpschrd. F.E. Blanchet 415',
+      'Harpschrd. F.E. Blanchet 392',
+
+      'Harpschrd. C. Grimaldi A (1697)',
+      'Harpschrd. C. Grimaldi A 415',
+      'Harpschrd. C. Grimaldi A 392',
+
+      'Harpschrd. C. Grimaldi B (1697)',
+      'Harpschrd. C. Grimaldi B 415',
+      'Harpschrd. C. Grimaldi B 392',
+      
+      'Harpschrd. C. Grimaldi A+B (1697)',
+      'Harpschrd. C. Grimaldi A+B 415',
+      'Harpschrd. C. Grimaldi A+B 392',
     ],
   },
   {
@@ -149,7 +181,7 @@ export const presets = [
     ioff: 0,
     name: 'Bells',
     presets: [
-      'Original',
+      'Church - Original',
       'Bell-the-fly',
       'Church - soft clapper',
       'Church - tremolo',
