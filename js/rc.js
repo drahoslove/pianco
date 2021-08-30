@@ -51,7 +51,7 @@ Vue.component('instrument-selector', {
 const app = new Vue({
   el: '#app',
   data: {
-    page: localStorage['rc-page'] || 'roland',
+    page: location.hash.substr(1) || localStorage['rc-page'] || 'roland',
     presets: Ptq.presets,
     rolandVoices: R.instruments,
     rolandMetronomeBeats: R.metronomeBeats,
@@ -69,6 +69,7 @@ const app = new Vue({
     setPage(page) {
       this.page = page
       localStorage['rc-page'] = page
+      history.replaceState(null, null, ' ') // removes hash from url
     },
     selectPreset(e) {
       const { value } = e.target.dataset
