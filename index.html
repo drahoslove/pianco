@@ -26,7 +26,7 @@ Play just for fun or cooperate with friends. Connect your digital piano via MIDI
 	gtag('config', 'UA-21351225-3')
 </script>
 <script>
-	if ('serviceWorker' in window.navigator) {
+	if ('serviceWorker' in window.navigator && window.location.origin === 'https://pian.co') {
 		window.navigator.serviceWorker.register('/service-worker.js')
 	}
 </script>
