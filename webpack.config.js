@@ -1,4 +1,4 @@
-module.exports = {
+imodule.exports = {
   entry: {
 		main: './js/main.js',
   },
