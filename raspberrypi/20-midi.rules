@@ -2,7 +2,9 @@
 # ids obtained from `lsusb`
 
 # on connect Roland piano
-ACTION=="bind", SUBSYSTEM=="snd_seq", ATTRS{idVendor}=="0582", ATTRS{idProduct}=="01b1", RUN+="/usr/local/bin/connect-midi.sh"
+# ACTION=="bind", SUBSYSTEM=="snd_seq", ATTRS{idVendor}=="0582", ATTRS{idProduct}=="01b1", RUN+="/usr/local/bin/connect-midi.sh"
+ACTION=="add", SUBSYSTEM=="sound", ENV{DEVNAME}=="/dev/midi1" RUN+="/bin/sh -c 'echo $(date) $(env) >> /tmp/udev-debug.log'", RUN+="/usr/local/bin/connect-midi.sh"
 
 # on disconnect Roland piano
-ACTION=="unbind", SUBSYSTEM=="snd_seq", ATTRS{idVendor}=="0582", ATTRS{idProduct}=="01b1", RUN+="/usr/local/bin/disconnect-midi.sh"
+# ACTION=="unbind", SUBSYSTEM=="snd_seq", ATTRS{idVendor}=="0582", ATTRS{idProduct}=="01b1", RUN+="/usr/local/bin/disconnect-midi.sh"
+ACTION=="remove", SUBSYSTEM=="sound", ENV{DEVNAME}=="/dev/midi1" RUN+="/bin/sh -c 'echo $(date) $(env) >> /tmp/udev-debug.log'", RUN+="/usr/local/bin/disconnect-midi.sh"

@@ -5,6 +5,7 @@
 # THIS file should be called after Roland piano is disconnected (turned off)
 # defined by rules in /etc/udev/rules.d/
 
+/usr/bin/curl http://127.0.0.1:1212/wled/off
 
 service pianoteq stop
 sleep 1
