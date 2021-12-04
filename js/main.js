@@ -52,8 +52,8 @@ allNotes.forEach((note, i, { length }) => {
   )
   key.tabIndex = -1
   keyboard.querySelector('.top-keys').appendChild(key)
-  const hue = 360*((i-3)/(12*4))
-  key.style.setProperty('--hue', hue)
+  const hue = 360*((i-3)/(12))
+  key.style.setProperty('--key-hue', hue)
   if (!note.includes('#')) {
     const wideKey = key.cloneNode(true)
     keyboard.querySelector('.bottom-keys').appendChild(wideKey)
@@ -64,7 +64,7 @@ allNotes.forEach((note, i, { length }) => {
 
   const column = document.createElement('div')
   column.dataset.note = note
-  column.style.setProperty('--hue', hue)
+  column.style.setProperty('--key-hue', hue)
   pianoroll.appendChild(column)
 })
 

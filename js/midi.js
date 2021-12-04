@@ -9,6 +9,9 @@ export const CC_BANK_1 = 32
 export const CC_SUTAIN = 64
 
 export const MID_C = 60
+export const A0 = 21
+export const C8 = 108
+
 
 export const CHANNEL = 3 // this is what roland actually uses as output
 // 1=piano,  2,3=main layer, 9=silent, rest=piano
