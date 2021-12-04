@@ -434,12 +434,15 @@ footer.bar button.on {
 /* colors */
 
 .keyboard {
-	--rainbow-rate: 2;
+	--rainbow-rate: 0.24; /* 4 octaves period */
 	--global-hue: 0;
+	--global-sat: 1;
 }
 
 .keyboard button, .keyboard .pianoroll>div {
 	--hue: calc(var(--key-hue) * var(--rainbow-rate) + var(--global-hue));
+	--sat: calc(var(--global-sat) * 70%);
+	--lit: calc(100% - var(--global-sat) * 50% );
 }
 
 .keyboard {
@@ -503,25 +506,25 @@ footer.bar button.on {
 	/* background: #ffeab4; */
 	background-color: #fff;
 	z-index: 2;
-	box-shadow: 0px 0px 20px 3px hsl(calc(var(--hue)), 75%, 85%);
+	box-shadow: 0px 0px 20px 3px hsl(calc(var(--hue)), calc(var(--sat) * 1.1), calc(var(--lit) * 1.7));
 	background-image:	linear-gradient(
 			0deg,
-			hsla(calc(var(--hue)), 70%, 50%, 0.6) 0%,
-			hsla(calc(var(--hue)), 70%, 100%, 0.1) 100%
+			hsla(calc(var(--hue)), var(--sat), var(--lit), 0.6) 0%,
+			hsla(calc(var(--hue)), var(--sat), 100%, 0.1) 100%
 		);
 }
 .velocity .bottom-keys button.pressed {
 	background-image:	linear-gradient(
 			0deg,
-			hsla(calc(var(--hue)), 70%, 50%, 0.6) 0%,
-			hsla(calc(var(--hue)), 70%, 50%, 0.6) calc(var(--velocity) * 100%),
+			hsla(calc(var(--hue)), var(--sat), var(--lit), 0.6) 0%,
+			hsla(calc(var(--hue)), var(--sat), var(--lit), 0.6) calc(var(--velocity) * 100%),
 			transparent calc(var(--velocity) * 100%),
 			transparent 100%
 		),	
 		linear-gradient( /* this is copied from above*/
 			0deg,
-			hsla(calc(var(--hue)), 70%, 50%, 0.6) 0%,
-			hsla(calc(var(--hue)), 70%, 100%, 0.1) 100%
+			hsla(calc(var(--hue)), var(--sat), var(--lit), 0.6) 0%,
+			hsla(calc(var(--hue)), var(--sat), 100%, 0.1) 100%
 		);
 }
 
@@ -549,12 +552,12 @@ footer.bar button.on {
 }
 .top-keys button.pressed {
 	background-color: #000;
-	box-shadow: 0px 0px 20px 3px hsl(calc(var(--hue)), 75%, 85%);
+	box-shadow: 0px 0px 20px 3px hsl(calc(var(--hue)), calc(var(--sat) * 1.1), calc(var(--lit) * 1.7));
 	background-image:
 		linear-gradient(
 			180deg,
-			hsla(calc(var(--hue)), 70%, 50%, 0.8) 0%,
-			hsla(calc(var(--hue)), 70%, 50%, 0.1) 100%
+			hsla(calc(var(--hue)), var(--sat), var(--lit), 0.8) 0%,
+			hsla(calc(var(--hue)), var(--sat), var(--lit), 0.1) 100%
 		);
 }
 
@@ -562,15 +565,15 @@ footer.bar button.on {
 	background-image:
 		linear-gradient(
 			0deg,
-			hsl(calc(var(--hue)), 70%, 50%) 0%,
-			hsl(calc(var(--hue)), 70%, 50%) calc(var(--velocity) * 100%),
+			hsl(calc(var(--hue)), var(--sat), var(--lit)) 0%,
+			hsl(calc(var(--hue)), var(--sat), var(--lit)) calc(var(--velocity) * 100%),
 			transparent calc(var(--velocity) * 100%),
 			transparent 100%
 		),
 		linear-gradient( /* this is copied from above*/
 			180deg,
-			hsla(calc(var(--hue)), 70%, 50%, 0.8) 0%,
-			hsla(calc(var(--hue)), 70%, 50%, 0.1) 100%
+			hsla(calc(var(--hue)), var(--sat), var(--lit), 0.8) 0%,
+			hsla(calc(var(--hue)), var(--sat), var(--lit), 0.1) 100%
 		);
 }
 .letters .top-keys button {
@@ -866,8 +869,11 @@ body.idle .cinema-bar button {
 }
 .cinema .top-keys button.pressed {
 	background-color: #000;
-	box-shadow: 0px 0px 26px 3px hsl(var(--hue), 57%, 87%);
-	background-image: linear-gradient(180deg, hsla(var(--hue), 70%, 50%, 0.8) 0%, hsla(var(--hue), 70%, 50%, 0.1) 100%);
+	box-shadow: 0px 0px 26px 3px hsl(var(--hue), calc(var(--sat) * 0.7), 87%);
+	background-image: linear-gradient(180deg,
+		hsla(var(--hue), var(--sat), var(--lit), 0.8) 0%,
+		hsla(var(--hue), var(--sat), var(--lit), 0.1) 100%
+	);
 }
 
 .cinema .bottom-keys button {
@@ -876,8 +882,11 @@ body.idle .cinema-bar button {
 .cinema .bottom-keys button.pressed {
 	background-color: #fff;
 	z-index: 2;
-	box-shadow: 0px 0px 26px 3px hsl(var(--hue), 57%, 87%);
-	background-image: linear-gradient(0deg,  hsla(var(--hue), 85%, 45%, 0.45) 0%, hsla(var(--hue), 70%, 100%, 0.1) 100%);
+	box-shadow: 0px 0px 26px 3px hsl(var(--hue), calc(var(--sat) * 0.8), 87%);
+	background-image: linear-gradient(0deg,
+		hsla(var(--hue), calc(var(--sat) * 1.2), calc(var(--lit) * 0.9), 0.45) 0%,
+		hsla(var(--hue), var(--sat), 100%, 0.1) 100%
+	);
 }
 .background {
 	opacity: 0;
@@ -1095,15 +1104,15 @@ input[type=range]::-ms-thumb {
 .pianoroll>div>div {
 	width: 100%;
 	min-width: 1px;
-	background-color: hsla(var(--hue), 70%, 50%, 0.9);
+	background-color: hsla(var(--hue), var(--sat), calc(var(--lit) * 1.8), 0.9);
 	position: absolute;
 	bottom: 0;
 	height: 100vh;
 	border-radius: 3px;
 	box-shadow:
-		0 0 5px hsla(var(--hue), 70%, 50%, 0.9),
-		0 0 15px hsla(var(--hue), 70%, 50%, 0.8),
-		0 0 25px hsla(var(--hue), 70%, 50%, 0.7);
+		0 0 5px hsla(var(--hue), var(--sat), var(--lit), 0.9),
+		0 0 15px hsla(var(--hue), var(--sat), var(--lit), 0.8),
+		0 0 25px hsla(var(--hue), var(--sat), var(--lit), 0.7);
 }
 .pianoroll>div>div.pressed {
 	animation: grow-up 5s linear 0s 1 normal none running;
@@ -1191,9 +1200,9 @@ div.modal button:hover {
 	}
 	.pianoroll>div>div {
 		box-shadow:
-		/* 0 0 5px hsla(var(--hue), 70%, 50%, 0.9), */
-		/* 0 0 15px hsla(var(--hue), 70%, 50%, 0.8), */
-		0 0 25px hsla(var(--hue), 70%, 50%, 0.7);
+		/* 0 0 5px hsla(var(--hue), var(--sat), 50%, 0.9), */
+		/* 0 0 15px hsla(var(--hue), var(--sat), 50%, 0.8), */
+		0 0 25px hsla(var(--hue), var(--sat), 50%, 0.7);
 	}
 	html {
 		font-size: 100%;

@@ -256,22 +256,23 @@ function updateHue(note, source) {
 	)
 	if (isKeyShortcut) {
 		const colorMode = {
-			// [A0 + 9]: [0, 0],// MODE_WHITE_COLD,
-			// [A0 + 11]: [0, 0],// MODE_WHITE,
-			// [A0 + 13]: [0, 0],// MODE_WHITE_WARM,
-			[A0 + 8]:  [, 1/1], // MODE_RAINBOW_1,
-			[A0 + 10]: [, 1/2], // MODE_RAINBOW_2,
-			[A0 + 12]: [, 1/3], // MODE_RAINBOW_3,
-			[A0 + 14]: [, 1/4], // MODE_RAINBOW_4,
+			[A0 + 9]: [-120, .2],// MODE_WHITE_COLD,
+			[A0 + 11]: [, 0],// MODE_WHITE,
+			[A0 + 13]: [+60, .2],// MODE_WHITE_WARM,
+			[A0 + 8]:  [, 1, 1/1], // MODE_RAINBOW_1,
+			[A0 + 10]: [, 1, 1/2], // MODE_RAINBOW_2,
+			[A0 + 12]: [, 1, 1/3], // MODE_RAINBOW_3,
+			[A0 + 14]: [, 1, 1/4], // MODE_RAINBOW_4,
 			...(Array(12).fill().reduce((obj, _, i) => ({
 				...obj,
-				[A0+15+i]: [(360/12)*i, ],
+				[A0+15+i]: [(360/12)*i, 1, ],
 			}), {})),
 		}[Tone.Midi(note).toMidi()]
 		if (colorMode) {
-			const [ globalHue=0, rate=0 ] = colorMode
+			const [ globalHue=0, globalSat=1, rate=0 ] = colorMode
 			const keyboard = document.querySelector('.keyboard')
 			keyboard.style.setProperty('--global-hue', globalHue)
+			keyboard.style.setProperty('--global-sat', globalSat)
 			keyboard.style.setProperty('--rainbow-rate', rate)
 		}
 	}
