@@ -904,7 +904,7 @@ body.idle .cinema-bar button {
 	transition: opacity 2s ease 1.5s;
 }
 .background .smoke {
-	opacity: .66;
+	opacity: .8066;
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -936,31 +936,31 @@ body.idle .cinema-bar button {
 }
 
 .background .smoke:nth-child(5) {
-	opacity: 0.08;
+	opacity: 0.05;
 	animation: flow-1 37s ease-in-out -30s infinite alternate;
 }
 .background .smoke:nth-child(6) {
-	opacity: 0.08;
+	opacity: 0.05;
 	transform: scale(1, -1);	
 	animation: flow-2 33s ease-in-out -29s infinite alternate;
 }
 .background .smoke:nth-child(7) {
-	opacity: 0.08;
+	opacity: 0.05;
 	transform: scale(-1, 1);
 	animation: flow-3 37s ease-in-out -28s infinite alternate;
 }
 .background .smoke:nth-child(8) {
-	opacity: 0.08;
+	opacity: 0.05;
 	transform: scale(-1, -1);
 	animation: flow-4 30s ease-in-out -27s infinite alternate;
 }
 
 @keyframes hue-rot {
-	0%   {background-color: hsl(0, 100%, 55%)}
-	25%  {background-color: hsl(90, 100%, 55%)}
-	50%  {background-color: hsl(180, 100%, 55%)}
-	75%  {background-color: hsl(240, 100%, 55%)}
-	100% {background-color: hsl(360, 100%, 55%)}
+	0%   {background-color: hsl(0, 95%, 55%)}
+	25%  {background-color: hsl(90, 95%, 55%)}
+	50%  {background-color: hsl(180, 95%, 55%)}
+	75%  {background-color: hsl(240, 95%, 55%)}
+	100% {background-color: hsl(360, 95%, 55%)}
 }
 
 @keyframes flow-1 {
@@ -1104,15 +1104,22 @@ input[type=range]::-ms-thumb {
 .pianoroll>div>div {
 	width: 100%;
 	min-width: 1px;
-	background-color: hsla(var(--hue), var(--sat), calc(var(--lit) * 1.8), 0.9);
+	background-color: hsla(var(--hue), var(--sat), calc(var(--lit) * 1.9), 0.9);
 	position: absolute;
 	bottom: 0;
 	height: 100vh;
 	border-radius: 3px;
+}
+.pianoroll>div>div.front {
+	z-index: 2;
+}
+.pianoroll>div>div.back {
+	z-index: 1;
+	background-color: transparent;
 	box-shadow:
-		0 0 5px hsla(var(--hue), var(--sat), var(--lit), 0.9),
-		0 0 15px hsla(var(--hue), var(--sat), var(--lit), 0.8),
-		0 0 25px hsla(var(--hue), var(--sat), var(--lit), 0.7);
+		0 0 5px hsla(var(--hue), calc(var(--sat) * 1), var(--lit), 0.9),
+		0 0 15px hsla(var(--hue), calc(var(--sat) * 1.2), var(--lit), 0.8),
+		0 0 25px hsla(var(--hue), calc(var(--sat) * 1.4), var(--lit), 0.7);
 }
 .pianoroll>div>div.pressed {
 	animation: grow-up 5s linear 0s 1 normal none running;
@@ -1198,11 +1205,11 @@ div.modal button:hover {
 	.smoke:nth-child(even) { /* reduce gpu stress */
 		display: none;
 	}
-	.pianoroll>div>div {
+	.pianoroll>div>div.back {
 		box-shadow:
-		/* 0 0 5px hsla(var(--hue), var(--sat), 50%, 0.9), */
-		/* 0 0 15px hsla(var(--hue), var(--sat), 50%, 0.8), */
-		0 0 25px hsla(var(--hue), var(--sat), 50%, 0.7);
+		/* 0 0 5px hsla(var(--hue), calc(var(--sat) * 1), var(--lit), 0.9),
+		0 0 15px hsla(var(--hue), calc(var(--sat) * 1.2), var(--lit), 0.8), */
+		0 0 25px hsla(var(--hue), calc(var(--sat) * 1.4), var(--lit), 0.7);
 	}
 	html {
 		font-size: 100%;

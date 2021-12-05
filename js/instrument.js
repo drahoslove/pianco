@@ -251,8 +251,8 @@ function updateHue(note, source) {
 		return
 	}
 	const isKeyShortcut = (
-		pressedNotes["A0"]?.has(0) &&
-		pressedNotes["B0"]?.has(0)
+		(pressedNotes["A0"] && pressedNotes["A0"].has(0)) &&
+		(pressedNotes["B0"] && pressedNotes["B0"].has(0))
 	)
 	if (isKeyShortcut) {
 		const colorMode = {
@@ -281,13 +281,20 @@ function updateHue(note, source) {
 
 function addRect(note, source) {
 	if (source === 'mutedIO') { return }
-  const rect = document.createElement('div')
 	const column = document.querySelector(`.pianoroll [data-note="${note}"]`)
-	rect.className = "pressed"
   if (!column) { // document not fully loaded?
 		return
 	}
-	column.appendChild(rect)
+	const backRect = document.createElement('div')
+	backRect.classList.add("pressed")
+	backRect.classList.add("back")
+
+	const frontRect = document.createElement('div')
+	frontRect.classList.add("pressed")
+	frontRect.classList.add("front")
+
+	column.appendChild(backRect)
+	column.appendChild(frontRect)
 }
 function releaseRect(note, source) {
 	// if (source === 'mutedIO') return
@@ -295,11 +302,11 @@ function releaseRect(note, source) {
 	if (!column) {
 		return
 	}
-	const rect = column.lastChild
-	if (rect) {
-		rect.className = "released"
-		setTimeout(rect.remove.bind(rect), 15*1000)
-	}
+	Array.from(column.querySelectorAll('.pressed')).forEach(rect => {
+		rect.classList.remove("pressed")
+		rect.classList.add("released")
+		setTimeout(rect.remove.bind(rect), 10*1000)
+	})
 }
 
 
