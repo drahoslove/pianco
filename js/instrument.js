@@ -17,6 +17,7 @@ Tone.setContext(new Tone.Context({
 const pressedNotes = {}
 const sustainedNotes = {}
 const sustainState = {}
+let rectSustainMode = true // whether to render rects on sustain
 
 const allNotes = []
 allNotes.push("A0","A#0","B0")
@@ -158,12 +159,11 @@ const updateNote = (note, velocity, action) => (source) => {
 			source !== 'mutedIO' && classList.add('pressed')
 			style.setProperty('--velocity', velocity)
 		})  
-		if (isSustained) { // repressing sustained note
+		if (rectSustainMode && isSustained) { // repressing sustained note
 			releaseRect(note, source)
 			getInstrument(source).triggerRelease([note])
 		}
 		addRect(note, source)
-		updateHue(note, source)
 		getInstrument(source).triggerAttack(note, "+0", velocity)
 	}
 	if (wasPressed && !isPressed) {
@@ -173,8 +173,10 @@ const updateNote = (note, velocity, action) => (source) => {
 			style.setProperty('--velocity', 0)
 		})
 		if (!isSustained) {
-			releaseRect(note, source)
 			getInstrument(source).triggerRelease(note, "+0.001")
+		}
+		if (!rectSustainMode || !isSustained) {
+			releaseRect(note, source)
 		}
 	}
 	if (wasSustained && !isSustained && !wasPressed && !isPressed) {
@@ -192,6 +194,9 @@ const pressNote = (note, velocity=0.5, uid) => updateNote(note, velocity, () => 
 		setTimeout(() => {
 			userIcon.classList.add('active')
 		})
+	}
+	if (uid === 0) {
+		updateHue(note)
 	}
 })
 
@@ -232,6 +237,9 @@ const releaseSustain = (uid, source) => {
 			noteset.delete(uid)
 		})(source)
 	})
+	if (uid === 0) {
+		toggleRectSustainMode(source)
+	}
 }
 
 const allOff = () => {
@@ -246,10 +254,17 @@ const allOff = () => {
 	})
 }
 
-function updateHue(note, source) {
-	if (source === 'mutedIO') {
-		return
+function toggleRectSustainMode() {
+	const isKeyShortcut = (
+		(pressedNotes["A0"] && pressedNotes["A0"].has(0)) &&
+		(pressedNotes["B0"] && pressedNotes["B0"].has(0))
+	)
+	if (isKeyShortcut) {
+		rectSustainMode = !rectSustainMode
 	}
+}
+
+function updateHue(note) {
 	const isKeyShortcut = (
 		(pressedNotes["A0"] && pressedNotes["A0"].has(0)) &&
 		(pressedNotes["B0"] && pressedNotes["B0"].has(0))
