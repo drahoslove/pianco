@@ -394,39 +394,36 @@ input.checkbox:checked::before {
     <!-- pianoteq page -->
     <div id="page-pianoteq" v-show="page === 'pianoteq'" class="container mb-3">
       <div class="row">
-        <div v-for="(group, j) in presets" class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mt-3" :key="group.cc+group.ioff">
+        <div v-for="(list, groupName) in presets" class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mt-3" :key="groupName">
           <h4>
-           {{ group.name }}
+            {{ groupName }}
           </h4>
           <div class="dropdown-menu d-block position-static w-100"
-            :id="`presets-${group.cc}-${group.ioff}`"
+            :id="`presets-${groupName}`"
           >
             <template
-              v-for="(preset, i) in group.presets"
-              >
-              <small v-if="isPresetSubgroupStart(preset, i, group.presets)" class="year">
-                {{ presetBracket(group.presets[i]) }}
+              v-for="(preset, i) in list"
+            >
+              <small v-if="isPresetYear(preset)" class="year">
+                {{ list[i] }}
               </small>
               <button
-                :key="i + group.ioff"
+                v-if="!isPresetYear(preset)"
+                :key="i"
                 v-show="!preset.includes('392')"
-                :class="['dropdown-item', { 'active bg-info': selectedPreset === `${group.cc}:${i+group.ioff+1}` }]"
-                :data-value="`${group.cc}:${i+group.ioff+1}`"
+                :class="['dropdown-item', { 'active bg-info': selectedPreset === preset }]"
+                :data-value="preset"
                 @click="selectPreset($event)"
               >
-                {{ presetShort(group.name, preset) }}
+                {{ presetShort(groupName, preset) }}
               </button>
-              <hr v-if="isPresetSubgroupEnd(preset, i, group.presets)" class="my-2" />
-
+              <hr v-if="isPresetSubgroupEnd(preset, i, list)" class="my-2" />
             </template>
           </div>
-          <div v-if="j == presets.length-1" class="pt-3" style="clear:both">
-            <span class="mdi mdi-help-box"></span>
-            <a href="/raspberrypi/pianco.ptm" class="text-secondary">
-              <small>
-                Use pianco.ptm MIDI mapping file
-              </small>
-            </a>
+          <div v-if="Object.values(presets).length === 1">
+            <small>
+              Run Pianoteq with <code> --serve 0.0.0.0:8081</code>
+            </small>
           </div>
         </div>
       </div>

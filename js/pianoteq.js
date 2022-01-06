@@ -1,203 +1,131 @@
-export const presets = [
-  // Acoustic Pianos:
-  // (CC 102-119 udnefined by MIDI standart)
-  {
-    cc: 104,
-    ioff: 0,
-    name: 'Ant. Petrof',
-    presets: [
-      'Ant. Petrof Prelude',
-      'Ant. Petrof Felt I',
-      'Ant. Petrof Felt II',
-      'Ant. Petrof Warm',
-      'Ant. Petrof Venue',
-      'Ant. Petrof 275',
-      'Ant. Petrof Recording 1',
-      'Ant. Petrof Recording 2',
-      'Ant. Petrof Recording 3',
-      'Ant. Petrof Cinematic',
-      'Ant. Petrof Bass & Piano split',
-      'Ant. Petrof Intimate',
-      'Ant. Petrof Player',
-      'Ant. Petrof Under Lid',
-      'Ant. Petrof Duo',
-      'Ant. Petrof Dreamy',
-      'Ant. Petrof Cosmic',
-      'Ant. Petrof Broken',
-    ]
-  },
-  {
-    cc: 104,
-    ioff: 20, // added to index of preset
-    name: 'Petrof Mistral',
-    presets: [
-      'Petrof Mistral Prelude',
-      'Petrof Mistral Warm',
-      'Petrof Mistral Felt I',
-      'Petrof Mistral Felt II',
-      'Petrof Mistral Venue',
-      'Petrof Mistral 284',
-      'Petrof Mistral Classical Recording',
-      'Petrof Mistral Jazz Recording',
-      'Petrof Mistral Cinematic',
-      'Petrof Mistral Bass & Piano split',
-      'Petrof Mistral Intimate',
-      'Petrof Mistral Player',
-      'Petrof Mistral Under Lid',
-      'Petrof Mistral Gentle',
-      'Petrof Mistral Dreamy',
-      'Petrof Mistral Cosmic',
-      'Petrof Mistral Broken',
-    ]
-  },
-  {
-    cc: 102,
-    ioff: 0,
-    name: 'Bluethner',
-    presets: [
-      'Bluethner Prelude',
-      'Bluethner Improv',
-      'Bluethner Model One',
-      'Bluethner Felt I',
-      'Bluethner Felt II',
-      'Bluethner Model One AB',
-      'Bluethner Studio Recording BA',
-      'Bluethner Studio Recording AB',
-      'Bluethner Chamber Recording BA',
-      'Bluethner Chamber Recording AB',
-      'Bluethner Concert Recording BA',
-      'Bluethner Concert Recording AB',
-      'Bluethner Cinematic',
-      'Bluethner Player',
-      'Bluethner Intimate',
-    ],
-  },
-  {
-    cc: 103,
-    ioff: 0,
-    name: 'C. Bechstein DG',
-    presets: [
-      'C. Bechstein DG Prelude',
-      'C. Bechstein DG Sweet',
-      'C. Bechstein DG Felt I',
-      'C. Bechstein DG Felt II',
-      'C. Bechstein DG D 282',
-      'C. Bechstein DG Recording 1',
-      'C. Bechstein DG Recording 2',
-      'C. Bechstein DG Recording 3',
-      'C. Bechstein DG Cinematic',
-      'C. Bechstein DG Snappy',
-      'C. Bechstein DG Bass & Piano split',
-      'C. Bechstein DG Venue',
-      'C. Bechstein DG Player',
-      'C. Bechstein DG Under Lid',
-      'C. Bechstein DG Cosmic',
-      'C. Bechstein DG Broken',
-    ],
-  },
-  {
-    cc: 105,
-    ioff: 0,
-    name: 'Other Pianos',
-    presets: [
-      'Erard Close Mic (1922)',
-      'Erard Player (1922)',
-      'Erard Recording (1922)',
-      'Pleyel Close Mic (1926)',
-      'Pleyel Player (1926)',
-      'Pleyel Recording (1926)',
-      'CP-80 Line Output',
-      'CP-80 Tremolo',
-      'CP-80 Amped',
-      'CP-80 Recording',
-      'CP-80 SoundBoarded',
-    ],
-  },
-  {
-    cc: 106,
-    ioff: 0,
-    name: 'Historical',
-    presets: [
-      'J. Schantz (1790)',
-      'J. Schantz 415',
-      'J. Schantz 415 Player',
-      'J. Schantz 415 Recording',
-      'J. Schantz 392',
+export let apiUrl = localStorage['rc-pianoteq-api-url'] || 'https://local.pian.co/jsonrpc'
 
-      'J.E. Schmidt (1790)',
-      'J.E. Schmidt 415',
-      'J.E. Schmidt 415 Player',
-      'J.E. Schmidt 415 Recording',
-      'J.E. Schmidt 392',
+export async function setUrl() {
+  const testUrl = async () => {
+    return !!(await api('getInfo'))
+  }
+  let i = 0
+  while(!await testUrl()) {
+    apiUrl = window.prompt(
+      'Set URL of Pianoteq JSON RPC API',
+      localStorage['rc-pianoteq-api-url'] || 'http://127.0.0.1:8081/jsonrpc'
+    )
+    if (apiUrl === null) {
+      break
+    }
+    localStorage['rc-pianoteq-api-url'] = apiUrl
+    i++
+  }
+}
 
-      'A. Walter (1790)',
-      'A. Walter 415',
-      'A. Walter 415 Player',
-      'A. Walter 415 Recording',
-      'A. Walter 392',
+export async function api(method, params=[]) {
+  if (!method) {
+    return false
+  }
+  if (!apiUrl) {
+    return false
+  }
+  const body = {
+    jsonrpc: "2.0",
+    method,
+    params,
+    id: 0,
+  }
+  try {
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+    const response = await res.json()
+    if ('result' in response) {
+      return response.result || response.result === null
+    } else {
+      return false
+    }
+  } catch (e) {
+    console.warn(e)
+    return false
+  }
+}
 
-      'D. Schöffstoss (1812)',
-      'D. Schöffstoss 415',
-      'D. Schöffstoss 415 Player',
-      'D. Schöffstoss 415 Recording',
-      'D. Schöffstoss 392',
+// custom ordering and grouping of instruments with small number of presets
+const groups = {
+  "Grand Ant. Petrof": null,
+  "Grand Petrof Mistral": null,
+  "Grand Bluethner": null,
+  "Grand C. Bechstein DG": null,
+  "Other Pianos": [
+    "Erard (1922)",
+    "Pleyel (1926)",
+    "CP-80",
+  ],
+  "Historical": [
+    "J. Schantz (1790)",
+    "J.E. Schmidt (1790)",
+    "A. Walter (1790)",
+    "D. Schöffstoss (1812)",
+    "C. Graf (1826)",
+  ],
+  "Predecessor": [
+    "Cimbalom",
+    "Neupert Clavichord",
+    "F.E. Blanchet Harpsichord (1733)",
+    "C. Grimaldi Harpsichord (1697)",
+  ],
+  "Bells": [
+    "Church Bells",
+    "Tubular Bells",
+  ],
+}
 
-      'C. Graf (1826)',
-      'C. Graf 415',
-      'C. Graf 415 Player',
-      'C. Graf 415 Recording',
-      'C. Graf 392',
-    ],
-  },
-  {
-    cc: 107,
-    ioff: 0,
-    name: 'Predecessor',
-    presets: [
-      'Cimbalom Basic',
-      'Cimbalom Hard',
-      'Cimbalom Soft',
-      'Cimbalom à la piano',
-      'Cimbalom Tzigane',
-      'Cimbalom 415',
-      'Cimbalom 392',
+export async function getCurrentPreset() {
+  const response = await api('getInfo')
+  if (response) {
+    return response[0].current_preset.name
+  }
+  return null
+}
 
-      'Neupert Clavichord single',
-      'Neupert Clavichord double',
-      'Neupert Clavichord lute',
-      'Neupert Clavichord 415',
-      'Neupert Clavichord 392',
-
-      'F.E. Blanchet Harpschrd. (1733)',
-      'F.E. Blanchet Harpschrd. 415',
-      'F.E. Blanchet Harpschrd. 392',
-
-      'C. Grimaldi Harpschrd. A (1697)',
-      'C. Grimaldi Harpschrd. A 415',
-      'C. Grimaldi Harpschrd. A 392',
-
-      'C. Grimaldi Harpschrd. B',
-      'C. Grimaldi Harpschrd. B 415',
-      'C. Grimaldi Harpschrd. B 392',
-      
-      'C. Grimaldi Harpschrd. A+B',
-      'C. Grimaldi Harpschrd. A+B 415',
-      'C. Grimaldi Harpschrd. A+B 392',
-    ],
-  },
-  {
-    cc: 108,
-    ioff: 0,
-    name: 'Bells',
-    presets: [
-      'Church - Original',
-      'Bell-the-fly',
-      'Church - soft clapper',
-      'Church - tremolo',
-      'Church - sustain',
-      'Tubular - original',
-      'Tubular - major',
-      'Tubular - minor',
-    ],
-  },
-]
+export async function fetchPresets() {
+  const list = await api('getListOfPresets')
+  if (!list) {
+    apiUrl = undefined
+    return { "Setup": ["Set Pianoteq JSON RPC API URL"]}
+  }
+  const presets = new Set()
+  list
+    .filter(({ license_status }) => license_status === 'ok')
+    .forEach(({
+      name,
+      instr: instrName,
+    }) => {
+      const instr = [...presets].find((i) => i.name === instrName) || {
+        name: instrName,
+        presets: [],
+      }
+      presets.add(instr)
+      instr.presets.push(name)
+    })
+  return Object.entries(groups)
+    .reduce((acc, [groupName, instrNames]) => {
+      if (instrNames === null) {
+        const instr = [...presets].find(({ name }) => name === groupName)
+        acc[groupName.replace('Grand ', '')] = instr.presets
+      } else {
+        acc[groupName] = instrNames
+          .map(instrName => [...presets].find(({ name }) => name === instrName))
+          .reduce((list, instr) => {
+            const match = instr.name.match(/\((.*)\)/)
+            return [
+              ...list,
+              ...(match ? [match[0]] : []),
+              ...instr.presets,
+            ]
+          }, [])
+      }
+      return acc
+    }, {})
+}

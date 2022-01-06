@@ -52,13 +52,13 @@ const app = new Vue({
   el: '#app',
   data: {
     page: location.hash.substr(1) || localStorage['rc-page'] || 'pianoteq',
-    presets: Ptq.presets,
+    presets: await Ptq.fetchPresets(),
     rolandVoices: R.instruments,
     rolandMetronomeBeats: R.metronomeBeats,
     rolandMetronomeBeatOn: false,
     rolandMetronomeTempoNotations: R.metronomeTempoNotations,
     selectedRolandMetronomeTempoNotation: 3,
-    selectedPreset: null,
+    selectedPreset: await Ptq.getCurrentPreset(),
     selectedRolandVoice: {
       single: null,
       dual: null,
@@ -71,21 +71,33 @@ const app = new Vue({
       localStorage['rc-page'] = page
       history.replaceState(null, null, ' ') // removes hash from url
     },
-    selectPreset(e) {
+    async selectPreset(e) {
       const { value } = e.target.dataset
-      this.selectedPreset = value
-      const [ cc, i ] = value.split(':')
-      send([
-        toCmd(CMD_CONTROL_CHANGE, 9),
-        +cc,
-        +i,
-      ])
+      if (!Ptq.apiUrl) {
+        this.presets = { "Setup": ["..."]}
+        await Ptq.setUrl()
+        this.presets = await Ptq.fetchPresets()
+        this.selectedPreset = await Ptq.getCurrentPreset()
+        return
+      }
+      const ok = await Ptq.api('loadPreset', {
+        name: value,
+        bank: '',
+        preset_type: 'full',
+      })
+      if (ok) {
+        this.selectedPreset = value
+      }
     },
     presetShort: (prefix, preset) =>
       preset.startsWith(prefix)
         ? preset.substr(prefix.length)
         : preset.replace(/\(.*\)/, '')
     ,
+    isPresetYear: (name) => {
+      const match = name.match(/\((.*)\)/)
+      return !!match
+    },
     isPresetSubgroupStart: (name, i, list) => {
       const start = name.split(' ')[0]
       const result = i < list.length-1 
@@ -99,12 +111,6 @@ const app = new Vue({
         && start === list[i-1].split(' ')[0]
         && start !== list[i+1].split(' ')[0]
       return result
-    },
-    presetBracket: (name) => { // extract string from the bracket in the presest name
-      const match = name.match(/\((.*)\)/)
-      return match
-        ? match[1]
-        : ''
     },
     toggleRolandMetronomeBeat(event) {
       event.preventDefault()
@@ -121,8 +127,15 @@ const app = new Vue({
         })[variant](hexcode)
       }
     },
-    mmc: (command) => {
+    mmc: async (command) => {
       // F0 7F <Device-ID> <Sub-ID#1> [<Sub-ID#2> [<parameters>]] F7
+      await Ptq.api({
+        stop: 'midiStop',
+        play: 'midiPlay',
+        record: 'midiRecord',
+        pause: 'midiPause',
+        rewind: 'midiRewind',
+      }[command]) !== false ||
       send([
         0xf0,
         0x7f,
@@ -617,3 +630,4 @@ const sleep = async (t) => {
     setTimeout(resolve, t)
   })
 }
+
