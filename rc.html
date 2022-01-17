@@ -30,7 +30,7 @@ gtag('config', 'UA-21351225-3')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js"></script>
 <script>
-if ('serviceWorker' in window.navigator) {
+if ('serviceWorker' in window.navigator && window.location.origin === 'https://pian.co') {
   window.navigator.serviceWorker.register('/service-worker.js')
 }
 </script>
