@@ -28,7 +28,7 @@ export const fromVal = (val) => val/127
 // takes array of uniq note values (c=0)
 // returns symbolic name of the chord
 // eg: [0,3,7] => "Cm"; [2,5,8] =>  "Ddim"
-
+// https://www.lotusmusic.com/lessonpix/chordprogessions/chordsymbol.jpg
 export function nameOfChord(chord) {
   const roots = []
   roots.push(chord[0] % 12) // lowest note played
@@ -66,10 +66,10 @@ export function nameOfChord(chord) {
     if (chordEq(baseChord, [0, 3, 7, 10])) { // minor seventh (Cm7, C-7)
       return rootNote + "m7"
     }
-    if (chordEq(baseChord, [0, 3, 5, 9])) { // diminished seventh (Cdim7, C°7)
+    if (chordEq(baseChord, [0, 3, 6, 9])) { // diminished seventh (Cdim7, C°7)
       return rootNote + "dim7"
     }
-    if (chordEq(baseChord, [0, 3, 5, 10])) { // half diminished seventh (Cø, Cm7b)
+    if (chordEq(baseChord, [0, 3, 6, 10])) { // half diminished seventh (Cø, Cm7b)
       return rootNote + "ø7"
     }
   }
