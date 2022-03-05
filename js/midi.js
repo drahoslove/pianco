@@ -31,46 +31,42 @@ export const fromVal = (val) => val/127
 // https://www.lotusmusic.com/lessonpix/chordprogessions/chordsymbol.jpg
 export function nameOfChord(chord) {
   const roots = chord.sort().map(n => n % 12)
-  // roots.push(chord[0] % 12) // lowest note played
-  // roots.push([...chord].map(n => n % 12).sort()[0]) // lowest note in octave
 
   for (let root of roots) {
-    const rootNote = ["C", "C#", "D", "D#", "E", "F", "F#" , "G", "G#", "A", "A#", "B"][root]
+    const rootNote = [
+      ["C"],
+      ["C♯", "D♭"],
+      ["D"],
+      ["D♯", "E♭"],
+      ["E"],
+      ["F"],
+      ["F♯", "G♭"],
+      ["G"],
+      ["G♯", "A♭"],
+      ["A"],
+      ["A♯", "B♭"],
+      ["B"],
+    ][root]
     const baseChord = [...new Set(chord.map(n => ((n+12)-root)%12))].sort((a,b) => a-b)
-    const chordEq = (a, b) => String(a) === String(b)
   
     // console.log('chord', chord, baseChord)
-  
-    if (chordEq(baseChord, [0, 4, 7])) { // major (C, Cmaj) (česky dur)
-      return rootNote
-    }
-    if (chordEq(baseChord, [0, 3, 7])) { // minor (Cm, Cmi, C-) (česky moll)
-      return rootNote + "m"
-    }
-    if (chordEq(baseChord, [0, 3, 6])) { // diminished (Cdim, C°) (česky zmenšená kvinta(?))
-      return rootNote + "dim"
-    }
-  
-    if (chordEq(baseChord, [0, 4, 7, 9])) { // major sixth (C6)
-      return rootNote + "6"
-    }
-  
-    if (chordEq(baseChord, [0, 4, 7, 11])) { // major seventh (Cmaj7, C∆7)
-      return rootNote + "maj7"
-    }
-    if (chordEq(baseChord, [0, 4, 7, 10])) { // dominant seventh (C7, Cdom7)
-      return rootNote + "7"
-    }
-    if (chordEq(baseChord, [0, 3, 7, 10])) { // minor seventh (Cm7, C-7)
-      return rootNote + "m7"
-    }
-    if (chordEq(baseChord, [0, 3, 6, 9])) { // diminished seventh (Cdim7, C°7)
-      return rootNote + "dim7"
-    }
-    if (chordEq(baseChord, [0, 3, 6, 10])) { // half diminished seventh (Cø, Cm7b)
-      return rootNote + "ø7"
+    const nameFunc = {
+      [[0, 4, 7]]: r => r,  // major (C, Cmaj) (česky dur)
+      [[0, 3, 7]]: r => r + "m",  // minor (Cm, Cmi, C-) (česky moll)
+      [[0, 3, 6]]: r => r + "dim",  // diminished (Cdim, C°) (česky zmenšená kvinta(?))
+
+      [[0, 4, 7, 9]]: r => r + "6",  // major sixth (C6)
+    
+      [[0, 4, 7, 11]]: r => r + "maj7",  // major seventh (Cmaj7, C∆7)
+      [[0, 4, 7, 10]]: r => r + "7",  // dominant seventh (C7, Cdom7)
+      [[0, 3, 7, 10]]: r => r + "m7",  // minor seventh (Cm7, C-7)
+      [[0, 3, 6, 9]]: r => r + "dim7",  // diminished seventh (Cdim7, C°7)
+      [[0, 3, 6, 10]]:  r => r + "ø7",  // half diminished seventh (Cø, Cm7b)
+    }[baseChord] || null
+
+    if (nameFunc) {
+      return rootNote.map(nameFunc).join(' / ')
     }
   }
-
 	return ""
 }
