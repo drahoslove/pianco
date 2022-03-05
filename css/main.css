@@ -1222,7 +1222,7 @@ div.modal button:hover {
 
 /* mobile devices  */
 
-@media screen and (max-height: 500px), (max-width: 500px) {
+@media screen and (max-height: 600px), (max-width: 600px) {
 	.smoke:nth-child(even) { /* reduce gpu stress */
 		display: none;
 	}
