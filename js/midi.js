@@ -36,7 +36,7 @@ export function nameOfChord(chord) {
 
   for (let root of roots) {
     const rootNote = ["C", "C#", "D", "D#", "E", "F", "F#" , "G", "G#", "A", "A#", "B"][root]
-    const baseChord = chord.map(n => ((n+12)-root)%12).sort((a,b) => a-b)
+    const baseChord = [...new Set(chord.map(n => ((n+12)-root)%12))].sort((a,b) => a-b)
     const chordEq = (a, b) => String(a) === String(b)
   
     // console.log('chord', chord, baseChord)
