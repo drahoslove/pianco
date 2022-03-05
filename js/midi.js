@@ -69,8 +69,7 @@ export function nameOfChord(chord) {
     if (chordEq(baseChord, [0, 3, 5, 9])) { // diminished seventh (Cdim7, C°7)
       return rootNote + "dim7"
     }
-  
-    if (chordEq(baseChord, [0, 3, 5, 109])) { // half diminished seventh (Cø, Cm7b)
+    if (chordEq(baseChord, [0, 3, 5, 10])) { // half diminished seventh (Cø, Cm7b)
       return rootNote + "ø7"
     }
   }
