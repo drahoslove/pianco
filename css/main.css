@@ -793,6 +793,19 @@ div.hint {
 	transition: none;
 }
 
+.chord-info {
+	position: absolute;
+	right: -200px;
+	top: 0;
+	bottom: 0;
+	padding: 0.5em;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	font-size: 175%;
+	width: 200px;
+}
+
 
 /* ============== cinema mode ============== */
 

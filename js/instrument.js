@@ -4,6 +4,8 @@ import {
 	CMD_NOTE_ON,
 	CMD_NOTE_OFF,
 	A0,
+	C8,
+	nameOfChord,
 } from './midi.js'
 import {
 	instrumentApp
@@ -198,6 +200,7 @@ const pressNote = (note, velocity=0.5, uid) => updateNote(note, velocity, () => 
 	if (uid === 0) {
 		updateHue(note)
 	}
+	updateChord()
 })
 
 const releaseNote = (note, uid) => updateNote(note, undefined, () => {
@@ -214,6 +217,7 @@ const releaseNote = (note, uid) => updateNote(note, undefined, () => {
 			userIcon.classList.remove('active')
 		})
 	}
+	updateChord()
 })
 
 const releaseAll = (uid) => (source) => {
@@ -261,6 +265,24 @@ function toggleRectSustainMode() {
 	)
 	if (isKeyShortcut) {
 		rectSustainMode = !rectSustainMode
+	}
+}
+
+function updateChord () {
+	// get midi values of all pressed notes
+	const notes = []
+	Object.entries(pressedNotes).forEach(([note, noteset]) => {
+		if (noteset.size > 0) {
+			notes.push(Tone.Midi(note).toMidi())
+		}
+	})
+
+	const chord = [...new Set(notes.map(n => n % 12))]
+	const chordName = nameOfChord(chord)
+
+	const el = document.getElementById('chord-name')
+	if (el) {
+		el.innerText = chordName
 	}
 }
 
