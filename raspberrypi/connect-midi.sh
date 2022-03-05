@@ -10,14 +10,14 @@
 service raspotify stop
 
 # `aconnect -l`
-# to get right values
+# to check right values
 
 sleep 1
 
 # connect tablet with roland piano
-ROLAND=20
-ANDROID=24
-GOPIANO=$( sudo aconnect -l | grep RtMidi | awk '{ print $2 }' | sed 's/://' )
+ROLAND=$( sudo aconnect -l  | grep Roland  | head -n 1 | awk '{ print $2 }' | sed 's/://' )
+ANDROID=$( sudo aconnect -l | grep Android | head -n 1 | awk '{ print $2 }' | sed 's/://' )
+GOPIANO=$( sudo aconnect -l | grep RtMidi  | head -n 1 | awk '{ print $2 }' | sed 's/://' )
 aconnect $ANDROID:0 $ROLAND:0
 aconnect $ROLAND:0 $ANDROID:0
 aconnect $ROLAND:0 $GOPIANO:0
