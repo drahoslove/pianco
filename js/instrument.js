@@ -277,12 +277,15 @@ function updateChord () {
 		}
 	})
 
-	const chord = [...new Set(notes.map(n => n % 12))]
+	const chord = [...notes]
 	const chordName = nameOfChord(chord)
 
 	const el = document.getElementById('chord-name')
-	if (el) {
+	if (chordName) {
 		el.innerText = chordName
+		el.classList.remove('fade')
+	} else {
+		el.classList.add('fade')
 	}
 }
 

@@ -805,6 +805,14 @@ div.hint {
 	font-size: 175%;
 	width: 200px;
 }
+.chord-info>* {
+	opacity: 1;
+	transition: none;
+}
+.chord-info>.fade {
+	opacity: 0;
+	transition: opacity 0.2s ease 0.1s;
+}
 
 
 /* ============== cinema mode ============== */

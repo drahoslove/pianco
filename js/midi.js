@@ -30,9 +30,9 @@ export const fromVal = (val) => val/127
 // eg: [0,3,7] => "Cm"; [2,5,8] =>  "Ddim"
 // https://www.lotusmusic.com/lessonpix/chordprogessions/chordsymbol.jpg
 export function nameOfChord(chord) {
-  const roots = []
-  roots.push(chord[0] % 12) // lowest note played
-  roots.push([...chord].map(n => n % 12).sort()[0]) // lowest note in octave
+  const roots = chord.sort().map(n => n % 12)
+  // roots.push(chord[0] % 12) // lowest note played
+  // roots.push([...chord].map(n => n % 12).sort()[0]) // lowest note in octave
 
   for (let root of roots) {
     const rootNote = ["C", "C#", "D", "D#", "E", "F", "F#" , "G", "G#", "A", "A#", "B"][root]
@@ -51,11 +51,9 @@ export function nameOfChord(chord) {
       return rootNote + "dim"
     }
   
-  
     if (chordEq(baseChord, [0, 4, 7, 9])) { // major sixth (C6)
       return rootNote + "6"
     }
-  
   
     if (chordEq(baseChord, [0, 4, 7, 11])) { // major seventh (Cmaj7, C∆7)
       return rootNote + "maj7"
