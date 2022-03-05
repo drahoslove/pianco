@@ -100,11 +100,14 @@ Object.keys(defaultSettings).forEach(key => {
 })
 
 
+const isMobile = ('ontouchstart' in document.documentElement)
+
 // do not show toggle qwerty hint button on mobile
 const hintButton = document.getElementById('toggle-qwerty')
-if (!('ontouchstart' in document.documentElement)) {
+if (!isMobile) {
   hintButton.hidden = false
 } else {
+  document.body.classList.add('mobile')
   saveSetting('qwerty', false) // to be sure
 }
 

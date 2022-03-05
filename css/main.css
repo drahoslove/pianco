@@ -1220,9 +1220,12 @@ div.modal button:hover {
 }
 
 
-/* mobile devices  */
+/* mobile devices - disable all box shadows for better responxivity  */
+body.mobile *{
+	box-shadow: none !important;
+}
 
-@media screen and (max-height: 600px), (max-width: 600px) {
+@media screen and (max-height: 500px), (max-width: 500px) {
 	.smoke:nth-child(even) { /* reduce gpu stress */
 		display: none;
 	}
