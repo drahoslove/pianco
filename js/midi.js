@@ -27,10 +27,10 @@ export const fromVal = (val) => val/127
 
 // takes array of uniq note values (c=0)
 // returns symbolic name of the chord
-// eg: [0,3,7] => "Cm"; [2,5,8] =>  "Ddim"
-// https://www.lotusmusic.com/lessonpix/chordprogessions/chordsymbol.jpg
+// eg: [0,3,7] => "Cm"; [2,5,8] =>  "Edim"
 export function nameOfChord(chord) {
-  const roots = chord.sort().map(n => n % 12)
+  const asc = (a,b) => a-b
+  const roots = chord.sort(asc).map(n => n % 12)
 
   for (let root of roots) {
     const rootNote = [
@@ -47,21 +47,26 @@ export function nameOfChord(chord) {
       ["A♯", "B♭"],
       ["B"],
     ][root]
-    const baseChord = [...new Set(chord.map(n => ((n+12)-root)%12))].sort((a,b) => a-b)
+    const baseChord = [...new Set(chord.map(n => ((n+12)-root)%12))].sort(asc)
   
     // console.log('chord', chord, baseChord)
-    const nameFunc = {
-      [[0, 4, 7]]: r => r,  // major (C, Cmaj) (česky dur)
-      [[0, 3, 7]]: r => r + "m",  // minor (Cm, Cmi, C-) (česky moll)
-      [[0, 3, 6]]: r => r + "dim",  // diminished (Cdim, C°) (česky zmenšená kvinta(?))
 
-      [[0, 4, 7, 9]]: r => r + "6",  // major sixth (C6)
-    
-      [[0, 4, 7, 11]]: r => r + "maj7",  // major seventh (Cmaj7, C∆7)
-      [[0, 4, 7, 10]]: r => r + "7",  // dominant seventh (C7, Cdom7)
-      [[0, 3, 7, 10]]: r => r + "m7",  // minor seventh (Cm7, C-7)
-      [[0, 3, 6, 9]]: r => r + "dim7",  // diminished seventh (Cdim7, C°7)
-      [[0, 3, 6, 10]]:  r => r + "ø7",  // half diminished seventh (Cø, Cm7b)
+    // https://en.wikipedia.org/wiki/Chord_notation#Common_types_of_chords
+    const nameFunc = {
+      [[0, 4, 7]]: r => r,  // major triad (C, Cmaj) (durový kvintakord)
+      [[0, 3, 7]]: r => r + "m",  // minor triad (Cm, Cmi, C-) (mollový kvintakord)
+      [[0, 4, 8]]: r => r + "aug",  // augmented triad (Caug, C+) (zvětšený kvintakord)
+      [[0, 3, 6]]: r => r + "dim",  // diminished triad (Cdim, C°) (zmenšený kvintakord)
+
+      [[0, 4, 7, 9]]: r => r + "<sup>6</sup>",  // major sixth (C6, C add13)
+      [[0, 3, 7, 9]]: r => r + "min<sup>6</sup>",  // minor sixth (C6, Cmin add13)
+      // ⁷
+      [[0, 4, 7, 10]]: r => r + "<sup>7</sup>",  // dominant seventh (C7, Cdom7) (dominantní septakord)
+      [[0, 4, 7, 11]]: r => r + "maj<sup>7</sup>",  // major seventh (Cmaj7, C∆7) (velký septakord)
+      [[0, 3, 7, 10]]: r => r + "min<sup>7</sup>",  // minor seventh (Cmin7, Cm7, C-7) (malý molový septakord)
+      [[0, 4, 8, 10]]: r => r + "aug<sup>7</sup>", // augmented seventh (Caug7, C+7) (zvětšený septakord)
+      [[0, 3, 6, 9]]: r => r + "<sup>o7</sup>",  // diminished seventh (Cdim7, C°7) (zmenšený septakord)
+      [[0, 3, 6, 10]]:  r => r + "<sup>ø7</sup>",  // half diminished seventh (Cø7, Cmin7dim5) (malý zmenšený septakord)
     }[baseChord] || null
 
     if (nameFunc) {

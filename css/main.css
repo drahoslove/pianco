@@ -795,7 +795,7 @@ div.hint {
 
 .chord-info {
 	position: absolute;
-	right: -200px;
+	right: -250px;
 	top: 0;
 	bottom: 0;
 	padding: 0.5em;
@@ -803,7 +803,7 @@ div.hint {
 	align-items: center;
 	justify-content: flex-start;
 	font-size: 175%;
-	width: 200px;
+	width: 250px;
 }
 .chord-info>* {
 	opacity: 1;
