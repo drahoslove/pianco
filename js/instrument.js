@@ -281,6 +281,9 @@ function updateChord () {
 	const chordName = nameOfChord(chord)
 
 	const el = document.getElementById('chord-name')
+	if(!el) {
+		return
+	}
 	if (chordName) {
 		el.innerHTML = chordName
 		el.classList.remove('fade')
