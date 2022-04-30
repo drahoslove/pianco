@@ -224,8 +224,14 @@ window.onload = async () => {
           }).toJSDate()
           end = dateTime.toJSDate()
         }
+
+        const filteredDate = data.filter(({ date }) => (
+          +date >= +start &&
+          +date <= +end
+        ))
         data.push({ date: new Date(+end), duration: new Date(0), notes: 0, tempo: 0})
-        return selectInterval(data, start, end)
+
+        return selectInterval(filteredDate, duration)
       }
     }
   })
@@ -237,16 +243,12 @@ window.onload = async () => {
   document.querySelector('#charts').hidden=false
   document.querySelector('.loader').hidden=true
 
-  function selectInterval(allData, start, end) {
+  function selectInterval(data, duration) {
     charts.forEach(chart => { // clear the old charts
       chart.resetSvg()
       d3.selectAll("svg").remove()
     })
 
-    const data = allData.filter(({ date }) => (
-      +date >= +start &&
-      +date <= +end
-    ))
 
     const startDate = new Date(+data[0].date)
     const endDate = new Date(+data[data.length-1].date)
@@ -461,6 +463,11 @@ window.onload = async () => {
     ]
 
     charts = Array.from(document.querySelectorAll('.chart'))
+      .filter((div) => ({
+        'day-chart': !['day'].includes(duration),
+        'week-chart': !['day', 'week'].includes(duration),
+        'month-chart': !['day', 'week', 'month'].includes(duration),
+      }[div.id] || true))
       .map((div, i) => new dc[div.id === 'weekday-chart' ? 'RowChart' : 'BarChart'](div, 'chartgroup'))
       .map((chart, i) => chartDefs[i](chart))
       .map(chart => (chart.render(), chart))
