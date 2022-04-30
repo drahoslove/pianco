@@ -45,6 +45,12 @@ svg {
   padding: 1em;
 }
 
+.totals p {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5em;
+}
+
 .filters {
   width: 450px;
   display: grid;
@@ -86,13 +92,16 @@ svg {
   <div class="row">
     <div class="totals">
       <p>
-        notes: <b><span id="total-notes">0 ?</span></b>
+        total: <b> <span id="total-duration">0 ?</span></b>
       </p>
       <p>
-        duration: <b><span id="total-duration">0 ?</span></b>
+        daily avg: <b> <span id="avg-daily">0 ?</span></b>
       </p>
       <p>
-        midi files: <b><span id="total-count">0 ?</span></b>
+        notes: <b> <span id="total-notes">0 ?</span></b>
+      </p>
+      <p>
+        midi files: <b> <span id="total-count">0 ?</span></b>
       </p>
     </div>
     <div class="filters" id="filters">
@@ -169,8 +178,8 @@ window.onload = async () => {
   }))
   
   const numberFormat = (n) => Intl.NumberFormat('cs').format(n)
-  const dayString = (date) => date.toISOString().substr(0,10)
-  const hourString = (date) => date.toISOString().substr(0,13)
+  const dayString = (date) => date.toLocaleDateString() // .toISOString().substr(0,10) // any uniq string for each day
+  const hourString = (date) => date.toISOString().substr(0,13) // any unique string for each hour
 
   // fill missing days with empty data
   // {
@@ -194,7 +203,7 @@ window.onload = async () => {
 
 
   const selectAll = () => {
-    selectInterval(data, startDate, endDate)
+    selectInterval(data)
   }
 
   ;[...document.querySelectorAll('#filters input')].forEach(input => {
@@ -229,26 +238,23 @@ window.onload = async () => {
           +date >= +start &&
           +date <= +end
         ))
-        data.push({ date: new Date(+end), duration: new Date(0), notes: 0, tempo: 0})
+        filteredDate.push({ date: new Date(+end), duration: new Date(0), notes: 0, tempo: 0})
 
         return selectInterval(filteredDate, duration)
       }
     }
   })
 
-  let charts = []
+
+  let cleanup = () => {}
 
   selectAll()
 
   document.querySelector('#charts').hidden=false
   document.querySelector('.loader').hidden=true
 
-  function selectInterval(data, duration) {
-    charts.forEach(chart => { // clear the old charts
-      chart.resetSvg()
-      d3.selectAll("svg").remove()
-    })
-
+  async function selectInterval(data, duration) {
+    cleanup()
 
     const startDate = new Date(+data[0].date)
     const endDate = new Date(+data[data.length-1].date)
@@ -285,9 +291,10 @@ window.onload = async () => {
     ]
 
     const archive = crossfilter(data)
-    const allCount = archive.groupAll().reduceSum((d) => d.notes ? 1 : 0)
+    const allCount = archive.groupAll().reduceSum((d) => d.notes ? 1 : 0) // midi files with notes
     const allNotes = archive.groupAll().reduceSum(d => d.notes)
     const allDuration = archive.groupAll().reduceSum(d => +d.duration)
+    const allDays = archive.groupAll().reduce(...avgReducers(d => dayString(d.date)))
 
     const dateDim1 = archive.dimension(d => d.date)
     const dateDim2 = archive.dimension(d => d.date)
@@ -462,7 +469,7 @@ window.onload = async () => {
       },
     ]
 
-    charts = Array.from(document.querySelectorAll('.chart'))
+    const charts = Array.from(document.querySelectorAll('.chart'))
       .filter((div) => ({
         'day-chart': !['day'].includes(duration),
         'week-chart': !['day', 'week'].includes(duration),
@@ -491,6 +498,9 @@ window.onload = async () => {
         numberFormat(allCount.value()) ||
         `${numberFormat(allCount.value())} / ${numberFormat(sumCount)}`
       )
+      d3.select("#avg-daily").text(
+        durationFormat(allDays.value().avgDuration)// + ' ' + allDays.value().count
+      )
     }
 
     charts.forEach((chart) => {
@@ -511,6 +521,20 @@ window.onload = async () => {
           broadcasting = false
       })
     })
+
+
+    cleanup = () => {
+      charts.forEach(chart => { // clear the old charts
+        chart.resetSvg()
+      })
+      d3.selectAll("svg").remove()
+      dateDim1.dispose()
+      dateDim2.dispose()
+      dateDim3.dispose()
+      dayHour.dispose()
+      weekDay.dispose()
+      tempo.dispose()
+    }
   }
 }
 
