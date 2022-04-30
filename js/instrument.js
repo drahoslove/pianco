@@ -277,8 +277,7 @@ function updateChord () {
 		}
 	})
 
-	const chord = [...notes]
-	const chordName = nameOfChord(chord)
+	const chordName = nameOfChord(notes)
 
 	const el = document.getElementById('chord-name')
 	if (chordName) {

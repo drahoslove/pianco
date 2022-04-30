@@ -3,46 +3,87 @@
 <title>Pianoteq Stats</title>
 <link rel="stylesheet" href="lib/dc.css" />
 <style>
+html, body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+}
+body {
+  width: 1500px;
+}
+
+*[hidden="true"] {
+  display: none !important;
+}
+
 svg {
   overflow: visible;
   margin: 0 auto;
 }
-.charts, .chart {
+
+#charts, .chart, .loader {
   display: flex;
   flex-direction: column;
   justify-items: center;
 }
+
 .row {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
+  margin-bottom: 2em;
 }
 
 .dc-chart g.row rect {
   fill-opacity: 1;
 }
 .totals {
-  background: #1f77b43d;
+  background: #1f77b41d;
   padding: 1em;
-  font-family: Arial, sans-serif;
+}
+
+.filters {
+  width: 450px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  gap: 0.25em;
+  margin-left: 0.25em;
+  padding-right: 4rem;
+}
+.filters label {
+  background-color: #1f77b40d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.filters label:last-child {
+  grid-column: span 3;
+}
+.filters label:hover {
+  background-color: #1f77b41d;
+}
+.filters input:checked + label {
+  background-color: #1f77b42d;
+}
+.filters input {
+  visibility: hidden;
+  position: absolute;
+  pointer-events: none;
+}
+
+
+:is(#month-chart, #week-chart) svg .x.axis .tick text {
+  transform: translateY(5px) rotate(-20deg);
 }
 </style>
 
-<div id="body">
-
-<div id="charts">
+<div id="charts" hidden="true">
   <div class="row">
-    <div id="hour-chart" class="chart">
-      <div class="title">Time of Day (avg)</div>
-    </div>
-    <div id="week-chart" class="chart">
-      <div class="title">Day of week (avg)</div>
-    </div>
-  </div>
-  <div class="row">
-    <div id="delay-chart" class="chart">
-      <div class="title">Notes per second</div>
-    </div>
     <div class="totals">
       <p>
         notes: <b><span id="total-notes">0 ?</span></b>
@@ -54,42 +95,80 @@ svg {
         midi files: <b><span id="total-count">0 ?</span></b>
       </p>
     </div>
+    <div class="filters" id="filters">
+      <input type="radio" name="filter" id="this_day" value="this_day">
+      <label for="this_day">today</label>
+      <input type="radio" name="filter" id="prev_day" value="prev_day">
+      <label for="prev_day">yesterday</label>
+      <input type="radio" name="filter" id="last_day" value="last_day">
+      <label for="last_day">last 24h</label>
+      <input type="radio" name="filter" id="this_week" value="this_week">
+      <label for="this_week">this week</label>
+      <input type="radio" name="filter" id="prev_week" value="prev_week">
+      <label for="prev_week">previous week</label>
+      <input type="radio" name="filter" id="last_week" value="last_week">
+      <label for="last_week">last 7 days</label>
+      <input type="radio" name="filter" id="this_month" value="this_month">
+      <label for="this_month">this month</label>
+      <input type="radio" name="filter" id="prev_month" value="prev_month">
+      <label for="prev_month">previous month</label>
+      <input type="radio" name="filter" id="last_month" value="last_month">
+      <label for="last_month">last 30 days</label>
+      <input type="radio" name="filter" id="this_year" value="this_year">
+      <label for="this_year"> this year</label>
+      <input type="radio" name="filter" id="prev_year" value="prev_year">
+      <label for="prev_year">previous year</label>
+      <input type="radio" name="filter" id="last_year" value="last_year">
+      <label for="last_year">last 365 days</label>
+      <input type="radio" name="filter" id="all" value="all" checked>
+      <label for="all"> all time</label>
+    </div>
+    <div id="delay-chart" class="chart">
+      <div class="title">Notes per second</div>
+    </div>
   </div>
-  <div id="day-chart" class="chart">
+  <div class="row">
+    <div id="hour-chart" class="chart">
+      <div class="title">Time of Day (avg)</div>
+    </div>
+    <div id="weekday-chart" class="chart">
+      <div class="title">Day of week (avg)</div>
+    </div>
+  </div>
+  <div class="row">
+    <div id="day-chart" class="chart">
+      <div class="title">Days</div>
+    </div>
   </div>
   <div class="row">
     <div id="week-chart" class="chart">
+      <div class="title">Weeks</div>
     </div>
     <div id="month-chart" class="chart">
+      <div class="title">Months</div>
     </div>
   </div>
 </div>
+<div class="loader">...</div>
 
-<div id="lists">
-  <div id="flight-list" class="list"></div>
-</div>
-
-<footer>
-</footer>
-
-</div>
-
+<script src="lib/luxon.min.js"></script>
 <script src="lib/crossfilter.v1.min.js"></script>
 <script src="lib/d3.v6.min.js"></script>
 <script src="lib/dc.js"></script>
 <script>
-const numberFormat = (n) => Intl.NumberFormat('cs').format(n)
+const { DateTime } = luxon
 
 window.onload = async () => {
   const response = await fetch('https://local.pian.co/archive.json')
   const rawData = await response.json()
   const data = rawData.map(({ t: timestamp, d: duration, n: notes }) => ({
     date: new Date(timestamp*1000),
-    duration: new Date(duration*1000),
+    duration: new Date((duration+0.5)*1000), // add half second to compensate for rounding
     notes,
-    tempo: duration ? notes/duration : 0,
+    tempo: notes/(duration+0.5),
   }))
-
+  
+  const numberFormat = (n) => Intl.NumberFormat('cs').format(n)
   const dayString = (date) => date.toISOString().substr(0,10)
   const hourString = (date) => date.toISOString().substr(0,13)
 
@@ -102,9 +181,7 @@ window.onload = async () => {
     const startDate = new Date(+data[0].date)
     const endDate = new Date(+data[data.length-1].date)
 
-    const histDomain = [startDate, endDate]
-
-    for (var d = new Date(startDate); d <= endDate; d.setHours(d.getHours () + 1)) {
+    for (let d = new Date(startDate); d <= endDate; d.setHours(d.getHours () + 1)) {
       data.push({ // insert empty data
         date: new Date(+d), // must clone the date - it is modified in the loop
         duration: new Date(0),
@@ -112,259 +189,318 @@ window.onload = async () => {
         tempo: 0,
       })
     }
-    data.sort(({ date: a}, { date: b }) => +a - +b) // older first, newest last
+    data.sort(({ date: a }, { date: b }) => +a - +b) // older first, newest last
   // }
 
-  const totalNotes = data.reduce((sum, { notes }) => sum + notes, 0)
-  const totalDuration = data.reduce((sum, { duration }) => sum + +duration/1000)
 
-  const roundTo = (n=1) => (x) => Math.floor(x / n) * n
+  const selectAll = () => {
+    selectInterval(data, startDate, endDate)
+  }
 
-  const avgReducers = (batchDefiner) => [
-    (p, v) => {
-      const batchKey = batchDefiner(v)
-      if (!p.batchCounted[batchKey]) {
-        ++p.count
-        p.batchCounted[batchKey] = 0
-      }
-      p.batchCounted[batchKey]++
-      p.durationSumMs += +v.duration
-      p.avgDuration = new Date(p.count ? Math.round(p.durationSumMs / p.count) : 0)
-      return p
-    },
-    (p, v) => {
-        const batchKey = batchDefiner(v)
-        p.batchCounted[batchKey]--
-        if (!p.batchCounted[batchKey]) {
-          --p.count
+  ;[...document.querySelectorAll('#filters input')].forEach(input => {
+    input.onchange = ({ target }) => {
+      if (target.checked) {
+        if (target.value === 'all') {
+          return selectAll()
         }
-        p.durationSumMs -= +v.duration
-        p.avgDuration = new Date(p.count ? Math.round(p.durationSumMs / p.count) : 0)
-        return p
-    },
-    () => ({ durationSumMs: 0, count: 0, avgDuration: new Date(0), batchCounted: {} })
-  ]
-
-  const archive = crossfilter(data)
-  const all = archive.groupAll()
-  const all1 = archive.groupAll() // .reduceSum(d => d.duration)
-  const all2 = archive.groupAll() // .reduceSum(d => d.duration)
-  const allCount = all.reduceSum((d) => d.notes ? 1 : 0)
-  const allNotes = all1.reduceSum(d => d.notes)
-  const allDuration = all2.reduceSum(d => +d.duration)
-
-  const dateDim1 = archive.dimension(d => d.date)
-  const dateDim2 = archive.dimension(d => d.date)
-  const dateDim3 = archive.dimension(d => d.date)
-  // const dateDim4 = archive.dimension(d => d.date)
-
-  /// 3 main time histgrams
-  const days = dateDim1.group(d3.timeDay).reduceSum(d => d.duration)
-  const weeks = dateDim2.group(d3.timeWeek).reduceSum(d => d.duration)
-  const months = dateDim3.group(d3.timeMonth).reduceSum(d => d.duration)
-
-  // by day hour
-  const dayHour = archive.dimension(d => roundTo(1)(d.date.getHours() + d.date.getMinutes()/60))
-  const dayHours = dayHour.group()
-    // .reduceSum(d => d.duration)
-    .reduce(...avgReducers(d => hourString(d.date))) // count all dates in same hour only as one
-
-  // by week day
-  const weekDay = archive.dimension(d => d.date.getDay())
-  const weekDays = weekDay.group().reduce(...avgReducers(d => dayString(d.date))) // count all dates in same day only as one
-
-  const tempo = archive.dimension(d => d.tempo)
-  const tempos = tempo.group(roundTo(1/2)).reduceSum(d => d.duration)
-
-  const durationScale = d3.scaleTime()
-    // .domain([0, 60*60*1000])
-    .domain([new Date(0), new Date(60 * 60 *1000)])
-    .range([0, 100])
-
-  const durationFormat = (ms) => {
-    const t = typeof ms === 'number' ? new Date(ms) : ms
-    const d = +t.toISOString().substr(8,2)-1
-    const h = +t.toISOString().substr(11,2)
-    const m = +t.toISOString().substr(14,2)
-    const s = +t.toISOString().substr(17,2)
-    return d !== 0 
-      ? `${+d}d ${+h}h`
-      : h !== 0
-        ? `${+h}h ${+m}m`
-        : `${+m}m ${+s}s`
-  }
-
-  var chartDefs = [
-    chart => {
-      chart
-        .width(750)
-        .gap(2)
-        .dimension(dayHour)
-        .group(dayHours)
-        .round(roundTo(1))
-        .x(d3.scaleLinear()
-          .domain([0, 24])
-          .range([0, 24])
-        )
-      chart
-        // .valueAccessor(d => +d.value.durationSumMs)
-        .valueAccessor(d => + d.value.avgDuration)
-        .elasticY(true)
-        .y(durationScale)
-      chart
-      chart.xAxis().ticks(24)
-      chart.yAxis().ticks(5)
-      chart.yAxis().tickFormat(durationFormat)
-      return chart
-    },
-    chart => {
-      chart
-        .width(750)
-        .gap(2)
-        .dimension(weekDay)
-        .group(weekDays)
-        .ordering(d => (d.key+6)%7)
-        .label(d => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][(d.key+6)%7])
-        .title(d => `${durationFormat(d.value.avgDuration)} spend on average\n${durationFormat(d.value.durationSumMs)} in total`)
-      chart
-        .ordinalColors(['rgb(31, 119, 180)'])
-      chart
-        .valueAccessor(d => +d.value.avgDuration)
-        .elasticX(true)
-        .x(durationScale)
-      // chart.xAxis().ticks(5)
-      chart.xAxis().tickFormat(durationFormat)
-      // chart.xAxis().label('Avg time spent')
-      return  chart
-    },
-    chart => {
-      chart
-        .width(750)
-        .gap(2)
-        .dimension(tempo)
-        .group(tempos)
-        .round(roundTo(1/2))
-        .xUnits(() => 2 * 12)
-        .x(d3.scaleLinear()
-          .domain([0, 12])
-          .range([0, 12])
-        )
-      chart
-        .elasticY(true)
-        .y(durationScale)
-      chart.xAxis().ticks(16)
-      chart.yAxis().ticks(5)
-      chart.yAxis().tickFormat(durationFormat)
-      return chart
-    },
-    // histograms
-    chart => {
-      chart
-        .width(1500)
-        .gap(2)
-        .dimension(dateDim1)
-        .group(days)
-        .round(d3.timeDay.floor)
-        .xUnits(d3.timeDays)
-        .x(d3.scaleTime()
-          .domain(histDomain)
-          .range([0, 100])
-          .nice(d3.timeMonth.every(1))
-        )
-      chart
-        .elasticY(true)
-        .y(durationScale)
-      chart.yAxis().scale(durationScale)
-      chart.yAxis().tickFormat(durationFormat)
-    return chart
-    },
-    chart => {
-      chart
-        .width(1000)
-        .gap(2)
-        .dimension(dateDim2)
-        .group(weeks)
-        .round(d3.timeWeek.floor)
-        .xUnits(d3.timeWeeks)
-        .x(d3.scaleTime()
-          .domain(histDomain)
-          .range([0, 100])
-          .nice(d3.timeMonth.every(1))
-        )
-      chart
-        .elasticY(true)
-        .y(durationScale)
-      chart.yAxis().tickFormat(durationFormat)
-    return chart
-    },
-    chart => {
-      chart
-        .width(500)
-        .gap(2)
-        .dimension(dateDim3)
-        .group(months)
-        .round(d3.timeMonth.floor)
-        .xUnits(d3.timeMonths)
-        .x(d3.scaleTime()
-          .domain(histDomain)
-          .range([0, 6])
-          .nice(d3.timeMonth.every(1))
-        )
-      chart
-        .elasticY(true)
-        .y(durationScale)
-      chart.yAxis().tickFormat(durationFormat)
-      chart
-        // .brushOn(false)
-        .title(d => `${durationFormat(d.value)} played`)
-    return chart
-    },
-  ]
-
-  const charts = Array.from(document.querySelectorAll('.chart'))
-    .map((div, i) => new dc[i === 1 ? 'RowChart' : 'BarChart'](div, 'chartgroup'))
-    .map((chart, i) => chartDefs[i](chart))
-    .map(chart => (chart.render(), chart))
-
-
-  // Whenever the brush moves, re-rendering everything.
-  function renderAll() {
-    const sumNotes = data.reduce((sum, { notes }) => (sum + notes), 0)
-    const sumDuration = data.reduce((sum, { duration }) => (sum + +duration), 0)
-    const sumCount = data.filter(({ notes }) => notes > 0).length
-
-    d3.select("#total-notes").text(
-      numberFormat(allNotes.value()) ||
-      `${numberFormat(allNotes.value())} / ${numberFormat(sumNotes)}`
-    )
-    d3.select("#total-duration").text(
-      durationFormat(allDuration.value()) ||
-      `${durationFormat(allDuration.value())} / ${durationFormat(sumDuration)}`
-    )
-    d3.select("#total-count").text(
-      numberFormat(allCount.value()) ||
-      `${numberFormat(allCount.value())} / ${numberFormat(sumCount)}`
-    )
-  }
-
-  charts.forEach((chart) => {
-    chart.on('renderlet', renderAll)
+        const [which, duration] = target.value.split('_')
+        let [start, end] = [startDate, endDate]
+        
+        if (which === 'this' || which === 'prev') {
+          const dateTime = DateTime.now().plus({
+            [`${duration}s`]: which === 'prev' ? -1 : 0
+          })
+          start = dateTime.startOf(duration).toJSDate()
+          end = dateTime.endOf(duration).toJSDate()
+        }
+        if (which === 'last') {
+          const dateTime = DateTime.now()
+          start = dateTime.plus({
+            days: -({ day: 1, week: 7, month: 30, year: 365 }[duration]),
+          }).toJSDate()
+          end = dateTime.toJSDate()
+        }
+        data.push({ date: new Date(+end), duration: new Date(0), notes: 0, tempo: 0})
+        return selectInterval(data, start, end)
+      }
+    }
   })
 
+  let charts = []
 
-  let broadcasting = false // don't repropogate (infinite loop)
-  charts.slice(-3).forEach((chart, i, charts) => {
-    chart.on('filtered', (chart, filter) => {
-        if (broadcasting) {
-          return
-        }
-        broadcasting = true
-        charts.filter(ch => ch !== chart).forEach(chart => {
-          chart.replaceFilter(filter)
-        })
-        broadcasting = false
+  selectAll()
+
+  document.querySelector('#charts').hidden=false
+  document.querySelector('.loader').hidden=true
+
+  function selectInterval(allData, start, end) {
+    charts.forEach(chart => { // clear the old charts
+      chart.resetSvg()
+      d3.selectAll("svg").remove()
     })
-  }) 
+
+    const data = allData.filter(({ date }) => (
+      +date >= +start &&
+      +date <= +end
+    ))
+
+    const startDate = new Date(+data[0].date)
+    const endDate = new Date(+data[data.length-1].date)
+    const histDomain = [startDate, endDate]
+
+    const totalNotes = data.reduce((sum, { notes }) => sum + notes, 0)
+    const totalDuration = data.reduce((sum, { duration }) => sum + +duration/1000)
+
+    const roundTo = (n=1) => (x) => Math.floor(x / n) * n
+
+    const avgReducers = (batchDefiner) => [
+      (p, v) => {
+        const batchKey = batchDefiner(v)
+        if (!p.batchCounted[batchKey]) {
+          ++p.count
+          p.batchCounted[batchKey] = 0
+        }
+        p.batchCounted[batchKey]++
+        p.durationSumMs += +v.duration
+        p.avgDuration = new Date(p.count ? Math.round(p.durationSumMs / p.count) : 0)
+        return p
+      },
+      (p, v) => {
+          const batchKey = batchDefiner(v)
+          p.batchCounted[batchKey]--
+          if (!p.batchCounted[batchKey]) {
+            --p.count
+          }
+          p.durationSumMs -= +v.duration
+          p.avgDuration = new Date(p.count ? Math.round(p.durationSumMs / p.count) : 0)
+          return p
+      },
+      () => ({ durationSumMs: 0, count: 0, avgDuration: new Date(0), batchCounted: {} })
+    ]
+
+    const archive = crossfilter(data)
+    const allCount = archive.groupAll().reduceSum((d) => d.notes ? 1 : 0)
+    const allNotes = archive.groupAll().reduceSum(d => d.notes)
+    const allDuration = archive.groupAll().reduceSum(d => +d.duration)
+
+    const dateDim1 = archive.dimension(d => d.date)
+    const dateDim2 = archive.dimension(d => d.date)
+    const dateDim3 = archive.dimension(d => d.date)
+    // const dateDim4 = archive.dimension(d => d.date)
+
+    /// 3 main time histgrams
+    const days = dateDim1.group(d3.timeDay).reduceSum(d => d.duration)
+    const weeks = dateDim2.group(d3.timeWeek).reduceSum(d => d.duration)
+    const months = dateDim3.group(d3.timeMonth).reduceSum(d => d.duration)
+
+    // by day hour
+    const dayHour = archive.dimension(d => roundTo(1)(d.date.getHours() + d.date.getMinutes()/60))
+    const dayHours = dayHour.group()
+      // .reduceSum(d => d.duration)
+      .reduce(...avgReducers(d => hourString(d.date))) // count all dates in same hour only as one
+
+    // by week day
+    const weekDay = archive.dimension(d => d.date.getDay())
+    const weekDays = weekDay.group().reduce(...avgReducers(d => dayString(d.date))) // count all dates in same day only as one
+
+    const tempo = archive.dimension(d => d.tempo)
+    const tempos = tempo.group(roundTo(1/2)).reduceSum(d => d.duration)
+
+    const durationScale = d3.scaleTime()
+      // .domain([0, 60*60*1000])
+      .domain([new Date(0), new Date(60 * 60 *1000)])
+      .range([0, 100])
+
+    const durationFormat = (ms) => {
+      const t = typeof ms === 'number' ? new Date(ms) : ms
+      const d = +t.toISOString().substr(8,2)-1
+      const h = +t.toISOString().substr(11,2)
+      const m = +t.toISOString().substr(14,2)
+      const s = +t.toISOString().substr(17,2)
+      return d !== 0 
+        ? `${+d}d ${+h}h`
+        : h !== 0
+          ? `${+h}h ${+m}m`
+          : `${+m}m ${+s}s`
+    }
+
+    const chartDefs = [
+      chart => { // tempo
+        chart
+          .width(750)
+          .gap(2)
+          .dimension(tempo)
+          .group(tempos)
+          .round(roundTo(1/2))
+          .xUnits(() => 2 * 12)
+          .x(d3.scaleLinear()
+            .domain([0, 12])
+            .range([0, 12])
+          )
+        chart
+          .elasticY(true)
+          .y(durationScale)
+        chart.xAxis().ticks(16)
+        chart.yAxis().ticks(5)
+        chart.yAxis().tickFormat(durationFormat)
+        return chart
+      },
+      chart => { // hour of day avg
+        chart
+          .width(750)
+          .height(200)
+          .gap(2)
+          .dimension(dayHour)
+          .group(dayHours)
+          .round(roundTo(1))
+          .x(d3.scaleLinear()
+            .domain([0, 24])
+            .range([0, 24])
+          )
+        chart
+          // .valueAccessor(d => +d.value.durationSumMs)
+          .valueAccessor(d => + d.value.avgDuration)
+          .elasticY(true)
+          .y(durationScale)
+        chart
+        chart.xAxis().ticks(24)
+        chart.yAxis().ticks(5)
+        chart.yAxis().tickFormat(durationFormat)
+        return chart
+      },
+      chart => { // day of week avg
+        chart
+          .width(750)
+          .height(200)
+          .gap(2)
+          .dimension(weekDay)
+          .group(weekDays)
+          .ordering(d => (d.key+6)%7)
+          .label(d => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][(d.key+6)%7])
+          .title(d => `${durationFormat(d.value.avgDuration)} spend on average\n${durationFormat(d.value.durationSumMs)} in total`)
+        chart
+          .ordinalColors(['rgb(31, 119, 180)'])
+        chart
+          .valueAccessor(d => +d.value.avgDuration)
+          .elasticX(true)
+          .x(durationScale)
+        // chart.xAxis().ticks(5)
+        chart.xAxis().tickFormat(durationFormat)
+        // chart.xAxis().label('Avg time spent')
+        return  chart
+      },
+      // histograms
+      chart => {
+        chart
+          .width(1500)
+          .gap(2)
+          .dimension(dateDim1)
+          .group(days)
+          .round(d3.timeDay.floor)
+          .xUnits(d3.timeDays)
+          .x(d3.scaleTime()
+            .domain(histDomain)
+            .range([0, 100])
+            .nice(d3.timeMonth.every(1))
+          )
+        chart
+          .elasticY(true)
+          .y(durationScale)
+        chart.yAxis().scale(durationScale)
+        chart.yAxis().tickFormat(durationFormat)
+        return chart
+      },
+      chart => {
+        chart
+          .width(930)
+          .height(200)
+          .gap(2)
+          .dimension(dateDim2)
+          .group(weeks)
+          .round(d3.timeWeek.floor)
+          .xUnits(d3.timeWeeks)
+          .x(d3.scaleTime()
+            .domain(histDomain)
+            .range([0, 100])
+            .nice(d3.timeMonth.every(1))
+          )
+        chart
+          .elasticY(true)
+          .y(durationScale)
+        chart.yAxis().tickFormat(durationFormat)
+        return chart
+      },
+      chart => {
+        chart
+          .width(570)
+          .height(200)
+          // .gap(2)
+          .dimension(dateDim3)
+          .group(months)
+          .round(d3.timeMonth.floor)
+          .xUnits(d3.timeMonths)
+          .x(d3.scaleTime()
+            .domain(histDomain)
+            .range([0, 6])
+            .nice(d3.timeMonth.every(1))
+          )
+        chart
+          .elasticY(true)
+          .y(durationScale)
+        // chart.xAxis().tickFormat((v,x, y) => { console.log(v, x, y); return v})
+        chart.yAxis().tickFormat(durationFormat)
+        chart
+          // .brushOn(false)
+          .title(d => `${durationFormat(d.value)} played`)
+        return chart
+      },
+    ]
+
+    charts = Array.from(document.querySelectorAll('.chart'))
+      .map((div, i) => new dc[div.id === 'weekday-chart' ? 'RowChart' : 'BarChart'](div, 'chartgroup'))
+      .map((chart, i) => chartDefs[i](chart))
+      .map(chart => (chart.render(), chart))
+
+
+    // Whenever the brush moves, re-rendering everything.
+    function renderAll() {
+      const sumNotes = data.reduce((sum, { notes }) => (sum + notes), 0)
+      const sumDuration = data.reduce((sum, { duration }) => (sum + +duration), 0)
+      const sumCount = data.filter(({ notes }) => notes > 0).length
+
+      d3.select("#total-notes").text(
+        numberFormat(allNotes.value()) ||
+        `${numberFormat(allNotes.value())} / ${numberFormat(sumNotes)}`
+      )
+      d3.select("#total-duration").text(
+        durationFormat(allDuration.value()) ||
+        `${durationFormat(allDuration.value())} / ${durationFormat(sumDuration)}`
+      )
+      d3.select("#total-count").text(
+        numberFormat(allCount.value()) ||
+        `${numberFormat(allCount.value())} / ${numberFormat(sumCount)}`
+      )
+    }
+
+    charts.forEach((chart) => {
+      chart.on('renderlet', renderAll)
+    })
+
+
+    let broadcasting = false // don't repropogate (infinite loop)
+    charts.slice(-3).forEach((chart, i, charts) => {
+      chart.on('filtered', (chart, filter) => {
+          if (broadcasting) {
+            return
+          }
+          broadcasting = true
+          charts.filter(ch => ch !== chart).forEach(chart => {
+            chart.replaceFilter(filter)
+          })
+          broadcasting = false
+      })
+    })
+  }
 }
 
 </script>
