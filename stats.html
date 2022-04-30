@@ -15,7 +15,7 @@ body {
   width: 1500px;
 }
 
-*[hidden="true"] {
+*[hidden] {
   display: none !important;
 }
 
@@ -200,10 +200,14 @@ window.onload = async () => {
   ;[...document.querySelectorAll('#filters input')].forEach(input => {
     input.onchange = ({ target }) => {
       if (target.checked) {
+        const [which, duration] = target.value.split('_')
+        document.getElementById('day-chart').hidden = ['day'].includes(duration)
+        document.getElementById('week-chart').hidden = ['day', 'week'].includes(duration)
+        document.getElementById('month-chart').hidden = ['day', 'week', 'month'].includes(duration)
+
         if (target.value === 'all') {
           return selectAll()
         }
-        const [which, duration] = target.value.split('_')
         let [start, end] = [startDate, endDate]
         
         if (which === 'this' || which === 'prev') {
