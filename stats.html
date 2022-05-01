@@ -501,6 +501,24 @@ window.onload = async () => {
       d3.select("#avg-daily").text(
         durationFormat(allDays.value().avgDuration)// + ' ' + allDays.value().count
       )
+
+      // adjust widths of months columns
+      d3.selectAll('#month-chart .chart-body .bar')
+        .transition()
+        .duration(500)
+        .attr('width', function (_, i, list) {
+          const gap = 2
+          const rect = d3.select(this)
+          const nextRect = list[i+1]
+          const currentWidth = rect.attr('width')
+          if (nextRect) {
+            const width = nextRect.getAttribute('x') - rect.attr('x') - gap
+            return  width < 1.2 * currentWidth // ignore if bar is missing
+              ? width
+              : currentWidth
+          }
+          return currentWidth
+        })
     }
 
     charts.forEach((chart) => {
