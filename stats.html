@@ -346,6 +346,13 @@ window.onload = async () => {
           .group(activeDays)
           .ordering(d => +d.key)
           .label(d => (d.key ? 'Days Played' : 'Days Counted'))
+          .title((d) => {
+            const [all, played] =  activeDays.all()
+            const percentage = d.key === false
+              ? 100
+              : Math.round(100 * played.value.count / all.value.count)
+            return `${percentage} % (${d.value.count})`
+          })
           .valueAccessor(d => d.value.count)
           .elasticX(true)
         chart.ordinalColors(['#d7e7f2', '#1f77b4'])
