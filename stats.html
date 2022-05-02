@@ -57,8 +57,6 @@ svg {
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
   gap: 0.25em;
-  margin-left: 0.25em;
-  padding-right: 4rem;
 }
 .filters label {
   background-color: #1f77b40d;
@@ -132,8 +130,8 @@ svg {
       <input type="radio" name="filter" id="all" value="all" checked>
       <label for="all"> all time</label>
     </div>
-    <div id="delay-chart" class="chart">
-      <div class="title">Notes per second</div>
+    <div id="activity-pie" class="chart">
+      <div class="title">Days spent playing</div>
     </div>
   </div>
   <div class="row">
@@ -142,6 +140,9 @@ svg {
     </div>
     <div id="weekday-chart" class="chart">
       <div class="title">Day of week (avg)</div>
+    </div>
+    <div id="delay-chart" class="chart">
+      <div class="title">Notes per second</div>
     </div>
   </div>
   <div class="row">
@@ -230,8 +231,8 @@ window.onload = async () => {
           const dateTime = DateTime.now()
           start = dateTime.plus({
             days: -({ day: 1, week: 7, month: 30, year: 365 }[duration]),
-          }).toJSDate()
-          end = dateTime.toJSDate()
+          }).endOf('day').toJSDate()
+          end = dateTime.endOf('day').toJSDate()
         }
 
         const filteredDate = data.filter(({ date }) => (
@@ -296,21 +297,21 @@ window.onload = async () => {
     const allDuration = archive.groupAll().reduceSum(d => +d.duration)
     const allDays = archive.groupAll().reduce(...avgReducers(d => dayString(d.date)))
 
+    /// 3 main time histgrams
     const dateDim1 = archive.dimension(d => d.date)
     const dateDim2 = archive.dimension(d => d.date)
     const dateDim3 = archive.dimension(d => d.date)
-    // const dateDim4 = archive.dimension(d => d.date)
-
-    /// 3 main time histgrams
     const days = dateDim1.group(d3.timeDay).reduceSum(d => d.duration)
     const weeks = dateDim2.group(d3.timeWeek).reduceSum(d => d.duration)
     const months = dateDim3.group(d3.timeMonth).reduceSum(d => d.duration)
 
+
+    const activeDay = archive.dimension(d => d.notes ? true : false)
+    const activeDays = activeDay.group().reduce(...avgReducers(d =>  dayString(d.date)))
+
     // by day hour
     const dayHour = archive.dimension(d => roundTo(1)(d.date.getHours() + d.date.getMinutes()/60))
-    const dayHours = dayHour.group()
-      // .reduceSum(d => d.duration)
-      .reduce(...avgReducers(d => hourString(d.date))) // count all dates in same hour only as one
+    const dayHours = dayHour.group().reduce(...avgReducers(d => hourString(d.date))) // count all dates in same hour only as one
 
     // by week day
     const weekDay = archive.dimension(d => d.date.getDay())
@@ -338,29 +339,22 @@ window.onload = async () => {
     }
 
     const chartDefs = [
-      chart => { // tempo
+      chart => {
         chart
-          .width(750)
-          .gap(2)
-          .dimension(tempo)
-          .group(tempos)
-          .round(roundTo(1/2))
-          .xUnits(() => 2 * 12)
-          .x(d3.scaleLinear()
-            .domain([0, 12])
-            .range([0, 12])
-          )
-        chart
-          .elasticY(true)
-          .y(durationScale)
-        chart.xAxis().ticks(16)
-        chart.yAxis().ticks(5)
-        chart.yAxis().tickFormat(durationFormat)
+          .width(500)
+          .dimension(activeDay)
+          .group(activeDays)
+          .ordering(d => +d.key)
+          .label(d => (d.key ? 'Days Played' : 'Days Counted'))
+          .valueAccessor(d => d.value.count)
+          .elasticX(true)
+        chart.ordinalColors(['#d7e7f2', '#1f77b4'])
+        chart.xAxis().ticks(8)
         return chart
       },
       chart => { // hour of day avg
         chart
-          .width(750)
+          .width(500)
           .height(200)
           .gap(2)
           .dimension(dayHour)
@@ -383,7 +377,7 @@ window.onload = async () => {
       },
       chart => { // day of week avg
         chart
-          .width(750)
+          .width(500)
           .height(200)
           .gap(2)
           .dimension(weekDay)
@@ -397,10 +391,31 @@ window.onload = async () => {
           .valueAccessor(d => +d.value.avgDuration)
           .elasticX(true)
           .x(durationScale)
-        // chart.xAxis().ticks(5)
+        chart.xAxis().ticks(8)
         chart.xAxis().tickFormat(durationFormat)
         // chart.xAxis().label('Avg time spent')
         return  chart
+      },
+      chart => { // tempo
+        chart
+          .width(500)
+          .height(200)
+          .gap(2)
+          .dimension(tempo)
+          .group(tempos)
+          .round(roundTo(1/2))
+          .xUnits(() => 2 * 12)
+          .x(d3.scaleLinear()
+            .domain([0, 12])
+            .range([0, 12])
+          )
+        chart
+          .elasticY(true)
+          .y(durationScale)
+        chart.xAxis().ticks(16)
+        chart.yAxis().ticks(5)
+        chart.yAxis().tickFormat(durationFormat)
+        return chart
       },
       // histograms
       chart => {
@@ -419,7 +434,7 @@ window.onload = async () => {
         chart
           .elasticY(true)
           .y(durationScale)
-        chart.yAxis().scale(durationScale)
+        // chart.yAxis().scale(durationScale)
         chart.yAxis().tickFormat(durationFormat)
         return chart
       },
@@ -440,6 +455,7 @@ window.onload = async () => {
         chart
           .elasticY(true)
           .y(durationScale)
+        // chart.yAxis().scale(durationScale)
         chart.yAxis().tickFormat(durationFormat)
         return chart
       },
@@ -461,10 +477,9 @@ window.onload = async () => {
           .elasticY(true)
           .y(durationScale)
         // chart.xAxis().tickFormat((v,x, y) => { console.log(v, x, y); return v})
+        // chart.yAxis().scale(durationScale)
         chart.yAxis().tickFormat(durationFormat)
-        chart
-          // .brushOn(false)
-          .title(d => `${durationFormat(d.value)} played`)
+        chart.title(d => `${durationFormat(d.value)} played`)
         return chart
       },
     ]
@@ -475,7 +490,10 @@ window.onload = async () => {
         'week-chart': !['day', 'week'].includes(duration),
         'month-chart': !['day', 'week', 'month'].includes(duration),
       }[div.id] || true))
-      .map((div, i) => new dc[div.id === 'weekday-chart' ? 'RowChart' : 'BarChart'](div, 'chartgroup'))
+      .map((div, i) => new dc[{
+        'weekday-chart' : 'RowChart',
+        'activity-pie' : 'RowChart',
+      }[div.id] || 'BarChart'](div, 'chartgroup'))
       .map((chart, i) => chartDefs[i](chart))
       .map(chart => (chart.render(), chart))
 
@@ -505,6 +523,7 @@ window.onload = async () => {
       // adjust widths of months columns
       d3.selectAll('#month-chart .chart-body .bar')
         .transition()
+        // .delay(500)
         .duration(500)
         .attr('width', function (_, i, list) {
           const gap = 2
