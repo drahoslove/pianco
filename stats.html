@@ -108,7 +108,7 @@ svg {
       <input type="radio" name="filter" id="prev_day" value="prev_day">
       <label for="prev_day">yesterday</label>
       <input type="radio" name="filter" id="last_day" value="last_day">
-      <label for="last_day">last 24h</label>
+      <label for="last_day">last 24 h</label>
       <input type="radio" name="filter" id="this_week" value="this_week">
       <label for="this_week">this week</label>
       <input type="radio" name="filter" id="prev_week" value="prev_week">
@@ -218,8 +218,8 @@ window.onload = async () => {
         if (target.value === 'all') {
           return selectAll()
         }
-        let [start, end] = [startDate, endDate]
         
+        let [start, end] = [startDate, endDate]
         if (which === 'this' || which === 'prev') {
           const dateTime = DateTime.now().plus({
             [`${duration}s`]: which === 'prev' ? -1 : 0
@@ -231,8 +231,8 @@ window.onload = async () => {
           const dateTime = DateTime.now()
           start = dateTime.plus({
             days: -({ day: 1, week: 7, month: 30, year: 365 }[duration]),
-          }).endOf('day').toJSDate()
-          end = dateTime.endOf('day').toJSDate()
+          }).endOf(duration === 'day' ? 'hour' : 'day').toJSDate()
+          end = dateTime.endOf(duration === 'day' ? 'hour' : 'day').toJSDate()
         }
 
         const filteredDate = data.filter(({ date }) => (
@@ -523,7 +523,6 @@ window.onload = async () => {
       // adjust widths of months columns
       d3.selectAll('#month-chart .chart-body .bar')
         .transition()
-        // .delay(500)
         .duration(500)
         .attr('width', function (_, i, list) {
           const gap = 2
