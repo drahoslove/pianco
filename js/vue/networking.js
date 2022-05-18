@@ -51,7 +51,7 @@ export const networkingApp = new Vue({
     names: [],
     reactions: [],
     muted: [{}],
-    lastEmojis: localStorage.lastEmojis ? localStorage.lastEmojis.split(",") : [],
+    lastEmojis: (localStorage||{}).lastEmojis ? localStorage.lastEmojis.split(",") : [],
     defaultEmojis: {
       '❤️': 'lovely',
       '👏🏻': 'bravo!',

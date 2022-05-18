@@ -215,7 +215,7 @@ window.onload = async () => {
         document.getElementById('day-chart').hidden = ['day'].includes(duration)
         document.getElementById('week-chart').hidden = ['day', 'week'].includes(duration)
         document.getElementById('month-chart').hidden = ['day', 'week', 'month'].includes(duration)
-
+        
         if (target.value === 'all') {
           return selectAll()
         }

@@ -211,7 +211,7 @@ const connect = () => {
     
     ws.onopen = () => {
       const newGid = gidFromHash()
-      const { secret, name } = localStorage
+      const { secret, name } = localStorage || {}
       send(`regroup 0 0 ${newGid} ${secret||''} ${name||''}`)
       networkingApp.isOnline = true
       networkingApp.gid = newGid
