@@ -14,10 +14,12 @@
 <link rel='manifest' href='/manifest.json'>
 <!-- <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎹</text></svg>"> -->
 <!-- fonts -->
+<link rel="preload" fetchpriority="high" href="/font/Bravura.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2&display=swap">
 <!-- Sentry -->
-<script defer src="https://js.sentry-cdn.com/4f3d05f95bea47cdbf66d235f657fa30.min.js" crossorigin></script>
+<script defer src="https://js.sentry-cdn.com/4f3d05f95bea47cdbf66d235f657fa30.min.js" crossorigin data-lazy="no"></script>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-21351225-3"></script>
 <script>
