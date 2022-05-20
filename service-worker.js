@@ -47,6 +47,7 @@ const solidFiles = [ // these will not ever change
   'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js',
   'https://code.iconify.design/1/1.0.6/iconify.min.js',
+  'https://code.jquery.com/jquery-3.5.1.slim.min.js',
 ]
 const filesToPrecache = [
   '/',

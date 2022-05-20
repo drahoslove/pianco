@@ -21,23 +21,13 @@ const sustainedNotes = {}
 const sustainState = {}
 let rectSustainMode = true // whether to render rects on sustain
 
-const allNotes = []
-allNotes.push("A0","A#0","B0")
-;[1,2,3,4,5,6,7].forEach(octave => {
-  "CDEFGAB".split('').forEach(letter => {
-    allNotes.push(`${letter}${octave}`)
-    if (letter !== 'E' && letter !== 'B') {
-      allNotes.push(`${letter}#${octave}`)
-    }
-  })
-})
-allNotes.push('C8')
+const allNotes = [...document.querySelectorAll('.pianoroll>*')]
+	.map(el => el.dataset.note)
 
 allNotes.forEach(note => {
 	pressedNotes[note] = new Set()
 	sustainedNotes[note] = new Set()
 })
-
 
 const instruments = {
   polySynth: new Tone.PolySynth(Tone.Synth, {
@@ -484,7 +474,6 @@ const instrumentById = [
 ];
 
 export {
-  allNotes,
   pressNote,
   releaseNote,
 	releaseAll,

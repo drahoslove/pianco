@@ -259,4 +259,9 @@ window.addEventListener('load', () => {
       el.blur()
     })
   })
+  // lazy load cinema bkg images
+  document.querySelectorAll('._smoke').forEach(el => {
+    el.classList.remove('_smoke')
+    el.classList.add('smoke')
+  })
 })

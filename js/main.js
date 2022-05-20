@@ -3,7 +3,6 @@ import './vue/networking.js'
 import { instrumentApp } from './vue/instrument.js'
 import './vue/recorder.js'
 import {
-  allNotes,
   instrumentById,
 } from './instrument.js'
 import {
@@ -28,45 +27,8 @@ const _ = cb => e => {
 
 // create keys
 const keyboard = document.querySelector('.keyboard')
-const pianoroll = document.querySelector('.pianoroll')
-const keys = []
 
-const noteToLabel = (note) => {
-  if (note.includes('#')) {
-    const [ A, _, octave ] = note.split('')
-    const aSharp = A + '♯'
-    const B = A === 'G' ? 'A' : String.fromCharCode(A.charCodeAt(0)+1)
-    const bFlat = B + '♭'
-    return `<span>${aSharp}<sub>${octave}</sub></span></br><span>${bFlat}<sub>${octave}</sub></span>`
-  } else {
-    const [ letter, octave ] = note.split('')
-    return letter + `<sub>${octave}</sub>`
-  }
-}
-
-allNotes.forEach((note, i, { length }) => {
-  const key = document.createElement('button')
-  key.dataset.note = note
-  key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (note, n, s, i) =>
-    `<span>${noteToLabel(note)}</span>`
-  )
-  key.tabIndex = -1
-  keyboard.querySelector('.top-keys').appendChild(key)
-  const hue = 360*((i-3)/(12))
-  key.style.setProperty('--key-hue', hue)
-  if (!note.includes('#')) {
-    const wideKey = key.cloneNode(true)
-    keyboard.querySelector('.bottom-keys').appendChild(wideKey)
-    keys.push(wideKey)
-  } else {
-    keys.push(key)
-  }
-
-  const column = document.createElement('div')
-  column.dataset.note = note
-  column.style.setProperty('--key-hue', hue)
-  pianoroll.appendChild(column)
-})
+const keys = [...keyboard.querySelectorAll('.bottom-keys>button, .top-keys>button')]
 
 
 // init sustain controll
