@@ -337,54 +337,93 @@
 		</button>
 	</div>
 	<script> // render keyboard (moved from main, to speed up LCP)
-		const allNotes = []
-		allNotes.push("A0","A#0","B0")
-		;[1,2,3,4,5,6,7].forEach(octave => {
-			"CDEFGAB".split('').forEach(letter => {
-				allNotes.push(`${letter}${octave}`)
-				if (letter !== 'E' && letter !== 'B') {
-					allNotes.push(`${letter}#${octave}`)
-				}
-			})
-		})
-		allNotes.push('C8')
-		
-		// create keys
-		const keyboard = document.querySelector('.keyboard')
-		const pianoroll = document.querySelector('.pianoroll')
-		const noteToLabel = (note) => {
-			if (note.includes('#')) {
-				const [ A, _, octave ] = note.split('')
-				const aSharp = A + '♯'
-				const B = A === 'G' ? 'A' : String.fromCharCode(A.charCodeAt(0)+1)
-				const bFlat = B + '♭'
-				return `<span>${aSharp}<sub>${octave}</sub></span></br><span>${bFlat}<sub>${octave}</sub></span>`
-			} else {
-				const [ letter, octave ] = note.split('')
-				return letter + `<sub>${octave}</sub>`
+	const allNotes = []
+	allNotes.push("A0","A#0","B0")
+	;[1,2,3,4,5,6,7].forEach(octave => {
+		"CDEFGAB".split('').forEach(letter => {
+			allNotes.push(`${letter}${octave}`)
+			if (letter !== 'E' && letter !== 'B') {
+				allNotes.push(`${letter}#${octave}`)
 			}
+		})
+	})
+	allNotes.push('C8')
+	
+	// create keys
+	const keyboard = document.querySelector('.keyboard')
+	const pianoroll = document.querySelector('.pianoroll')
+	const noteToLabel = (note) => {
+		if (note.includes('#')) {
+			const [ A, _, octave ] = note.split('')
+			const aSharp = A + '♯'
+			const B = A === 'G' ? 'A' : String.fromCharCode(A.charCodeAt(0)+1)
+			const bFlat = B + '♭'
+			return `<span>${aSharp}<sub>${octave}</sub></span></br><span>${bFlat}<sub>${octave}</sub></span>`
+		} else {
+			const [ letter, octave ] = note.split('')
+			return letter + `<sub>${octave}</sub>`
 		}
+	}
+	
+	allNotes.forEach((note, i, { length }) => {
+		const key = document.createElement('button')
+		key.dataset.note = note
+		key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (note, n, s, i) =>
+			`<span>${noteToLabel(note)}</span>`
+		)
+		key.tabIndex = -1
+		keyboard.querySelector('.top-keys').appendChild(key)
+		const hue = 360*((i-3)/(12))
+		key.style.setProperty('--key-hue', hue)
+		if (!note.includes('#')) {
+			const wideKey = key.cloneNode(true)
+			keyboard.querySelector('.bottom-keys').appendChild(wideKey)
+		}
+	
+		const column = document.createElement('div')
+		column.dataset.note = note
+		column.style.setProperty('--key-hue', hue)
+		pianoroll.appendChild(column)
+	})
+
+	// init staff
+	const staffBoxes = [...document.querySelectorAll('.staff')]
+	const notes = [
+		[
+			'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4',
+			'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5',
+			'C6',
+		],
+		[
+			'C2', 'D2', 'E2', 'F2', 'G2', 'A2', 'B2',
+			'C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3',
+			'C4',
+		],
+	]
+	staffBoxes.forEach((staffBox, j) => {
+		const wholeNote = [...staffBox.children].pop()
+		notes[j].forEach((ch, i) => {
+			const hspace = 0.25
+			const hoffset = 3.6
+			const vspace = 0.125
+			const voffset = (j === 0 ? -0.125 : +0.125)
+			const note = wholeNote.cloneNode(true)
+			note.dataset.note = ch
+			note.style.top = (-i+3) * vspace + voffset  + 'em'
+			note.style.right = i * -hspace + hoffset + 'em'
+			staffBox.appendChild(note)
 		
-		allNotes.forEach((note, i, { length }) => {
-			const key = document.createElement('button')
-			key.dataset.note = note
-			key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (note, n, s, i) =>
-				`<span>${noteToLabel(note)}</span>`
-			)
-			key.tabIndex = -1
-			keyboard.querySelector('.top-keys').appendChild(key)
-			const hue = 360*((i-3)/(12))
-			key.style.setProperty('--key-hue', hue)
-			if (!note.includes('#')) {
-				const wideKey = key.cloneNode(true)
-				keyboard.querySelector('.bottom-keys').appendChild(wideKey)
-			}
+			if (j === 0 ? ch === 'C6' : ch === "C4") return
 		
-			const column = document.createElement('div')
-			column.dataset.note = note
-			column.style.setProperty('--key-hue', hue)
-			pianoroll.appendChild(column)
+			const sharpNote = wholeNote.cloneNode(true)
+			sharpNote.innerHTML = `♯&thinsp;` + sharpNote.innerText
+			sharpNote.dataset.note = ch.split('').join('#')
+			sharpNote.style.top = (-i+3) * vspace + voffset + 'em'
+			sharpNote.style.right = i * -hspace + hoffset + 'em'
+			staffBox.appendChild(sharpNote)
 		})
-		</script>
+		wholeNote.remove()
+	})
+	</script>
 </body>
 </html>

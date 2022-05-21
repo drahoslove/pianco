@@ -158,47 +158,6 @@ window.addEventListener('keydown', (e) => {
 
 
 
-// init staff
-const staffBoxes = [...document.querySelectorAll('.staff')]
-const notes = [
-  [
-    'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4',
-    'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5',
-    'C6',
-  ],
-  [
-    'C2', 'D2', 'E2', 'F2', 'G2', 'A2', 'B2',
-    'C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3',
-    'C4',
-  ],
-]
-staffBoxes.forEach((staffBox, j) => {
-  const wholeNote = [...staffBox.children].pop()
-  notes[j].forEach((ch, i) => {
-    const hspace = 0.25
-    const hoffset = 3.6
-    const vspace = 0.125
-    const voffset = (j === 0 ? -0.125 : +0.125)
-    const note = wholeNote.cloneNode(true)
-    note.dataset.note = ch
-    note.style.top = (-i+3) * vspace + voffset  + 'em'
-    note.style.right = i * -hspace + hoffset + 'em'
-    staffBox.appendChild(note)
-  
-    if (j === 0 ? ch === 'C6' : ch === "C4") return
-  
-    const sharpNote = wholeNote.cloneNode(true)
-    sharpNote.innerHTML = `♯&thinsp;` + sharpNote.innerText
-    sharpNote.dataset.note = ch.split('').join('#')
-    sharpNote.style.top = (-i+3) * vspace + voffset + 'em'
-    sharpNote.style.right = i * -hspace + hoffset + 'em'
-    staffBox.appendChild(sharpNote)
-  })
-  wholeNote.remove()
-})
-
-
-
 // orientation
 
 const reorient = () => {
