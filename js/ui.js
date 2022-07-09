@@ -52,7 +52,7 @@ function saveSetting(key, val) {
     )
   } catch (e) {}
   settings[key] = val
-  (localStorage||{}).pianco = JSON.stringify(settings)
+  ;(localStorage||{}).pianco = JSON.stringify(settings)
 }
 
 function loadSetting(key) {
