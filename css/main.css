@@ -1252,7 +1252,6 @@ body.mobile *{
 	}
 	html {
 		font-size: 100%;
-		filterdrop-shadow(1px 6px 5px black): ;
 	}
 	body {
 		margin-bottom: 0;
@@ -1327,11 +1326,11 @@ body.mobile *{
 		flex-direction: row-reverse;
 		padding: 6px 0 6px;
 	}
-	.reacter .sep {
-		height: default;
-		border-bottom: default;
+	.reacter span.sep {
+		height: initial;
+		border-bottom: initial;
 		width: 0;
-    border-left: 1px #fff solid;
+		border-left: 1px #fff solid;
 	}
 	.reacter span {
 		display: flex;

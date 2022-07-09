@@ -37,7 +37,6 @@ Vue.component('prompt', {
   },
 })
 
-
 export const networkingApp = new Vue({
   el: '#networking-app',
   data: {

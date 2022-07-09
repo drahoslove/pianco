@@ -172,6 +172,11 @@ wss.on('connection', async function connection(ws) {
           }
           secret = randomString(16)
         }
+        if (Object.entries(identities).some(([key, iden ]) => (
+          iden.name === name && iden.gid === newGid && key !== secret
+        ))) { // name already used
+          name = ''
+        }
         if (!name) { // assign default random name
           name = `anon${newUid}`
         }

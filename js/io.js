@@ -22,6 +22,30 @@ Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || function () {
 
 const isFramed = window.parent !== window
 
+const requestUserData = async () => {
+  if (!isFramed) {
+    return {}
+  }
+
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      window.removeEventListener('message', handleResponse)
+      resolve({}) // fallback
+    }, 1000)
+    const handleResponse = (event) => {
+      if (!(event.data instanceof Object)) {
+        return
+      }
+      window.removeEventListener('message', handleResponse)
+      clearTimeout(timeout)
+      resolve(event.data) // { name, secret }
+    }
+    window.addEventListener('message', handleResponse)
+    window.parent.postMessage({ getUserData: true }, '*')
+  })
+}
+
+
 const DEF_GID = isFramed ? 101 : 0
 
 let UID = 0 // will be changed by backend
@@ -32,11 +56,13 @@ let ws
 
 const gidFromHash = () => location.hash === '#-'
   ? -1
-  : (parseInt(location.hash.slice(1))) % 255 || DEF_GID
+  : (parseInt(location.hash.slice(1))) % 100 || DEF_GID
 
 
-export const rename = (newName) => {
-  const { secret } = localStorage
+export const rename = async (newName) => {
+  const { secret } = isFramed
+    ? await requestUserData()
+    : localStorage || {}
   if (newName) {
     send(`regroup ${GID} ${UID} ${GID} ${secret||''} ${newName||''}`)
   }
@@ -66,15 +92,23 @@ const onReaction = onCmd('reaction', (values) => {
 
 const onRegroup = onCmd('regroup', (values) => {
   const [newGid, newUid] = values.map(Number)
+  if (isFramed && newGid !== GID) { // regroup forbidden in frame
+    return
+  }
+  if (newGid !== GID && newGid > 100) { // no regroup of hidden groups
+    return
+  }
   const [secret, name] = values.slice(2)
   allOff() // to mute others from old group
   networkingApp.gid = GID = newGid
   networkingApp.uid = UID = newUid
-  if (secret) {
-    localStorage.secret = secret
-  }
-  if (name) {
-    localStorage.name = name
+  if (!isFramed) {
+    if (secret) {
+      localStorage.secret = secret
+    }
+    if (name) {
+      localStorage.name = name
+    }
   }
   // update url if group changed
   if (gidFromHash() !== newGid) {
@@ -156,6 +190,9 @@ const onBlob = async ({ data }) => {
 }
 
 window.addEventListener('hashchange', () => { // chagning group
+  if (isFramed) { // no hash change in frame
+    return
+  }
   const newGid = gidFromHash()
   sendOffAll() // to mute self for others before leaving
   sendSustain(0) // to mute self for others before leaving
@@ -214,9 +251,11 @@ const connect = () => {
     // handle reaction
     ws.addEventListener('message', onReaction)
     
-    ws.onopen = () => {
+    ws.onopen = async () => {
       const newGid = gidFromHash()
-      const { secret, name } = localStorage || {}
+      let { secret, name } = isFramed
+        ? await requestUserData()
+        : localStorage || {}
       send(`regroup 0 0 ${newGid} ${secret||''} ${name||''}`)
       networkingApp.isOnline = true
       networkingApp.gid = newGid

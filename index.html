@@ -431,7 +431,6 @@ staffBoxes.forEach((staffBox, j) => {
 // iframed mode
 const $ = document.querySelector.bind(document)
 if (window.parent !== window) { // frame
-	console.log('is framed')
 	$('#home-link').target="_blank"
 	document.body.classList.add('framed')
 	
