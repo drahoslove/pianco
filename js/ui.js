@@ -83,6 +83,9 @@ const setOnClass = (el, val) => {
 
 Object.keys(defaultSettings).forEach(key => {
   const button = document.getElementById(`toggle-${key}`)
+  if (!button) {
+    return
+  }
   let val = loadSetting(key)
   setOnClass(button, +val)
   actions[key](val)

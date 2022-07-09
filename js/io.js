@@ -19,15 +19,20 @@ Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || function () {
   return new Response(this).arrayBuffer()
 } // polyfill for safari
 
+
+const isFramed = window.parent !== window
+
+const DEF_GID = isFramed ? 101 : 0
+
 let UID = 0 // will be changed by backend
-let GID = 0 
+let GID = DEF_GID
 
 // WS!
 let ws
 
 const gidFromHash = () => location.hash === '#-'
   ? -1
-  : (parseInt(location.hash.slice(1))) % 255 || 0
+  : (parseInt(location.hash.slice(1))) % 255 || DEF_GID
 
 
 export const rename = (newName) => {

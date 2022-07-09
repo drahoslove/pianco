@@ -137,6 +137,9 @@ export const networkingApp = new Vue({
     },
     userClick (uid, e) {
       if (uid == this.uid) {
+        if (window.parent !== window) { // framed
+          return
+        }
         const { name } = localStorage
         this.showRename = name
         // const newName = window.prompt('Your name', name)

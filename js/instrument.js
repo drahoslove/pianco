@@ -74,7 +74,6 @@ const instruments = {
 		baseUrl: "/audio/salamander/",
     release: 1,
     onload: () => {
-			console.log('piano samples loaded')
 			if (instrumentApp.instrument === 'none') {
 				instrumentApp.instrument = 'sampledPiano'
 			}

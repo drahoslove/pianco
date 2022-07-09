@@ -13,6 +13,8 @@
 #instrument-app[v-cloak],
 #recorder-app[v-cloak] {
   visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.5s ease;
 }
 
 html body *[hidden=""],
@@ -128,8 +130,8 @@ header h1#logo {
 @keyframes minireaction { /* mobile version - reduced travel distance*/
 	0%   { opacity: 0.0; transform: translateY(40px) scale(0.5);}
 	5%   { opacity: 1.0; transform: translateY(0px)  scale(1.0);}
-	90%  { opacity: 1.0; transform: translateY(0px) scale(1.0);}
-	100% { opacity: 0.0; transform: translateY(10px) scale(1.5);}
+	90%  { opacity: 1.0; transform: translateY(-30px) scale(1.0);}
+	100% { opacity: 0.0; transform: translateY(-35px) scale(1.75);}
 }
 
 .copy {
@@ -211,9 +213,16 @@ footer.bar {
 	justify-content: center;
 }
 
-.bar>div>div {
-	display: flex;
+.bar>div>div,
+.bar>div {
+	display: inline-flex;
+	gap: 2px;
 }
+.bar .tabs {
+	gap: 0px;
+}
+
+
 .bar>div>div.staffs {
 	display: block;
 }
@@ -274,13 +283,14 @@ footer.bar {
 /* other buttons */
 .bar :is(button, select),
 .bar.tool-bar label,
+.bar .tool-bar label,
 .bar .modal label,
 .bar input[type=text] {
 	min-width: 3.5rem;
 	text-align: center;
 	text-align-last: center;
 	display: flex;
-	border: 1px solid #999;
+	border: none;
 	cursor: pointer;
 	margin: 0;
 	padding: .6rem 1rem 0.4rem;
@@ -329,7 +339,6 @@ footer.bar button.on {
 .bar label:last-child {
 	border-top-right-radius: .5rem;
 	border-bottom-right-radius: .5rem;
-	border-right-width: 1px;
 }
 .bar label>button:first-child {
 	border-top-left-radius: inherit;
@@ -390,8 +399,9 @@ footer.bar button.on {
 	opacity: 0;
 }
 .volume-icon {
-	width: 1.5rem;
+	width: 100%;
 	display: flex;
+	justify-content: center;
 }
 .volume-label {
 	min-width: 0;
@@ -806,6 +816,7 @@ div.hint {
 	justify-content: flex-start;
 	font-size: 175%;
 	width: 250px;
+	pointer-events: none;
 }
 .chord-info>* {
 	opacity: 1;
@@ -1241,6 +1252,7 @@ body.mobile *{
 	}
 	html {
 		font-size: 100%;
+		filterdrop-shadow(1px 6px 5px black): ;
 	}
 	body {
 		margin-bottom: 0;
@@ -1259,6 +1271,7 @@ body.mobile *{
 	}
 	.keyboard {
 		height: 12rem;
+		z-index: 5;
 	}
 	/* too much shadows is reducing performance on mobile devices */
 	.bottom-keys button,
@@ -1280,10 +1293,10 @@ body.mobile *{
 	.bar input[type=text],
 	.bar .modal label,
 	.bar.tool-bar label { /* voluma and instrument changer wrapper */
-		padding: 0.1rem;
+		padding: 0.2rem;
 	}
 	.bar label.volume-label { /* volume wrapper */
-		padding: 0.1rem;
+		padding: 0.2rem;
 		min-width: 54px;
 	}
 	.bar button .iconify,
@@ -1291,6 +1304,10 @@ body.mobile *{
 	.bar label .iconify {
 		font-size: 22px;
 		line-height: 26px;
+	}
+	header.bar button:after {
+		top: 0.4rem;
+		left: 36px;
 	}
 	.bar,
 	header.bar,
@@ -1306,6 +1323,21 @@ body.mobile *{
 	.reaction {
 		animation: minireaction 5s ease-in 0s 1;
 	}
+	.reacter {
+		flex-direction: row-reverse;
+		padding: 6px 0 6px;
+	}
+	.reacter .sep {
+		height: default;
+		border-bottom: default;
+		width: 0;
+    border-left: 1px #fff solid;
+	}
+	.reacter span {
+		display: flex;
+    justify-content: center;
+    align-items: center;
+	}
 	.copy {
 		font-size: 75%;
 	}
@@ -1315,4 +1347,78 @@ body.mobile *{
 	[data-tippy-root] {
 		display: none;
 	}
+}
+
+
+
+/* framed */
+
+body.framed #recorder-app,
+body.framed #tabs,
+body.framed #toggle-velocity,
+body.framed #fullscreen {
+	display: none;
+}
+
+body.framed #instrument-app label {
+	display: flex;
+	flex-direction: row-reverse;
+}
+body.framed input.volume {
+	width: 4rem;
+	opacity: 1;
+}
+input.volume:disabled {
+	display: none;
+}
+
+body.framed .back-background {
+	position: absolute;
+	top: 15px;
+	width: 100%;
+	height: 100%;
+	background-color: #016699;
+}
+
+body.framed {
+	background-color: transparent;
+}
+body.framed header,
+body.framed footer {
+	box-shadow: none;
+	background-color: transparent;
+	padding: 0 0.5rem;
+}
+body.framed .staff-paper {
+	background-color: #e5efff;
+	z-index: 5;
+	/* border-radius: 0; */
+	border-top: 2px dotted #08618e;
+	margin-bottom: -3px;
+}
+body.framed .chord-info {
+	font-size: 125%;
+	color: #e5efff;
+}
+body.framed header.bar button,
+body.framed footer.bar :is(button, label) {
+	color: #cee1ff;
+	/* border-color: #16699400; */
+	background-color: #0b3347;
+}
+body.framed header {
+	position: absolute;
+	top: 20px;
+	z-index: 2;
+}
+body.framed footer {
+	position: absolute;
+	bottom: 6px;
+}
+body.framed .content {
+	position: absolute;
+	top: 0px;
+}
+body.framed.unfocused {
+	filter: brightness(0.9) grayscale(.1) blur(0px);
 }

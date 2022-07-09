@@ -21,6 +21,9 @@ let transposition = 0
 
 const _ = cb => e => {
   e.preventDefault()
+  if (['mousedown', 'touchstart'].includes(e.type)) {
+    window.focus()
+  }
   cb && cb(e)
   return false
 }
@@ -175,6 +178,9 @@ document.addEventListener('visibilitychange', (e) => { // release all when
 window.addEventListener('beforeunload', (e) => {
   releaseAll()('beforeunload')
 })
+window.addEventListener('blur', (e) => {
+  releaseAll()('blur')
+})
 
 // init keyboard input
 const keyMap = (n) => ({
@@ -217,27 +223,29 @@ window.addEventListener('keyup', e => {
 
 // init MIDI input
 const midiEl = document.getElementById('midi')
-const reloadMidi = (isFrist) => {
-  console.log('will reload midi')
-  if (navigator.requestMIDIAccess) {
-    console.log('This browser supports Web MIDI!')
-    instrumentApp.midiTooltip = 'MIDI in: supported'
-    midiEl.className="unknown"
-    navigator.requestMIDIAccess({ sysex: false })
-      .then(onMIDISuccess(isFrist === true))
-      .catch((err) => {
-        console.error(`Could not access your MIDI devices. ${err}`)
-        instrumentApp.midiTooltip = 'MIDI in: failed'
-        midiEl.className="err"
-      })
-  } else {
-    console.warn('WebMIDI is not supported in this browser.')
-    instrumentApp.midiTooltip = 'MIDI in: not supported'
-    midiEl.className="err"
+if (midiEl) {
+  const reloadMidi = (isFrist) => {
+    console.log('will reload midi')
+    if (navigator.requestMIDIAccess) {
+      console.log('This browser supports Web MIDI!')
+      instrumentApp.midiTooltip = 'MIDI in: supported'
+      midiEl.className="unknown"
+      navigator.requestMIDIAccess({ sysex: false })
+        .then(onMIDISuccess(isFrist === true))
+        .catch((err) => {
+          console.error(`Could not access your MIDI devices. ${err}`)
+          instrumentApp.midiTooltip = 'MIDI in: failed'
+          midiEl.className="err"
+        })
+    } else {
+      console.warn('WebMIDI is not supported in this browser.')
+      instrumentApp.midiTooltip = 'MIDI in: not supported'
+      midiEl.className="err"
+    }
   }
+  midiEl.onclick = reloadMidi
+  reloadMidi(true)
 }
-midiEl.onclick = reloadMidi
-reloadMidi(true)
 
 function onMIDISuccess(isFrist) {
   return (midiAccess) => {
