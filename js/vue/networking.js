@@ -3,6 +3,7 @@ import {
 } from '../instrument.js'
 import {
   rename as ioRename,
+  giveMic as ioGiveMic,
   react,
 } from '../io.js'
 
@@ -49,6 +50,7 @@ export const networkingApp = new Vue({
     groups: [],
     names: [],
     mods: [],
+    mics: [],
     reactions: [],
     muted: [{}],
     lastEmojis: (localStorage||{}).lastEmojis ? localStorage.lastEmojis.split(",") : [],
@@ -122,6 +124,12 @@ export const networkingApp = new Vue({
     isMuted (uid) {
       return (this.muted[this.gid] || {})[uid]
     },
+    isMod (uid) {
+      return (this.mods[this.gid] || []).includes(uid)
+    },
+    hasMic (uid) {
+      return (this.mics[this.gid] || []).includes(uid)
+    },
     toggleMute (uid) {
       const gid = this.gid
       if (!this.muted[gid]) {
@@ -136,10 +144,14 @@ export const networkingApp = new Vue({
       }
     },
     userClick (uid, e) {
-      if (uid == this.uid) {
-        if (window.parent !== window) { // framed
-          return
-        }
+      if (e.shiftKey) {
+        ioGiveMic(uid)
+        return
+      }
+      if (
+        uid == this.uid &&
+        window.parent === window // only un-framed can rename self
+      ) {
         const { name } = localStorage || {}
         this.showRename = name
         // const newName = window.prompt('Your name', name)

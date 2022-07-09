@@ -142,6 +142,7 @@ const onUserStatus = onCmd('status', (values) => {
   networkingApp.groups = status.groups || []
   networkingApp.names = status.names || []
   networkingApp.mods = status.mods || []
+  networkingApp.mics = status.mics || []
   
   removedUsers.forEach(uid => {
     releaseAll(uid)('cleanage')
@@ -272,7 +273,7 @@ const connect = () => {
       let { secret, name } = isFramed
         ? await requestUserData()
         : localStorage || {}
-      send(`regroup 0 0 ${newGid} ${secret||''} ${name||''}`)
+      send(`regroup ${GID} ${UID} ${newGid} ${secret||''} ${name||''}`)
       networkingApp.isOnline = true
       networkingApp.gid = newGid
       console.log('ws open')
@@ -321,12 +322,18 @@ const send = (data) => {
 
 const sendNoteOn = (note, velocity=0.5) => (source) => {
   pressNote(note, velocity, UID)(source)
+  if (networkingApp.isMuted(UID)) {
+    return
+  }
   const midiNote = Tone.Midi(note).toMidi()
   send(new Uint8Array([GID, UID, toCmd(1), midiNote, toVal(velocity)]))
 }
 
 const sendNoteOff = (note) => (source) => {
   releaseNote(note, UID)(source)
+  if (networkingApp.isMuted(UID)) {
+    return
+  }
   const midiNote = Tone.Midi(note).toMidi()
   send(new Uint8Array([GID, UID, toCmd(0), midiNote, toVal(0)]))
 }
@@ -345,6 +352,10 @@ const sendOffAll = () => (source) => {
   sendSustain(0, source)
 }
 
+const giveMic = (toUid) => {
+  send(`givemic ${GID} ${toUid}`)
+}
+
 const recorder = ['record', 'stop', 'replay', 'pause'].reduce((recorder, action) => ({
   ...recorder,
   [action]: () => {
@@ -360,6 +371,7 @@ export {
   sendNoteOff,
   sendOffAll,
   sendSustain,
+  giveMic,
 }
 
 

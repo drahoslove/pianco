@@ -278,14 +278,21 @@
 						:content="userName(u)" v-tippy
 						:aria-label="`${isMuted(u) ? 'un': ''}mute ${userName(u)}`"
 					>
+						<span class="user-flags">
+							<span class="iconify flag self" data-icon="mdi-dots-horizontal" v-if="u === uid"></span>
+							<span class="iconify flag mic" data-icon="mdi-microphone" v-if="hasMic(u)"></span>
+							<span class="iconify flag muted" data-icon="mdi-volume-mute" v-if="u !== uid && isMuted(u)"></span>
+							<span class="iconify flag self-muted" data-icon="mdi-microphone-off" v-if="u === uid && isMuted(u)"></span>
+						</span>
 						<span
 							class="user-icon"
 							:style="{'--color': userColor(u)}"
 							:data-uid="u"
 						>
-							<span class="iconify" data-icon="mdi-account-settings" v-if="u===uid" ></span>
-							<span class="iconify" data-icon="mdi-account-cancel"v-else-if="isMuted(u)" ></span>
-							<span class="iconify" data-icon="mdi-account-tie"	v-else-if="u===0"	></span>
+							<!-- <span class="iconify" data-icon="mdi-account-settings" v-if="u===uid" ></span> -->
+							<!-- <span class="iconify" data-icon="mdi-account-cancel"v-else-if="isMuted(u)" ></span> -->
+							<span class="iconify" data-icon="mdi-account-tie"	v-if="u===0"></span>
+							<span class="iconify" data-icon="mdi-account-tie"	v-else-if="isMod(u)"></span>
 							<span class="iconify" data-icon="mdi-account"	v-else ></span>
 						</span>
 					</button>

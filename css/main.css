@@ -412,10 +412,12 @@ footer.bar button.on {
 }
 
 .bar .user-icon {
+	display: block;
 	color: inherit;
 	transition: color .5s ease;
 	position: relative;
 	animation: letgo 0.1s ease 0s 1;
+	line-height: 0;
 }
 
 .bar:hover .user-icon {
@@ -425,6 +427,40 @@ footer.bar button.on {
 .bar .user-icon.active {
 	color: var(--color) !important;
 	animation: hit 0.12s ease 0s 1;
+}
+
+.user-flags {
+	pointer-events: none;
+	display: block;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	font-size: 75%;
+}
+
+.user-flags .flag.self {
+	position: absolute;
+	bottom: -6px;
+	left: 0;
+	right: 0;
+	font-size: 120%;
+	/* margin: 0 auto; */
+	width: 100%;
+}
+.user-flags .flag.mic,
+.user-flags .flag.self-muted {
+	position: absolute;
+	left: 4px;
+	top: 8px;
+	font-size: 120%;
+}
+.user-flags .flag.muted {
+	position: absolute;
+	right: 3px;
+	top: 6px;
+	font-size: 125%;
 }
 
 @keyframes hit {

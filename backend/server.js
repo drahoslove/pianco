@@ -68,14 +68,24 @@ const echo = (data) => { // to eveyone in group except origin
 
 const status = () => { // broadcast state of the world to everyone
   const data = JSON.stringify({
-    groups: groups.map(uids => [...uids]),
+    groups: groups.map(uids => [...uids]), // [0: [0, 42]]
+    mods: groups.map((_, group) => ( // [0: [42]],
+      Object.values(identities)
+        .filter(({ gid, isMod }) => gid === group && isMod)
+        .reduce((map, { uid }) => ([...map, uid]), [])
+    )),
+    mics: groups.map((_, group) => ( // [0: [0]]
+      Object.values(identities)
+        .filter(({ gid, hasMic }) => gid === group && hasMic)
+        .reduce((map, { uid }) => ([...map, uid]), [])
+    )),
     names: groups.map((_, group) => // [0: {0: 'draho'}, 3: {}]
       Object.values(identities)
         .filter(({ gid }) => gid === group)
         .reduce((map, {uid, name}) => ({...map, [uid]: name}), {})
     ),
-    // TODO additional data in the future
   })
+  console.log('identities', identities)
   wss.clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(`status ${data}`)
@@ -89,7 +99,7 @@ wss.echo = echo
 wss.status = status
 
 groups[ROOT_GRP].add(ROOT_USR) // add ghost player to main room permanently
-identities[ROOT_SECRET] = { name: 'pianco', gid: 0, uid: 0 }
+identities[ROOT_SECRET] = { name: 'Pianco', gid: 0, uid: 0 }
 
 
 const Autoplay = require('./autoplay.js')(wss)
@@ -154,6 +164,22 @@ wss.on('connection', async function connection(ws) {
         broadcastText(gid, message)
       }
 
+      if (cmd === 'givemic') {
+        const { secret } = ws
+        const iden = identities[secret]
+        const [gid, toUid] = values.map(Number)
+        if (!iden || iden.gid !== gid || !iden.isMod) {
+          // only mod in current group can give mic
+          return
+        }
+        Object.values(identities).forEach(iden => {
+          if (iden.gid === gid) {
+            iden.hasMic = iden.uid === toUid && !iden.hasMic
+          }
+        })
+        wss.status()
+      }
+
       if (cmd === "regroup") {
         const [_, __, newGid] = values.map(Number)
         let [secret, name] = values.slice(3) // optional
@@ -182,15 +208,12 @@ wss.on('connection', async function connection(ws) {
         let remoteIdentity = verify(secret, REMOTE_KEY)
         let serverIdentity = verify(secret, SERVER_KEY)
 
-        if (!name) { // assign default random name
-          console.log('gen name', name)
-          name = `anon${newUid}`
-        }
-        if (Object.entries(identities).some(([key, iden]) => (
+
+        const nameExistsInGroup = Object.entries(identities).some(([key, iden]) => (
           iden.name === name && iden.gid === newGid && key !== secret
-        ))) { // name already used
-          console.warn(`name ${name} alerady used`)
-          name = `anon${newUid}`
+        ))
+        if (!name || nameExistsInGroup) { // assign default anon name derived from uid
+          name = `anon${newUid}` // might be overwritten by remoteIdentity.name
         }
 
         const identity = {
@@ -209,16 +232,28 @@ wss.on('connection', async function connection(ws) {
         }
 
         // update stored values
-        groups[oldGid] && groups[oldGid].delete(oldUid)
+        groups[oldGid]?.delete(oldUid)
         if (newGid >= 0) {
           groups[newGid].add(newUid)
         }
         // remove deprecated identity
-        // Object.entries(identities).forEach(([key, iden]) => {
-        //   if (iden.gid === oldGid && iden.uid === oldUid) {
-        //     delete identities[key]
-        //   }
-        // })
+        Object.entries(identities).forEach(([key, iden]) => {
+          if (iden.gid === oldGid && iden.uid === oldUid) {
+            delete identities[key]
+          }
+          // update secret of existing clients of the same user
+          if (remoteIdentity && iden.name === identity.name && key !== secret) { // new secret - remove old one
+            wss.clients
+              .forEach(cws => {
+                if (cws.secret === key) {
+                  cws.secret = secret
+                }
+              })
+            const oldIdent = identities[key]
+            groups[oldIdent?.gid]?.delete(oldIdent.uid)
+            delete identities[key]
+          }
+        })
         identities[secret] = identity
 
         // inform clients of secret
@@ -226,8 +261,8 @@ wss.on('connection', async function connection(ws) {
           const { uid, gid } = identities[secret]
           // send response to all ws from device
           if (cws.secret === ws.secret && cws.readyState === WebSocket.OPEN) {
-            cws.send(`regroup ${newGid} ${newUid} ${secret} ${name}`)
-            console.log(`${secret.substr(-4)}:${name} - ${uid}@${gid} => ${newUid}@${newGid}`)
+            cws.send(`regroup ${newGid} ${newUid} ${secret} ${identity.name}`)
+            console.log(`${secret.substr(-4)}:${identity.name} - ${uid}@${gid} => ${newUid}@${newGid}`)
           }
         })
         // update sockets
