@@ -134,6 +134,11 @@ wss.on('connection', async function connection(ws) {
     }
 
     if (message instanceof Buffer) {
+      const mic = Object.values(identities)
+        .find(iden => iden.gid === gid && iden.hasMic)
+      if (mic && mic.uid !== uid) { // do not propagate if someone not you has mic
+        return
+      }
       if (message[0] !== 255 && message[0] !== -1) {
         echo(message) // <--- this is the most important
         recorders[gid].pass(message) // pass message to recorder
@@ -336,6 +341,7 @@ wss.on('connection', async function connection(ws) {
       if (ws.secret in identities) {
         identities[ws.secret].uid = undefined
         identities[ws.secret].gid = undefined
+        identities[ws.secret].hasMic = false
       }
       console.log(`${uid}@${gid} => close`)
       wss.status()
