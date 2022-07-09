@@ -119,10 +119,10 @@ const onRegroup = onCmd('regroup', (values) => {
   networkingApp.uid = UID = newUid
   if (!isFramed) {
     if (secret) {
-      localStorage.secret = secret
+      (localStorage||{}).secret = secret
     }
     if (name) {
-      localStorage.name = name
+      (localStorage||{}).name = name
     }
   }
   // update url if group changed
@@ -140,7 +140,8 @@ const onUserStatus = onCmd('status', (values) => {
   const removedUsers = (networkingApp.groups[GID]||[])
     .filter(uid => !status.groups[GID].includes(uid))
   networkingApp.groups = status.groups || []
-  networkingApp.names = status.names || {}
+  networkingApp.names = status.names || []
+  networkingApp.mods = status.mods || []
   
   removedUsers.forEach(uid => {
     releaseAll(uid)('cleanage')
@@ -212,7 +213,7 @@ window.addEventListener('hashchange', () => { // chagning group
   sendOffAll() // to mute self for others before leaving
   sendSustain(0) // to mute self for others before leaving
   allOff() // to mute others
-  const { secret, name } = localStorage
+  const { secret, name } = localStorage || {}
   send(`regroup ${GID} ${UID} ${newGid} ${secret||''} ${name||''}`)
   console.log(`${UID}@${GID} => ?@${newGid} request`)
 })
@@ -239,7 +240,7 @@ const pingPong = () => {
   ws.addEventListener('message', ({ data }) => {
     if (data === 'pong') {
       pongs++
-      if (localStorage.DEBUG){
+      if (localStorage?.DEBUG){
         console.log('ping', Math.floor((performance.now() - now)*100) /100, 'ms')
       }
     }

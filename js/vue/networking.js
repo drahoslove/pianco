@@ -48,6 +48,7 @@ export const networkingApp = new Vue({
     uid: 0,
     groups: [],
     names: [],
+    mods: [],
     reactions: [],
     muted: [{}],
     lastEmojis: (localStorage||{}).lastEmojis ? localStorage.lastEmojis.split(",") : [],
@@ -139,7 +140,7 @@ export const networkingApp = new Vue({
         if (window.parent !== window) { // framed
           return
         }
-        const { name } = localStorage
+        const { name } = localStorage || {}
         this.showRename = name
         // const newName = window.prompt('Your name', name)
         // ioRename(newName)
