@@ -22,6 +22,21 @@ Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || function () {
 
 const isFramed = window.parent !== window
 
+
+window.addEventListener('message', (event) => {
+  if (!(event.data instanceof Object)) {
+    return
+  }
+  if (event.data.test) {
+    console.log('Test data received', event.data)
+  }
+  if (event.data.userJwt) {
+    const secret = event.data.userJwt || ''
+    const name = ''
+    send(`regroup ${GID} ${UID} ${GID} ${secret} ${name}`)
+  }
+})
+
 const requestUserData = async () => {
   if (!isFramed) {
     return {}
