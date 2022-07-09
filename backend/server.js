@@ -1,5 +1,9 @@
 const WebSocket = require('ws')
-const { randomString, rand } = require('./rand.js')
+const jwt = require('jsonwebtoken')
+const { rand } = require('./rand.js')
+
+const SERVER_KEY = process.env.SERVER_KEY || 'secret-server-key'
+const REMOTE_KEY = process.env.REMOTE_KEY || 'secret-remote-key'
 
 const CMD_NOTE_ON = 1
 const fromCmd = (cmd) => (cmd>>4) & 7
@@ -14,6 +18,15 @@ const wss = new WebSocket.Server({ port: PORT })
 
 const groups = Array.from({ length: 255 }).map(() => new Set()) // 255 is offline 'room''
 const identities = {} // {[secret]: { name: 'pianco', gid: 0, uid: 0 }}
+
+
+const verify = (secret, key) => { // return null or identity from secret
+  try {
+    return jwt.verify(secret, key)
+  } catch(e) {
+    return null
+  } 
+}
 
 const send = (gid, uid, message) => { // to specific identity
   wss.clients.forEach(client => {
@@ -166,38 +179,59 @@ wss.on('connection', async function connection(ws) {
             return
           }
         }
-        if (!secret) {
-          if (ws.secret) {
-            return console.error('cant change secret of wssecre')
-          }
-          secret = randomString(16)
-        }
-        if (Object.entries(identities).some(([key, iden ]) => (
-          iden.name === name && iden.gid === newGid && key !== secret
-        ))) { // name already used
-          name = ''
-        }
+        let remoteIdentity = verify(secret, REMOTE_KEY)
+        let serverIdentity = verify(secret, SERVER_KEY)
+
         if (!name) { // assign default random name
+          console.log('gen name', name)
           name = `anon${newUid}`
         }
+        if (Object.entries(identities).some(([key, iden]) => (
+          iden.name === name && iden.gid === newGid && key !== secret
+        ))) { // name already used
+          console.warn(`name ${name} alerady used`)
+          name = `anon${newUid}`
+        }
+
+        const identity = {
+          ...serverIdentity,
+          name,
+          ...remoteIdentity,
+          gid: newGid,
+          uid: newUid,
+        }
+        if (!remoteIdentity && !serverIdentity) {
+          console.error('no or invalid secret', secret)// invalid secret
+          if (ws.secret) {
+            return console.error('cant change secret of ws.secret')
+          }
+          secret = jwt.sign(identity, SERVER_KEY)
+        }
+
         // update stored values
         groups[oldGid] && groups[oldGid].delete(oldUid)
         if (newGid >= 0) {
           groups[newGid].add(newUid)
         }
-        identities[secret] = { name, gid: newGid, uid: newUid }
+        // remove deprecated identity
+        // Object.entries(identities).forEach(([key, iden]) => {
+        //   if (iden.gid === oldGid && iden.uid === oldUid) {
+        //     delete identities[key]
+        //   }
+        // })
+        identities[secret] = identity
 
-        // update sockets
-        ws.secret = secret
         // inform clients of secret
-        wss.clients.forEach(ws => {
+        wss.clients.forEach(cws => {
           const { uid, gid } = identities[secret]
           // send response to all ws from device
-          if (ws.secret === secret && ws.readyState === WebSocket.OPEN) {
-            ws.send(`regroup ${newGid} ${newUid} ${secret} ${name}`)
-            console.log(`${secret}:${name} - ${uid}@${gid} => ${newUid}@${newGid}`)
+          if (cws.secret === ws.secret && cws.readyState === WebSocket.OPEN) {
+            cws.send(`regroup ${newGid} ${newUid} ${secret} ${name}`)
+            console.log(`${secret.substr(-4)}:${name} - ${uid}@${gid} => ${newUid}@${newGid}`)
           }
         })
+        // update sockets
+        ws.secret = secret
         wss.status()
 
         // reset ghost player timer
@@ -207,7 +241,7 @@ wss.on('connection', async function connection(ws) {
             stopCurrent: false,
           })
         }
-      }
+      } // end regroup
 
       const recorder = recorders[gid]
 
@@ -245,7 +279,6 @@ wss.on('connection', async function connection(ws) {
         }
       }
 
-      // console.log(cmd, values)
     }
   })
 

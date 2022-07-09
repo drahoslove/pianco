@@ -1,7 +1,7 @@
 const { Midi } = require('@tonejs/midi')
 const fs = require('fs').promises
 const path = require('path')
-const fetch = require('node-fetch')
+const fetch = import('node-fetch')
 const { normalRand, rand } = require('./rand.js')
 
 const MIDI_CACHE_DIR = '../audio/midi'

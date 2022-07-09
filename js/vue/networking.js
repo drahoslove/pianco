@@ -155,7 +155,7 @@ export const networkingApp = new Vue({
       }
     },
     userName (uid) {
-      const name = (this.names[this.gid]||[])[uid] || 'anon'
+      const name = (this.names[this.gid]||[])[uid] || ''
       return name 
         + (uid === this.uid ? ' <small>- you</small>' : '')
         + (this.isMuted(uid) ? ' <small>- muted</small>' : '')

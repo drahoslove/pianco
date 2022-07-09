@@ -38,10 +38,10 @@ const requestUserData = async () => {
       }
       window.removeEventListener('message', handleResponse)
       clearTimeout(timeout)
-      resolve(event.data) // { name, secret }
+      resolve({ secret: event.data.userJwt }) // { secret }
     }
     window.addEventListener('message', handleResponse)
-    window.parent.postMessage({ getUserData: true }, '*')
+    window.parent.postMessage({ getUserJwt: true }, '*')
   })
 }
 
