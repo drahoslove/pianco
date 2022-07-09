@@ -1412,7 +1412,7 @@ body.framed .back-background {
 	top: 15px;
 	width: 100%;
 	height: 100%;
-	background-color: #016699;
+	background-color: #236698;
 }
 
 body.framed {
@@ -1437,9 +1437,8 @@ body.framed .chord-info {
 }
 body.framed header.bar button,
 body.framed footer.bar :is(button, label) {
-	color: #cee1ff;
-	/* border-color: #16699400; */
-	background-color: #0b3347;
+	color: #fafafa;
+	background-color: #202c37;
 }
 body.framed header {
 	position: absolute;
