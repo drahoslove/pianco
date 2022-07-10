@@ -71,7 +71,7 @@ const status = () => { // broadcast state of the world to everyone
     groups: groups.map(uids => [...uids]), // [0: [0, 42]]
     mods: groups.map((_, group) => ( // [0: [42]],
       Object.values(identities)
-        .filter(({ gid, isMod }) => gid === group && isMod)
+        .filter(({ gid, mod }) => gid === group && mod)
         .reduce((map, { uid }) => ([...map, uid]), [])
     )),
     mics: groups.map((_, group) => ( // [0: [0]]
@@ -173,7 +173,7 @@ wss.on('connection', async function connection(ws) {
         const { secret } = ws
         const iden = identities[secret]
         const [gid, toUid] = values.map(Number)
-        if (!iden || iden.gid !== gid || !iden.isMod) {
+        if (!iden || iden.gid !== gid || !iden.mod) {
           // only mod in current group can give mic
           return
         }
