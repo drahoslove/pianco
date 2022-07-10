@@ -441,11 +441,9 @@ if (window.parent !== window) { // frame
 	$('#home-link').target="_blank"
 	document.body.classList.add('framed')
 	
-	window.addEventListener('DOMContentLoaded', () => {
-		$('footer').insertBefore($('#arrows-app'), $('#tabs'))
-		$('footer').insertBefore($('#instrument-app'), $('#links'))
-	})
-
+	$('footer').insertBefore($('#arrows-app'), $('#tabs'))
+	$('footer').insertBefore($('#instrument-app'), $('#links'))
+	
 	$('#tabs').remove()
 	$('#links').remove()
 	$('#toggle-velocity').remove()
