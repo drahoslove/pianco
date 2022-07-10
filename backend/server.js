@@ -247,7 +247,7 @@ wss.on('connection', async function connection(ws) {
             delete identities[key]
           }
           // update secret of existing clients of the same remote user
-          if (iden.name === identity.name && key !== secret && remoteIdentity && verify(iden, REMOTE_KEY)) { // new secret - remove old one
+          if (iden.name === identity.name && key !== secret && remoteIdentity && verify(key, REMOTE_KEY)) { // new secret - remove old one
             wss.clients
               .forEach(cws => {
                 if (cws.secret === key) {
