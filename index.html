@@ -441,9 +441,11 @@ if (window.parent !== window) { // frame
 	$('#home-link').target="_blank"
 	document.body.classList.add('framed')
 	
-	$('footer').insertBefore($('#arrows-app'), $('#tabs'))
-	$('footer').insertBefore($('#instrument-app'), $('#links'))
-	
+	window.addEventListener('DOMContentLoaded', () => {
+		$('footer').insertBefore($('#arrows-app'), $('#tabs'))
+		$('footer').insertBefore($('#instrument-app'), $('#links'))
+	})
+
 	$('#tabs').remove()
 	$('#links').remove()
 	$('#toggle-velocity').remove()
