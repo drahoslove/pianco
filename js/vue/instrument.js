@@ -22,7 +22,6 @@ export const instrumentApp = new Vue({
       // TODO - blur on click?
     },
     volume (oldVolume, newVolume) {
-      console.log('xxxx volume', oldVolume, newVolume)
       if (oldVolume === newVolume) {
         return
       }

@@ -246,8 +246,8 @@ wss.on('connection', async function connection(ws) {
           if (iden.gid === oldGid && iden.uid === oldUid) {
             delete identities[key]
           }
-          // update secret of existing clients of the same user
-          if (remoteIdentity && iden.name === identity.name && key !== secret) { // new secret - remove old one
+          // update secret of existing clients of the same remote user
+          if (iden.name === identity.name && key !== secret && remoteIdentity && verify(iden, REMOTE_KEY)) { // new secret - remove old one
             wss.clients
               .forEach(cws => {
                 if (cws.secret === key) {
@@ -262,16 +262,16 @@ wss.on('connection', async function connection(ws) {
         identities[secret] = identity
 
         // inform clients of secret
+        // update sockets
+        ws.secret = secret
         wss.clients.forEach(cws => {
           const { uid, gid } = identities[secret]
           // send response to all ws from device
-          if (cws.secret === ws.secret && cws.readyState === WebSocket.OPEN) {
+          if (cws.secret === secret && cws.readyState === WebSocket.OPEN) {
             cws.send(`regroup ${newGid} ${newUid} ${secret} ${identity.name}`)
             console.log(`${secret.substr(-4)}:${identity.name} - ${uid}@${gid} => ${newUid}@${newGid}`)
           }
         })
-        // update sockets
-        ws.secret = secret
         wss.status()
 
         // reset ghost player timer
