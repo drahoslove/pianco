@@ -172,7 +172,7 @@ wss.on('connection', async function connection(ws) {
       if (cmd === 'givemic') {
         const { secret } = ws
         const iden = identities[secret]
-        const [gid, toUid] = values.map(Number)
+        const [gid, uid, toUid] = values.map(Number)
         if (!iden || iden.gid !== gid || !iden.mod) {
           // only mod in current group can give mic
           return
@@ -182,6 +182,18 @@ wss.on('connection', async function connection(ws) {
             iden.hasMic = iden.uid === toUid && !iden.hasMic
           }
         })
+        wss.status()
+      }
+
+      if (cmd === 'dropmic') {
+        const { secret } = ws
+        const iden = identities[secret]
+        const [gid, uid] = values.map(Number)
+        if (!iden || iden.gid !== gid || !iden.hasMic) {
+          // only mic owner in current group can drop mic
+          return
+        }
+        iden.hasMic = false
         wss.status()
       }
 

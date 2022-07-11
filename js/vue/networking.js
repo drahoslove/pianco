@@ -4,6 +4,7 @@ import {
 import {
   rename as ioRename,
   giveMic as ioGiveMic,
+  dropMic as ioDropMic,
   react,
 } from '../io.js'
 
@@ -145,7 +146,12 @@ export const networkingApp = new Vue({
     },
     userClick (uid, e) {
       if (e.shiftKey) {
-        ioGiveMic(uid)
+        if (this.hasMic(this.uid)) {
+          return ioDropMic()
+        }
+        if (this.isMod(this.uid)) {
+          return ioGiveMic(uid)
+        }
         return
       }
       if (

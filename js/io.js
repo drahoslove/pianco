@@ -23,7 +23,8 @@ Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || function () {
 const isFramed = window.parent !== window
 
 
-window.addEventListener('message', (event) => {
+const onMessage = (event) => {
+  console.log('globev', event)
   if (!(event.data instanceof Object)) {
     return
   }
@@ -35,27 +36,33 @@ window.addEventListener('message', (event) => {
     const name = ''
     send(`regroup ${GID} ${UID} ${GID} ${secret} ${name}`)
   }
-})
+}
 
 const requestUserData = async () => {
   if (!isFramed) {
     return {}
   }
-
+  
   return new Promise((resolve) => {
-    const timeout = setTimeout(() => {
-      window.removeEventListener('message', handleResponse)
-      resolve({}) // fallback
+    const timer = new AbortController()
+    const { signal } = timer
+    setTimeout(() => {
+      timer.abort()
+      resolve({})
+      window.addEventListener('message', onMessage)
     }, 1000)
     const handleResponse = (event) => {
+      console.log('locev', event)
       if (!(event.data instanceof Object)) {
         return
-      }
-      window.removeEventListener('message', handleResponse)
-      clearTimeout(timeout)
+      } 
       resolve({ secret: event.data.userJwt }) // { secret }
     }
-    window.addEventListener('message', handleResponse)
+    window.removeEventListener('message', onMessage)
+    window.addEventListener('message', handleResponse, {
+      once: true,
+      signal,
+    })
     window.parent.postMessage({ getUserJwt: true }, '*')
   })
 }
@@ -75,9 +82,10 @@ const gidFromHash = () => location.hash === '#-'
 
 
 export const rename = async (newName) => {
-  const { secret } = isFramed
-    ? await requestUserData()
-    : localStorage || {}
+  if (isFramed) { // no self renaming in framed
+    return
+  }
+  const { secret } = localStorage || {}
   if (newName) {
     send(`regroup ${GID} ${UID} ${GID} ${secret||''} ${newName||''}`)
   }
@@ -353,7 +361,10 @@ const sendOffAll = () => (source) => {
 }
 
 const giveMic = (toUid) => {
-  send(`givemic ${GID} ${toUid}`)
+  send(`givemic ${GID} ${UID} ${toUid}`)
+}
+const dropMic = () => {
+  send(`dropmic ${GID} ${UID}`)
 }
 
 const recorder = ['record', 'stop', 'replay', 'pause'].reduce((recorder, action) => ({
@@ -372,6 +383,7 @@ export {
   sendOffAll,
   sendSustain,
   giveMic,
+  dropMic,
 }
 
 
