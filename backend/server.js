@@ -68,22 +68,32 @@ const echo = (data) => { // to eveyone in group except origin
 
 const status = () => { // broadcast state of the world to everyone
   const data = JSON.stringify({
-    groups: groups.map(uids => [...uids]), // [0: [0, 42]]
-    mods: groups.map((_, group) => ( // [0: [42]],
-      Object.values(identities)
-        .filter(({ gid, mod }) => gid === group && mod)
-        .reduce((map, { uid }) => ([...map, uid]), [])
-    )),
-    mics: groups.map((_, group) => ( // [0: [0]]
-      Object.values(identities)
-        .filter(({ gid, hasMic }) => gid === group && hasMic)
-        .reduce((map, { uid }) => ([...map, uid]), [])
-    )),
-    names: groups.map((_, group) => // [0: {0: 'draho'}, 3: {}]
-      Object.values(identities)
-        .filter(({ gid }) => gid === group)
+    // groups: groups.map(uids => [...uids]), // [0: [0, 42]]
+    groups: groups.reduce((groups, uids, g) => ({ // {0: [0, 42]}
+      ...groups,
+      ...(uids.size > 0 && {[g]: [...uids]})
+    }), {}),
+    mods: groups.reduce((groups, uids, g) => ({ // {0: [42]},
+      ...groups,
+      ...(uids.size > 0 && {[g]: Object.values(identities)
+        .filter(({ gid, mod }) => gid === g && mod)
+        .map(({ uid }) => uid)
+      }),
+    }), {}),
+    mics: groups.reduce((groups, uids, g) => ({ // {0: [42]},
+      ...groups,
+      ...(uids.size > 0 && {[g]: Object.values(identities)
+        .filter(({ gid, hasMic }) => gid === g && hasMic)
+        .map(({ uid }) => uid)
+      }),
+    }), {}),
+    names: groups.reduce((groups, uids, g) => ({ // {0: {0: 'draho'}, 3: {}}
+      ...groups,
+      ...(uids.size > 0 && {[g]: Object.values(identities)
+        .filter(({ gid }) => gid === g)
         .reduce((map, {uid, name}) => ({...map, [uid]: name}), {})
-    ),
+      }),
+    }), {}),
   })
   console.log('identities', identities)
   wss.clients.forEach(client => {
@@ -243,7 +253,13 @@ wss.on('connection', async function connection(ws) {
         if (!remoteIdentity && !serverIdentity) {
           console.error('no or invalid secret', secret)// invalid secret
           if (ws.secret) {
+            ws.terminate()
             return console.error('cant change secret of ws.secret')
+          }
+          if (gid >= 100) {
+            // remote room must be accesed by remote signed secret only
+            ws.terminate()
+            return
           }
           secret = jwt.sign(identity, SERVER_KEY)
         }
