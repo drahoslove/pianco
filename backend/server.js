@@ -208,7 +208,7 @@ wss.on('connection', async function connection(ws) {
       }
 
       if (cmd === "regroup") {
-        const [_, __, newGid] = values.map(Number)
+        const [gid, uid, newGid] = values.map(Number)
         let [secret, name] = values.slice(3) // optional
         const { uid: oldUid, gid: oldGid } = identities[secret] ||
           { uid: undefined, gid: undefined } // after reset, or for new users - to force gen of new uid
