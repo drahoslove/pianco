@@ -1417,6 +1417,7 @@ body.framed .back-background {
 
 body.framed {
 	background-color: transparent;
+	touch-action: manipulation; /* disables double tap to zoom */
 }
 body.framed header,
 body.framed footer {
