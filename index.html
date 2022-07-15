@@ -274,25 +274,23 @@
 					v-for="u of users"
 				>
 					<button		
-						@click="userClick(u, $event)"
-						:content="userName(u)" v-tippy
-						:aria-label="`${isMuted(u) ? 'un': ''}mute ${userName(u)}`"
+						@click="userClick(u.id, $event)"
+						:content="u.name" v-tippy
+						:aria-label="`${u.isMuted ? 'un': ''}mute ${u.name}`"
 					>
 						<span class="user-flags">
-							<span class="iconify flag self" data-icon="mdi-dots-horizontal" v-if="u === uid"></span>
-							<span class="iconify flag mic" data-icon="mdi-microphone" v-if="hasMic(u)"></span>
-							<span class="iconify flag muted" data-icon="mdi-volume-mute" v-if="u !== uid && isMuted(u)"></span>
-							<span class="iconify flag self-muted" data-icon="mdi-microphone-off" v-if="u === uid && isMuted(u)"></span>
+							<span class="iconify flag self" data-icon="mdi-dots-horizontal" v-if="u.id === uid"></span>
+							<span class="iconify flag mic" data-icon="mdi-microphone" v-if="u.hasMic"></span>
+							<span class="iconify flag muted" data-icon="mdi-volume-mute" v-if="!u.isMe && u.isMuted"></span>
+							<span class="iconify flag self-muted" data-icon="mdi-microphone-off" v-if="u.isMe && u.isMuted"></span>
 						</span>
 						<span
 							class="user-icon"
-							:style="{'--color': userColor(u)}"
-							:data-uid="u"
+							:style="{'--color': userColor(u.id)}"
+							:data-uid="u.id"
 						>
-							<!-- <span class="iconify" data-icon="mdi-account-settings" v-if="u===uid" ></span> -->
-							<!-- <span class="iconify" data-icon="mdi-account-cancel"v-else-if="isMuted(u)" ></span> -->
-							<span class="iconify" data-icon="mdi-account-tie"	v-if="u===0"></span>
-							<span class="iconify" data-icon="mdi-account-tie"	v-else-if="isMod(u)"></span>
+							<span class="iconify" data-icon="mdi-account-tie"	v-if="u.id===0"></span>
+							<span class="iconify" data-icon="mdi-account-tie"	v-else-if="u.isMod"></span>
 							<span class="iconify" data-icon="mdi-account"	v-else ></span>
 						</span>
 					</button>

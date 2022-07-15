@@ -51,6 +51,7 @@ export const networkingApp = new Vue({
     uid: 0,
     groups: [],
     names: [],
+    avatars: [],
     mods: [],
     mics: [],
     reactions: [],
@@ -67,7 +68,29 @@ export const networkingApp = new Vue({
   },
   computed: {
     users () {
-      return this.groups[this.gid]
+      const users = (this.groups[this.gid]||[]).map((u) => ({
+        id: u,
+        mod: this.isMod(u),
+        name: this.userName(u),
+        avatar: (this.avatars[this.gid]||[])[this.uid],
+        isMuted: this.isMuted(u),
+        hasMic: this.hasMic(u),
+        isMe: u === this.uid,
+      }))
+      // const me = users.find(({isMe}) => isMe)
+      const byName = (u1, u2) => {
+        if (u1.name > u2.name) {
+          return +0.5
+        }
+        if (u1.name < u2.name) {
+          return -0.5
+        }
+        return 0
+      }
+      return  [
+        ...users.filter(({ isMod }) => isMod).sort(byName),
+        ...users.filter(({ isMod }) => !isMod).sort(byName),
+      ]
     },
     lastEmojisMap () {
       return this.lastEmojis.slice(this.lastEmojis.length === 4 ? 1 : 0).reduce((map, symbol, i) => ({
@@ -178,7 +201,6 @@ export const networkingApp = new Vue({
       const name = (this.names[this.gid]||[])[uid] || ''
       return name 
         + (uid === this.uid ? ' <small>- you</small>' : '')
-        + (this.isMuted(uid) ? ' <small>- muted</small>' : '')
     },
     userColor (uid) {
       return uid === this.uid
