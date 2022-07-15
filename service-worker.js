@@ -59,6 +59,7 @@ const filesToPrecache = [
   '/js/vue/recorder.js',
   '/js/instrument.js',
   '/js/io.js',
+  '/js/storage.js',
   '/js/midi.js',
   '/js/ui.js',
 

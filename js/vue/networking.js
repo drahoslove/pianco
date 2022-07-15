@@ -7,6 +7,7 @@ import {
   dropMic as ioDropMic,
   react,
 } from '../io.js'
+import { getStorage } from '../storage.js';
 
 
 const emojiReg = /\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F/gu;
@@ -54,7 +55,7 @@ export const networkingApp = new Vue({
     mics: [],
     reactions: [],
     muted: [{}],
-    lastEmojis: (localStorage||{}).lastEmojis ? localStorage.lastEmojis.split(",") : [],
+    lastEmojis: (getStorage().lastEmojis || '').split(","),
     defaultEmojis: {
       '❤️': 'lovely',
       '👏🏻': 'bravo!',
@@ -108,7 +109,7 @@ export const networkingApp = new Vue({
         if (this.lastEmojis.length > 4) {
           this.lastEmojis = [ ...this.lastEmojis.slice(1) ] // remove overflow
         }
-        localStorage.lastEmojis = this.lastEmojis.join(",") // persist
+        getStorage().lastEmojis = this.lastEmojis.join(",") // persist
       }
       react(symbol)
       this.showReacter = false
@@ -158,7 +159,7 @@ export const networkingApp = new Vue({
         uid == this.uid &&
         window.parent === window // only un-framed can rename self
       ) {
-        const { name } = localStorage || {}
+        const { name } = getStorage()
         this.showRename = name
         // const newName = window.prompt('Your name', name)
         // ioRename(newName)

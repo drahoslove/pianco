@@ -1,3 +1,5 @@
+import { getStorage } from "./storage.js"
+
 // settings
 const defaultSettings = {
   labels: 0,
@@ -48,21 +50,21 @@ function saveSetting(key, val) {
   let settings = {}
   try {
     settings = JSON.parse(
-      localStorage?.pianco || '{}'
+      getStorage().pianco || '{}'
     )
   } catch (e) {}
   settings[key] = val
-  ;(localStorage||{}).pianco = JSON.stringify(settings)
+  getStorage().pianco = JSON.stringify(settings)
 }
 
 function loadSetting(key) {
   let settings = {}
   try {
     settings = JSON.parse(
-      localStorage?.pianco || '{}'
+      getStorage().pianco || '{}'
     )
   } catch (e) {
-    (localStorage||{}).pianco = JSON.stringify({})
+    getStorage().pianco = JSON.stringify({})
   }
   return {
     ...defaultSettings,

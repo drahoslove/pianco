@@ -11,6 +11,7 @@ import {
   CHANNEL,
   chanFromCmd,
 } from './midi.js'
+import { getStorage } from './storage.js'
 import { networkingApp } from './vue/networking.js'
 import { recorderApp } from './vue/recorder.js'
 
@@ -85,7 +86,7 @@ export const rename = async (newName) => {
   if (isFramed) { // no self renaming in framed
     return
   }
-  const { secret } = localStorage || {}
+  const { secret } = getStorage()
   if (newName) {
     send(`regroup ${GID} ${UID} ${GID} ${secret||''} ${newName||''}`)
   }
@@ -127,10 +128,10 @@ const onRegroup = onCmd('regroup', (values) => {
   networkingApp.uid = UID = newUid
   if (!isFramed) {
     if (secret) {
-      (localStorage||{}).secret = secret
+      getStorage().secret = secret
     }
     if (name) {
-      (localStorage||{}).name = name
+      getStorage().name = name
     }
   }
   // update url if group changed
@@ -222,7 +223,7 @@ window.addEventListener('hashchange', () => { // chagning group
   sendOffAll() // to mute self for others before leaving
   sendSustain(0) // to mute self for others before leaving
   allOff() // to mute others
-  const { secret, name } = localStorage || {}
+  const { secret, name } = getStorage()
   send(`regroup ${GID} ${UID} ${newGid} ${secret||''} ${name||''}`)
   console.log(`${UID}@${GID} => ?@${newGid} request`)
 })
@@ -249,7 +250,7 @@ const pingPong = () => {
   ws.addEventListener('message', ({ data }) => {
     if (data === 'pong') {
       pongs++
-      if (localStorage?.DEBUG){
+      if (getStorage().DEBUG){
         console.log('ping', Math.floor((performance.now() - now)*100) /100, 'ms')
       }
     }
@@ -280,7 +281,7 @@ const connect = () => {
       const newGid = gidFromHash()
       let { secret, name } = isFramed
         ? await requestUserData()
-        : localStorage || {}
+        : getStorage()
       send(`regroup ${GID} ${UID} ${newGid} ${secret||''} ${name||''}`)
       networkingApp.isOnline = true
       networkingApp.gid = newGid
