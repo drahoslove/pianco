@@ -104,6 +104,8 @@ Object.keys(defaultSettings).forEach(key => {
 
 
 const isMobile = ('ontouchstart' in document.documentElement)
+const isFramed = window.parent !== window
+
 
 // do not show toggle qwerty hint button on mobile
 const hintButton = document.getElementById('toggle-qwerty')
@@ -138,6 +140,9 @@ window.addEventListener('keydown', (e) => {
 // fullscreen on
 const fullscreenButton = document.getElementById('fullscreen')
 const toggleFullscreen = async function () {
+  if (isFramed) {
+    return
+  }
   if (document.fullscreenElement && document.exitFullscreen) {
     await document.exitFullscreen()
   } else {
@@ -164,8 +169,6 @@ window.addEventListener('keydown', (e) => {
 // orientation
 
 const reorient = () => {
-  const isFramed = window.parent !== window
-
   const isPortrait = !!window.screen.orientation
     ? window.screen.orientation.type.includes('portrait')
     : window.screen.availHeight > window.screen.availWidth * 1.5
