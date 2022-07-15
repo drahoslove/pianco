@@ -33,7 +33,7 @@ const onMessage = (event) => {
     console.log('Test data received', event.data)
   }
   if (event.data.userJwt) {
-    const secret = event.data.userJwt || ''
+    const secret = (event.data.userJwt || '').replace(/ /g, '')
     const name = ''
     send(`regroup ${GID} ${UID} ${GID} ${secret} ${name}`)
   }
@@ -57,7 +57,7 @@ const requestUserData = async () => {
       if (!(event.data instanceof Object)) {
         return
       } 
-      resolve({ secret: event.data.userJwt }) // { secret }
+      resolve({ secret: event.data.userJwt.replace(/ /g, '') })
     }
     window.removeEventListener('message', onMessage)
     window.addEventListener('message', handleResponse, {
