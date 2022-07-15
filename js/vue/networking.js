@@ -79,10 +79,10 @@ export const networkingApp = new Vue({
       }))
       // const me = users.find(({isMe}) => isMe)
       const byName = (u1, u2) => {
-        if (u1.name > u2.name) {
+        if (u1.name.toLocaleLowerCase() > u2.name.toLocaleLowerCase()) {
           return +0.5
         }
-        if (u1.name < u2.name) {
+        if (u1.name.toLocaleLowerCase() < u2.name.toLocaleLowerCase()) {
           return -0.5
         }
         return 0
