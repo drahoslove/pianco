@@ -48,7 +48,9 @@ const isJwtNew = (jwt) => {
 }
 
 const onMessage = (event) => {
-  console.log('globev', event)
+  if(getStorage().DEBUG) {
+    console.log('globev', event)
+  }
   if (!(event.data instanceof Object)) {
     return
   }
@@ -79,7 +81,9 @@ const requestUserData = async () => {
       window.addEventListener('message', onMessage)
     }, 1000)
     const handleResponse = (event) => {
-      console.log('locev', event)
+      if(getStorage().DEBUG) {
+        console.log('locev', event)
+      }
       if (!(event.data instanceof Object)) {
         return
       } 
@@ -171,7 +175,7 @@ const onRegroup = onCmd('regroup', (values) => {
 })
 
 const onUserStatus = onCmd('status', (values) => {
-  const status = JSON.parse(values.join(''))
+  const status = JSON.parse(values.join(' '))
 
   const removedUsers = (networkingApp.groups[GID]||[])
     .filter(uid => !status.groups[GID].includes(uid))

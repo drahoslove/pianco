@@ -1370,19 +1370,9 @@ body.mobile *{
 	.bar,
 	header.bar,
 	footer.bar {
-		/* display: none; */
 		height: auto;
 		padding: 0;
 	}
-	/* .reacter,
-	.reaction {
-		bottom: 32px;
-		display: flex;
-		width: 100%;
-	} */
-	/* .reaction {
-		animation: minireaction 5s ease-in 0s 1;
-	} */
 	.reacter {
 		flex-direction: row-reverse;
 		padding: 6px 0 6px;
@@ -1453,7 +1443,6 @@ body.framed footer {
 body.framed .staff-paper {
 	background-color: #e5efff;
 	z-index: 5;
-	/* border-radius: 0; */
 	border-top: 2px dotted #08618e;
 	margin-bottom: -3px;
 }
