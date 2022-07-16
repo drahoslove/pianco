@@ -468,7 +468,7 @@ footer.bar button.on {
 
 /* bottom */
 .user-flags .flag.self {
-	bottom: -4px;
+	bottom: -6px;
 	left: 0;
 	right: 0;
 	width: 100%;
