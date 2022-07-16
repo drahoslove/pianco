@@ -26,15 +26,19 @@ const isFramed = window.parent !== window
 let lastJwt
 
 const getJwtData = (jwt) => {
-  return jwt
-    ? JSON.parse(jwt.split('.')[1])
-    : {}
+  try {
+    return jwt
+      ? JSON.parse(jwt.split('.')[1])
+      : {}
+  } catch(e) {
+    return {}
+  }
 }
 
 const isJwtNew = (jwt) => {
   const old = getJwtData(lastJwt)
   const newOne = getJwtData(jwt)
-  return Object.entries(newOnw).some((key, val) => {
+  return Object.entries(newOne).some((key, val) => {
     if (key === 'iat') {
       return val - old[key] > 1000 * 60 // is older than minute
     } else {
