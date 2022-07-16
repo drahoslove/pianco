@@ -272,6 +272,7 @@
 				<label
 					v-if="isOnline"
 					v-for="u of users"
+					:key="u.name"
 				>
 					<button		
 						@click="userClick(u.id, $event)"

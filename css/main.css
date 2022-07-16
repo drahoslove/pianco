@@ -1362,13 +1362,15 @@ body.mobile *{
 		height: auto;
 		padding: 0;
 	}
-	.reacter,
+	/* .reacter,
 	.reaction {
 		bottom: 32px;
-	}
-	.reaction {
+		display: flex;
+		width: 100%;
+	} */
+	/* .reaction {
 		animation: minireaction 5s ease-in 0s 1;
-	}
+	} */
 	.reacter {
 		flex-direction: row-reverse;
 		padding: 6px 0 6px;
@@ -1451,6 +1453,7 @@ body.framed header.bar button,
 body.framed footer.bar :is(button, label) {
 	color: #fafafa;
 	background-color: #202c37;
+	position: relative;
 }
 body.framed header {
 	position: absolute;
