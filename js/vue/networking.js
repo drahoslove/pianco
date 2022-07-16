@@ -72,7 +72,7 @@ export const networkingApp = new Vue({
         id: u,
         isMod: this.isMod(u),
         name: this.userName(u),
-        avatar: (this.avatars[this.gid]||[])[this.uid],
+        avatar: (this.avatars[this.gid]||[])[u],
         isMuted: this.isMuted(u),
         hasMic: this.hasMic(u),
         isMe: u === this.uid,

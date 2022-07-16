@@ -146,12 +146,16 @@ const onRegroup = onCmd('regroup', (values) => {
 
 const onUserStatus = onCmd('status', (values) => {
   const status = JSON.parse(values.join(''))
+
+  console.log('avatars', JSON.parse(values.join('')))
+
   const removedUsers = (networkingApp.groups[GID]||[])
     .filter(uid => !status.groups[GID].includes(uid))
-  networkingApp.groups = status.groups || []
-  networkingApp.names = status.names || []
-  networkingApp.mods = status.mods || []
-  networkingApp.mics = status.mics || []
+  networkingApp.groups = status.groups || {}
+  networkingApp.names = status.names || {}
+  networkingApp.avatars = status.avatars || {}
+  networkingApp.mods = status.mods || {}
+  networkingApp.mics = status.mics || {}
   
   removedUsers.forEach(uid => {
     releaseAll(uid)('cleanage')
@@ -304,6 +308,7 @@ const connect = () => {
       })
       networkingApp.groups = []
       networkingApp.names = {}
+      networkingApp.avatars = {}
       setTimeout(connect, 3000)
     }
   

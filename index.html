@@ -285,6 +285,7 @@
 							<span class="iconify flag self-muted" data-icon="mdi-microphone-off" v-if="u.isMe && u.isMuted"></span>
 						</span>
 						<span
+							v-if="!u.avatar"
 							class="user-icon"
 							:style="{'--color': userColor(u.id)}"
 							:data-uid="u.id"
@@ -292,6 +293,13 @@
 							<span class="iconify" data-icon="mdi-account-tie"	v-if="u.id===0"></span>
 							<span class="iconify" data-icon="mdi-account-tie"	v-else-if="u.isMod"></span>
 							<span class="iconify" data-icon="mdi-account"	v-else ></span>
+						</span>
+						<span
+							v-if="u.avatar"
+							class="user-avatar"
+							:data-uid="u.id"
+						>
+							<img :src="u.avatar" width="20px" height="24px" />
 						</span>
 					</button>
 					<span v-if="reactions[u.id]" class="reaction">{{reactions[u.id]}}</span>

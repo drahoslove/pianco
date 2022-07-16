@@ -68,7 +68,6 @@ const echo = (data) => { // to eveyone in group except origin
 
 const status = () => { // broadcast state of the world to everyone
   const data = JSON.stringify({
-    // groups: groups.map(uids => [...uids]), // [0: [0, 42]]
     groups: groups.reduce((groups, uids, g) => ({ // {0: [0, 42]}
       ...groups,
       ...(uids.size > 0 && {[g]: [...uids]})

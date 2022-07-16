@@ -420,14 +420,25 @@ footer.bar button.on {
 	line-height: 0;
 }
 
+.bar .user-avatar {
+	position: relative;
+	display: flex;
+}
+.bar .user-avatar img {
+	background: white;
+	border-radius: 3px;
+}
+
 .bar:hover .user-icon {
 	color: var(--color) !important;
 }
 
-.bar .user-icon.active {
+.bar .user-icon.active,
+.bar .user-avatar.active {
 	color: var(--color) !important;
 	animation: hit 0.12s ease 0s 1;
 }
+
 
 .user-flags {
 	pointer-events: none;
@@ -452,7 +463,7 @@ footer.bar button.on {
 .user-flags .flag.mic,
 .user-flags .flag.self-muted {
 	position: absolute;
-	left: 4px;
+	left: 3px;
 	top: 8px;
 	font-size: 120%;
 }
