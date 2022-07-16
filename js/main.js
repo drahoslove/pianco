@@ -222,7 +222,7 @@ window.addEventListener('keyup', e => {
 
 
 // init MIDI INPUT (no output)
-const midiEl = document.querySelector('#midi')
+const midiEl = document.querySelector('#midi') || {}
 const reloadMidi = (isFrist) => {
   console.log('will reload midi')
   if (navigator.requestMIDIAccess) {
