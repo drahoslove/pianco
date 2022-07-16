@@ -23,6 +23,25 @@ Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || function () {
 
 const isFramed = window.parent !== window
 
+let lastJwt
+
+const getJwtData = (jwt) => {
+  return jwt
+    ? JSON.parse(jwt.split('.')[1])
+    : {}
+}
+
+const isJwtNew = (jwt) => {
+  const old = getJwtData(lastJwt)
+  const newOne = getJwtData(jwt)
+  return Object.entries(newOnw).some((key, val) => {
+    if (key === 'iat') {
+      return val - old[key] > 1000 * 60 // is older than minute
+    } else {
+      return val !== old[key]
+    }
+  })
+}
 
 const onMessage = (event) => {
   console.log('globev', event)
@@ -35,7 +54,10 @@ const onMessage = (event) => {
   if (event.data.userJwt) {
     const secret = (event.data.userJwt || '').replace(/ /g, '')
     const name = ''
-    send(`regroup ${GID} ${UID} ${GID} ${secret} ${name}`)
+    if (isJwtNew(secret)) {
+      lastJwt = secret
+      send(`regroup ${GID} ${UID} ${GID} ${secret} ${name}`)
+    }
   }
 }
 
@@ -146,8 +168,6 @@ const onRegroup = onCmd('regroup', (values) => {
 
 const onUserStatus = onCmd('status', (values) => {
   const status = JSON.parse(values.join(''))
-
-  console.log('avatars', JSON.parse(values.join('')))
 
   const removedUsers = (networkingApp.groups[GID]||[])
     .filter(uid => !status.groups[GID].includes(uid))
