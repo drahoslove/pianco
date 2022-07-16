@@ -254,6 +254,7 @@ function onMIDISuccess(isFrist) {
         .find(input => input.state === 'connected')
       if (!input) {
         midiEl.className =  "none"
+        instrumentApp.midiEnabled = false
         instrumentApp.midiTooltip = 'MIDI in: none'
       } else {
         input.onmidimessage = handleMIDIMessage
