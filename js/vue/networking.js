@@ -113,7 +113,7 @@ export const networkingApp = new Vue({
       }
       if (!symbol) {
         this.showCustomEmoji = this.lastEmojis.length
-          ? this.lastEmojis[0]
+          ? this.lastEmojis[0] || '💯'
           : '💯'
         return
       }
