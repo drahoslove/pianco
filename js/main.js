@@ -146,7 +146,9 @@ if ('ontouchstart' in document.documentElement) { // only for touch devices
       }
       if (keysByTouches[id] && key !== keysByTouches[id]) {
         const { note } = keysByTouches[id].dataset
-        releaseNote(note)("touch")
+        setTimeout(() => {
+          releaseNote(note)("touch")
+        }, 50)
       }
       if (key) {
         keysByTouches[id] = key
@@ -159,7 +161,11 @@ if ('ontouchstart' in document.documentElement) { // only for touch devices
       const key = keyFromTouchPoint(touch)
       if (keysByTouches[id]) {
         const { note } = keysByTouches[id].dataset
-        releaseNote(note)("touch")
+        setTimeout(() => {
+          // touchend is too usually too fast compared to keyup
+          // so we will let the note to sound a bit longer
+          releaseNote(note)("touch")
+        }, 100)
       }
       keysByTouches[id] = null
     })

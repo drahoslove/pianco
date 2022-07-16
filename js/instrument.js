@@ -170,7 +170,7 @@ const updateNote = (note, velocity, action) => (source) => {
 			style.setProperty('--velocity', 0)
 		})
 		if (!isSustained) {
-			getInstrument(source).triggerRelease(note, "+0.001")
+			getInstrument(source).triggerRelease(note, "+0.1")
 		}
 		if (!rectSustainMode || !isSustained) {
 			releaseRect(note, source)
@@ -178,7 +178,7 @@ const updateNote = (note, velocity, action) => (source) => {
 	}
 	if (wasSustained && !isSustained && !wasPressed && !isPressed) {
 		releaseRect(note, source)
-		getInstrument(source).triggerRelease(note, "+0.001")
+		getInstrument(source).triggerRelease(note, "+0.1")
 	}
 }
 
