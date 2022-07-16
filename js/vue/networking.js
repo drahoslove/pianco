@@ -88,8 +88,8 @@ export const networkingApp = new Vue({
         return 0
       }
       return  [
-        ...users.filter(({ isMod }) => isMod).sort(byName),
-        ...users.filter(({ isMod }) => !isMod).sort(byName),
+        ...users.filter(({ isMod, id }) => isMod || id===0).sort(byName),
+        ...users.filter(({ isMod, id }) => !isMod && id>0).sort(byName),
       ]
     },
     lastEmojisMap () {

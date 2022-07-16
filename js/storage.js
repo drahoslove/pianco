@@ -3,7 +3,7 @@ const mockStorage = {}
 
 export const getStorage = () => {
   try {
-    return widnow.localStorage
+    return window.localStorage
       ? window.localStorage
       : mockStorage
   } catch (e) {
