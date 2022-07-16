@@ -280,10 +280,14 @@
 						:aria-label="`${u.isMuted ? 'un': ''}mute ${u.name}`"
 					>
 						<span class="user-flags">
-							<span class="iconify flag self" data-icon="mdi-dots-horizontal" v-if="u.id === uid"></span>
-							<span class="iconify flag mic" data-icon="mdi-microphone" v-if="u.hasMic"></span>
-							<span class="iconify flag muted" data-icon="mdi-volume-mute" v-if="!u.isMe && u.isMuted"></span>
+							<!-- left -->
 							<span class="iconify flag self-muted" data-icon="mdi-microphone-off" v-if="u.isMe && u.isMuted"></span>
+							<span class="iconify flag mic" data-icon="mdi-microphone" v-if="u.hasMic"></span>
+							<!-- right -->
+							<span class="iconify flag muted" data-icon="mdi-volume-mute" v-if="!u.isMe && u.isMuted"></span>
+							<span class="iconify flag mod" data-icon="mdi-tie" v-else-if="u.isMod && u.avatar"></span>
+							<!-- bottom -->
+							<span class="iconify flag self" data-icon="mdi-dots-horizontal" v-if="u.id === uid"></span>
 						</span>
 						<span
 							v-if="!u.avatar"

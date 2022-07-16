@@ -452,28 +452,39 @@ footer.bar button.on {
 	font-size: 75%;
 }
 
-.user-flags .flag.self {
+.user-flags .flag {
 	position: absolute;
+	font-size: 110%;
+}
+
+/* bottom */
+.user-flags .flag.self {
 	bottom: -4px;
 	left: 0;
 	right: 0;
-	font-size: 120%;
-	/* margin: 0 auto; */
 	width: 100%;
 }
+
+/* left side */
 .user-flags .flag.mic,
 .user-flags .flag.self-muted {
-	position: absolute;
 	left: 3px;
 	top: 8px;
 	font-size: 120%;
 }
+/* right side */
+.user-flags .flag.mod,
 .user-flags .flag.muted {
 	position: absolute;
 	right: 3px;
 	top: 6px;
 	font-size: 125%;
 }
+.user-flags .flag.mod {
+	top: 8px;
+	font-size: 110%;
+}
+
 
 @keyframes hit {
 	0%   { bottom: 0}

@@ -28,7 +28,7 @@ let lastJwt
 const getJwtData = (jwt) => {
   try {
     return jwt
-      ? JSON.parse(atob(jwt.split('.')[1]))
+      ? JSON.parse(window.atob(jwt.split('.')[1]))
       : {}
   } catch(e) {
     return {}
@@ -40,7 +40,7 @@ const isJwtNew = (jwt) => {
   const newOne = getJwtData(jwt)
   return Object.entries(newOne).some((key, val) => {
     if (key === 'iat') {
-      return val - old[key] > 1000 * 60 // is older than minute
+      return val - (old[key]||0) > 1000 * 60 * 15 // is older than 15 minutes
     } else {
       return val !== old[key]
     }
