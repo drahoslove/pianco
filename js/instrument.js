@@ -11,6 +11,8 @@ import {
 	instrumentApp
 } from './vue/instrument.js'
 
+const isFramed = window.parent !== window
+
 Tone.setContext(new Tone.Context({
 	latencyHint: 'interactive', // improve sheduling latency
 	lookAhead: 0.025,
@@ -30,14 +32,14 @@ allNotes.forEach(note => {
 })
 
 const instruments = {
-  polySynth: new Tone.PolySynth(Tone.Synth, {
-    envelope: {
-      attack: 0.01,
-      release: .5,
-    }
-  }).toDestination(),
-  AMSynth: new Tone.AMSynth().toDestination(),
-  FMSynth: new Tone.FMSynth().toDestination(),
+  // polySynth: new Tone.PolySynth(Tone.Synth, {
+  //   envelope: {
+  //     attack: 0.01,
+  //     release: .5,
+  //   }
+  // }).toDestination(),
+  // AMSynth: new Tone.AMSynth().toDestination(),
+  // FMSynth: new Tone.FMSynth().toDestination(),
   sampledPiano: new Tone.Sampler({
 		urls: {
 			"A0" : "A0.[mp3|ogg]",
@@ -95,34 +97,38 @@ const instruments = {
 
 const isBlacklistedDevice = ({ name }) => name.startsWith('AG0')
 
-// init midi output device
-let output = null
-const send = (data) => {
-	output && output.send(new Uint8Array(data))
-}
-navigator.requestMIDIAccess && navigator.requestMIDIAccess({ sysex: false })
-	.then((midiAccess) => {
-		const reconnectOutputs = () => {
-			for (let out of midiAccess.outputs.values()) {
-				if (isBlacklistedDevice(out)) {
-					continue
+// init midi OUTPUT device (does not affect input)
+if (!isFramed) {
+	let output = null
+	const send = (data) => {
+		output && output.send(new Uint8Array(data))
+	}
+	navigator.requestMIDIAccess && navigator.requestMIDIAccess({ sysex: false })
+		.then((midiAccess) => {
+			const reconnectOutputs = () => {
+				for (let out of midiAccess.outputs.values()) {
+					if (isBlacklistedDevice(out)) {
+						continue
+					}
+					output = out
+					console.log('MIDI out available:', out.name)
+					instrumentApp.instrument = 'midiout'
+					instrumentApp.midiEnabled = true
 				}
-				output = out
-				console.log('MIDI out available:', out.name)
-				instrumentApp.instrument = 'midiout'
-				instrumentApp.midiEnabled = true
 			}
-		}
-		midiAccess.onstatechange = reconnectOutputs
-		setTimeout(reconnectOutputs, 100)
-	})
-	.catch((err) => {
-		console.log('midi out request failed', err)
-	})
+			midiAccess.onstatechange = reconnectOutputs
+			setTimeout(reconnectOutputs, 100)
+		})
+		.catch((err) => {
+			console.log('midi out request failed', err)
+		})
+}
 
 
 const getInstrument = (source) => {
-	const isMidiLoop = (source === 'midiin' && instrumentApp.instrument === 'midiout')	
+	const isMidiLoop = (
+		source === 'midiin' && instrumentApp.instrument === 'midiout'
+	)
 	// if source is midi, we don't want to send play the note twice
 	return (
 		!isMidiLoop && source !== "mutedIO"

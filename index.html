@@ -163,13 +163,13 @@
 					>
 						<span>
 							<span v-if="instrument === 'sampledPiano'" class="iconify" data-icon="mdi-piano"></span>
-							<span v-if="instrument === 'polySynth'" class="iconify" data-icon="mdi-sine-wave"></span>
-							<span v-if="instrument === 'midiout'" class="iconify" data-icon="mdi-midi"></span>
+							<!-- <span v-if="instrument === 'polySynth'" class="iconify" data-icon="mdi-sine-wave"></span>
+							<span v-if="instrument === 'midiout'" class="iconify" data-icon="mdi-midi"></span> -->
 							<span v-if="instrument === 'none'" class="iconify" data-icon="mdi-dots-horizontal"></span>
 						</span>
 						<select id="instrument" name="instrument" hidden v-model="instrument" @click="changeInstrument">
 							<option value="sampledPiano"> piano</option>
-							<option value="polySynth" class="iconify"> synth</option>
+							<!-- <option value="polySynth" class="iconify"> synth</option> -->
 							<option value="midiout" :hidden="!midiEnabled">MIDI out</option>
 							<option value="none" selected hidden>...</option>
 							<!-- <option value="AMSynth">AM synth</option>
@@ -460,11 +460,8 @@ if (window.parent !== window) { // frame
 	$('#tabs').remove()
 	$('#links').remove()
 	$('#toggle-velocity').remove()
-	$('#midi').remove()
 
-	// $('#recorder-app').remove()
 	$('#instrument-label').remove()
-	// $('#fullscreen').remove()
 
 	window.addEventListener('blur', () => {
 		document.body.classList.add('unfocused')

@@ -38,13 +38,13 @@ export const instrumentApp = new Vue({
       if (this.midiEnabled){
         this.instrument = {
           'sampledPiano': 'polySynth',
-          'polySynth': 'midiout',
+          // 'polySynth': 'midiout',
           'midiout': 'sampledPiano'
         }[this.instrument] || 'none'
       } else {
         this.instrument = {
           'sampledPiano': 'polySynth',
-          'polySynth': 'sampledPiano',
+          // 'polySynth': 'sampledPiano',
         }[this.instrument] || 'none'
       }
     },

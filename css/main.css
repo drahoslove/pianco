@@ -1404,6 +1404,7 @@ body.mobile *{
 /* framed */
 
 body.framed #recorder-app,
+body.framed #midi,
 body.framed #tabs,
 body.framed #toggle-velocity,
 body.framed #fullscreen {
