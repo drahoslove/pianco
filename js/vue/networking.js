@@ -70,7 +70,7 @@ export const networkingApp = new Vue({
     users () {
       const users = (this.groups[this.gid]||[]).map((u) => ({
         id: u,
-        mod: this.isMod(u),
+        isMod: this.isMod(u),
         name: this.userName(u),
         avatar: (this.avatars[this.gid]||[])[this.uid],
         isMuted: this.isMuted(u),
