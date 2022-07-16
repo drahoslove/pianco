@@ -13,6 +13,7 @@ export const instrumentApp = new Vue({
     instrument: 'none',
     midiEnabled: false,
     midiTooltip: 'MIDI in',
+    isFramed: window.parent !== window,
   },
   computed: {
   },
@@ -37,14 +38,12 @@ export const instrumentApp = new Vue({
     changeInstrument (e) {
       if (this.midiEnabled){
         this.instrument = {
-          'sampledPiano': 'polySynth',
-          // 'polySynth': 'midiout',
+          'sampledPiano': 'midiout',
           'midiout': 'sampledPiano'
         }[this.instrument] || 'none'
       } else {
         this.instrument = {
-          'sampledPiano': 'polySynth',
-          // 'polySynth': 'sampledPiano',
+          'sampledPiano': 'sampledPiano',
         }[this.instrument] || 'none'
       }
     },

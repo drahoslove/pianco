@@ -3,7 +3,7 @@ import './vue/networking.js'
 import { instrumentApp } from './vue/instrument.js'
 import './vue/recorder.js'
 import {
-  instrumentById,
+  instrumentById, isBlacklistedDevice,
 } from './instrument.js'
 import {
   sendNoteOn as pressNote,
@@ -249,14 +249,19 @@ reloadMidi(true)
 function onMIDISuccess(isFrist) {
   return (midiAccess) => {
     const reconnectInputs = (e) => {
-      const input = [...midiAccess.inputs.values()].find(input => input.state === 'connected')
+      const input = [...midiAccess.inputs.values()]
+        .filter(input => !isBlacklistedDevice(input))
+        .find(input => input.state === 'connected')
       if (!input) {
         midiEl.className =  "none"
         instrumentApp.midiTooltip = 'MIDI in: none'
       } else {
         input.onmidimessage = handleMIDIMessage
         instrumentApp.midiTooltip = `MIDI in: ${input.name}`
+        instrumentApp.midiEnabled = true
         midiEl.className = "on"
+        console.log('midi input connected', input.name)
+        
       }
     }
     midiAccess.onstatechange = reconnectInputs

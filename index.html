@@ -155,46 +155,47 @@
 			</div> <!-- end piano row -->
 			<div class="bar tool-bar"> <!-- tool bar row -->
 				<div id="instrument-app" class="tool-bar" v-cloak>
-					<button id="midi" v-tippy :content="midiTooltip" :aria-label="midiTooltip">
+					<div v-if="midiEnabled && isFramed" class="midi-status-icon" v-tippy :content="midiTooltip" >
 						<span class="iconify" data-icon="mdi-midi"></span>
-					</button>
-					<label id="instrument-label" for="instrument" v-tippy :content="`out: ${instrument}`"
-						@keyup.enter.space="changeInstrument"
-					>
-						<span>
-							<span v-if="instrument === 'sampledPiano'" class="iconify" data-icon="mdi-piano"></span>
-							<!-- <span v-if="instrument === 'polySynth'" class="iconify" data-icon="mdi-sine-wave"></span>
-							<span v-if="instrument === 'midiout'" class="iconify" data-icon="mdi-midi"></span> -->
-							<span v-if="instrument === 'none'" class="iconify" data-icon="mdi-dots-horizontal"></span>
-						</span>
-						<select id="instrument" name="instrument" hidden v-model="instrument" @click="changeInstrument">
-							<option value="sampledPiano"> piano</option>
-							<!-- <option value="polySynth" class="iconify"> synth</option> -->
-							<option value="midiout" :hidden="!midiEnabled">MIDI out</option>
-							<option value="none" selected hidden>...</option>
-							<!-- <option value="AMSynth">AM synth</option>
-							<option value="FMSynth">FM synt</option> -->
-						</select>
-					</label>
-					<label class="volume-label" title="volume" @wheel="scrollVolume" tabindex="0"
-						@keyup.enter.space="toggleMute"
-					>
-						<span class="volume-icon" id="mute-span" @click="toggleMute">
-							<span class="iconify" data-icon="mdi-volume-mute" v-if="muted" ></span>
-							<span class="iconify" data-icon="mdi-volume-high" v-else-if="volume > -15" ></span>
-							<span class="iconify" data-icon="mdi-volume-medium" v-else-if="volume > -30" ></span>
-							<span class="iconify" data-icon="mdi-volume-low" v-else ></span>
-						</span>
-						<input
-							id="volume"
-							type="range"
-							class="volume"
-							:min="minVolume" :max="maxVolume" :step="stepVolume"
-							v-model.number="volume"
-							:disabled="muted"
-							tabindex="-1"
-						/>
-					</label>
+					</div>
+					<div>
+						<button v-if="!isFramed" id="midi" v-tippy :content="midiTooltip" :aria-label="midiTooltip">
+							<span class="iconify" data-icon="mdi-midi"></span>
+						</button>
+						<label id="instrument-label" for="instrument" v-tippy :content="`out: ${instrument}`"
+							@keyup.enter.space="changeInstrument"
+						>
+							<span>
+								<span v-if="instrument === 'sampledPiano'" class="iconify" data-icon="mdi-piano"></span>
+								<span v-if="instrument === 'midiout'" class="iconify" data-icon="mdi-midi"></span>
+								<span v-if="instrument === 'none'" class="iconify" data-icon="mdi-dots-horizontal"></span>
+							</span>
+							<select id="instrument" name="instrument" hidden v-model="instrument" @click="changeInstrument">
+								<option value="sampledPiano"> piano</option>
+								<option value="midiout" :hidden="!midiEnabled">MIDI out</option>
+								<option value="none" selected hidden>...</option>
+							</select>
+						</label>
+						<label class="volume-label" title="volume" @wheel="scrollVolume" tabindex="0"
+							@keyup.enter.space="toggleMute"
+						>
+							<span class="volume-icon" id="mute-span" @click="toggleMute">
+								<span class="iconify" data-icon="mdi-volume-mute" v-if="muted" ></span>
+								<span class="iconify" data-icon="mdi-volume-high" v-else-if="volume > -15" ></span>
+								<span class="iconify" data-icon="mdi-volume-medium" v-else-if="volume > -30" ></span>
+								<span class="iconify" data-icon="mdi-volume-low" v-else ></span>
+							</span>
+							<input
+								id="volume"
+								type="range"
+								class="volume"
+								:min="minVolume" :max="maxVolume" :step="stepVolume"
+								v-model.number="volume"
+								:disabled="muted"
+								tabindex="-1"
+							/>
+						</label>
+					</div>
 				</div>
 		
 				<div id="arrows-app">

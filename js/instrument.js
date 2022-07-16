@@ -95,14 +95,14 @@ const instruments = {
 	}
 }
 
-const isBlacklistedDevice = ({ name }) => name.startsWith('AG0')
+export const isBlacklistedDevice = ({ name }) => name.startsWith('AG0')
 
 // init midi OUTPUT device (does not affect input)
+let output = null
+const send = (data) => {
+	output && output.send(new Uint8Array(data))
+}
 if (!isFramed) {
-	let output = null
-	const send = (data) => {
-		output && output.send(new Uint8Array(data))
-	}
 	navigator.requestMIDIAccess && navigator.requestMIDIAccess({ sysex: false })
 		.then((midiAccess) => {
 			const reconnectOutputs = () => {

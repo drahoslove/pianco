@@ -393,6 +393,15 @@ footer.bar button.on {
 	line-height: 28px;
 }
 
+
+.bar .midi-status-icon {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 20pt;
+	margin: 0 .5em;
+}
+
 .volume-label > input.volume {
 	width: 0.01rem; /* safari will bug if 0 */
 	padding-left: 0.3rem;
@@ -1402,7 +1411,6 @@ body.mobile *{
 
 
 /* framed */
-
 body.framed #recorder-app,
 body.framed #midi,
 body.framed #tabs,
