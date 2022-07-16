@@ -199,10 +199,13 @@ export const networkingApp = new Vue({
     },
     userName (uid) {
       const name = (this.names[this.gid]||[])[uid] || ''
-      const isMod = (this.mods[this.gid]||[])[uid]
+      const isMod = this.isMod(uid)
+      const hasMic = this.hasMic(uid)
       return name 
         + (uid === this.uid ? ' <small>- you</small>' : '')
         + (isMod ? ' <small>- mod</small>' : '')
+        + (hasMic ? ' <small>- exclusive</small>' : '')
+
     },
     userColor (uid) {
       return uid === this.uid
