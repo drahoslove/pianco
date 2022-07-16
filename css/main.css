@@ -119,6 +119,7 @@ header h1#logo {
 	animation: reaction 5s ease-in 0s 1;
 	text-shadow: 2px 2px 10px #666;
 	pointer-events: none;
+	left: 3px;
 }
 
 @keyframes reaction {
