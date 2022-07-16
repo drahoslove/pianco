@@ -38,7 +38,7 @@ const getJwtData = (jwt) => {
 const isJwtNew = (jwt) => {
   const old = getJwtData(lastJwt)
   const newOne = getJwtData(jwt)
-  return Object.entries(newOne).some((key, val) => {
+  return Object.entries(newOne).some(([key, val]) => {
     if (key === 'iat') {
       return val - (old[key]||0) > 1000 * 60 * 15 // is older than 15 minutes
     } else {
