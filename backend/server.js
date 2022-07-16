@@ -94,6 +94,13 @@ const status = () => { // broadcast state of the world to everyone
         .reduce((map, {uid, name}) => ({...map, [uid]: name}), {})
       }),
     }), {}),
+    avatars: groups.reduce((groups, uids, g) => ({ // {0: {0: 'http...jpg'}, 3: {}}
+      ...groups,
+      ...(uids.size > 0 && {[g]: Object.values(identities)
+        .filter(({ gid, avatar }) => gid === g && avatar)
+        .reduce((map, {uid, avatar}) => ({...map, [uid]: avatar}), {})
+      }),
+    }), {}),
   })
   console.log('identities', identities)
   wss.clients.forEach(client => {
