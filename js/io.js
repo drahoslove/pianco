@@ -28,7 +28,7 @@ let lastJwt
 const getJwtData = (jwt) => {
   try {
     return jwt
-      ? JSON.parse(jwt.split('.')[1])
+      ? JSON.parse(atob(jwt.split('.')[1]))
       : {}
   } catch(e) {
     return {}
