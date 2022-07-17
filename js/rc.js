@@ -52,13 +52,18 @@ const app = new Vue({
   el: '#app',
   data: {
     page: location.hash.substr(1) || localStorage['rc-page'] || 'pianoteq',
+
     presets: await Ptq.fetchPresets(),
+    selectedPreset: await Ptq.getCurrentPreset(),
+    is_paused: false,
+    is_playing: false,
+    is_recording: false,
+
     rolandVoices: R.instruments,
     rolandMetronomeBeats: R.metronomeBeats,
     rolandMetronomeBeatOn: false,
     rolandMetronomeTempoNotations: R.metronomeTempoNotations,
     selectedRolandMetronomeTempoNotation: 3,
-    selectedPreset: await Ptq.getCurrentPreset(),
     selectedRolandVoice: {
       single: null,
       dual: null,
@@ -127,7 +132,8 @@ const app = new Vue({
         })[variant](hexcode)
       }
     },
-    mmc: async (command) => {
+    seq: async (command, event) => {
+      event.currentTarget.blur()
       // F0 7F <Device-ID> <Sub-ID#1> [<Sub-ID#2> [<parameters>]] F7
       await Ptq.api({
         stop: 'midiStop',
@@ -136,7 +142,7 @@ const app = new Vue({
         pause: 'midiPause',
         rewind: 'midiRewind',
       }[command]) !== false ||
-      send([
+      send([ // fallback to midi messages
         0xf0,
         0x7f,
         0x7f, // all channels
@@ -151,9 +157,24 @@ const app = new Vue({
         }[command],
         0xf7,
       ])
-    },
+      await updateState()
+    }
   }
 })
+
+const updateState = async () => {
+  const state = await Ptq.api('getSequencerInfo')
+  if (!state) {
+    return
+  }
+  const [seq] = state
+  app.is_paused = seq.is_paused
+  app.is_playing = seq.is_playing
+  app.is_recording = seq.is_recording
+}
+
+updateState()
+setInterval(updateState, 5000)
 
 
 $('[title]').tooltip()

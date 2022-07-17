@@ -68,6 +68,21 @@ if ('serviceWorker' in window.navigator && window.location.origin === 'https://p
   display: none;
 }
 
+.seq .btn.btn-secondary {
+  display: flex;
+}
+.seq .mdi {
+  font-size: 125%;
+  line-height: 1;
+}
+.mdi.red {
+  color: #ffb5b5;
+}
+
+.mdi.green {
+  color: #99edff;
+}
+
 h2 {
   font-size: 1.5rem;
 }
@@ -359,24 +374,24 @@ input.checkbox:checked::before {
             </li>
           </ul>
         </div>
-        <div class="btn-group" role="group">
-          <button class="btn btn-secondary" @click="mmc('rewind')">
+        <div class="btn-group seq" role="group">
+          <button class="btn btn-secondary" @click="seq('rewind', $event)">
             <span class="mdi mdi-skip-backward"></span>
           </button>
-          <button class="btn btn-secondary" @click="mmc('forward')">
+          <!-- <button class="btn btn-secondary" @click="seq('forward', $event)">
             <span class="mdi mdi-skip-forward"></span>
-          </button>
-          <button class="btn btn-secondary" @click="mmc('stop')">
+          </button> -->
+          <button class="btn btn-secondary" @click="seq('stop', $event)">
             <span class="mdi mdi-stop"></span>
           </button>
-          <button class="btn btn-secondary" @click="mmc('record')">
-            <span class="mdi mdi-record"></span>
+          <button class="btn btn-secondary" @click="seq('record', $event)">
+            <span class="mdi mdi-record" :class="{red: is_recording}"></span>
           </button>
-          <button class="btn btn-secondary" @click="mmc('pause')">
-            <span class="mdi mdi-pause"></span>
+          <button class="btn btn-secondary" @click="seq('pause', $event)">
+            <span class="mdi mdi-pause" :class="{green: is_paused}"></span>
           </button>
-          <button class="btn btn-secondary" @click="mmc('play')">
-            <span class="mdi mdi-play"></span>
+          <button class="btn btn-secondary" @click="seq('play', $event)">
+            <span class="mdi mdi-play" :class="{green: is_playing}"></span>
           </button>
         </div>
         <button
