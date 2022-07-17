@@ -78,15 +78,11 @@ export const networkingApp = new Vue({
         isMe: u === this.uid,
       }))
       // const me = users.find(({isMe}) => isMe)
-      const byName = (u1, u2) => {
-        if (u1.name.toLocaleLowerCase() > u2.name.toLocaleLowerCase()) {
-          return +0.5
-        }
-        if (u1.name.toLocaleLowerCase() < u2.name.toLocaleLowerCase()) {
-          return -0.5
-        }
-        return 0
-      }
+      const byName = (u1, u2) => (
+        u1.name.localeCompare(
+          u2.name, undefined, {sensitivity: 'base'}
+        )
+      )
       return  [
         ...users.filter(({ isMod, id }) => isMod || id===0).sort(byName),
         ...users.filter(({ isMod, id }) => !isMod && id>0).sort(byName),
