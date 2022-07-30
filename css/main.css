@@ -41,6 +41,7 @@ body {
 	background-image: linear-gradient(319deg, #faa499 0%, #f7dd85 37%, #ffc55c 100%); */
 	background-color: #999;
 	overflow: hidden;
+	--background: #212121;
 }
 body.rotated {
 	transform: rotate(90deg);
@@ -76,6 +77,23 @@ header h1#logo {
 	font-weight: 500;
 	font-style: normal;
 	margin: 0 0.5em;
+	position: relative;
+	letter-spacing: 1px;
+}
+header h1#logo::before,
+header h1#logo::after {
+	content: '.';
+	position: absolute;
+	right: 0.8em;
+	bottom: -1px;
+	font-size: 120%;
+	line-height: 1.4;
+	color: white;
+}
+header h1#logo::before {
+	-webkit-text-stroke: 5.5px var(--background);
+}
+header h1#logo::after {
 }
 
 .reacter {
@@ -1409,8 +1427,13 @@ body.mobile *{
 }
 
 
-
 /* framed */
+body.framed {
+	--background: #236698;
+	background-color: transparent;
+	touch-action: manipulation; /* disables double tap to zoom */
+}
+
 body.framed #recorder-app,
 body.framed #midi,
 body.framed #tabs,
@@ -1439,10 +1462,6 @@ body.framed .back-background {
 	background-color: #236698;
 }
 
-body.framed {
-	background-color: transparent;
-	touch-action: manipulation; /* disables double tap to zoom */
-}
 body.framed header,
 body.framed footer {
 	box-shadow: none;
