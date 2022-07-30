@@ -62,7 +62,7 @@ const app = new Vue({
     },
     metronome: {
       accentuate: true,
-      bpm: 60,
+      bpm: 0,
       enabled: false,
       timesig: "4/4",
       volume_db: 0,
@@ -169,6 +169,7 @@ const app = new Vue({
     },
     metro: async function(command, event) {
       event.currentTarget.blur()
+      event.preventDefault()
       let {
         enabled,
         bpm,
@@ -182,8 +183,9 @@ const app = new Vue({
         await Ptq.api('setMetronome',{ enabled })
       }
       if (command === 'bpm') {
-        bpm -= bpm % 30
-        bpm += 30
+        const step = event.ctrlKey ? 5 : 30
+        bpm -= bpm % step
+        bpm += step * (event.which === 3 ? -1 : +1)
         bpm %= 400
         await Ptq.api('setMetronome',{ bpm })
       }

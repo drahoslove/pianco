@@ -414,7 +414,7 @@ input.checkbox:checked::before {
           <button class="btn btn-secondary" @click="metro('toggle', $event)">
             <span class="mdi mdi-metronome-tick" :class="{green: metronome.enabled}"></span>
           </button>
-          <button class="btn btn-secondary" @click="metro('bpm', $event)">
+          <button class="btn btn-secondary" @mousedown="metro('bpm', $event)" @contextmenu.prevent>
             <span class="-">{{metronome.bpm}}</span>
           </button>
           <button class="btn btn-secondary" @click="metro('timesig', $event)">
