@@ -55,10 +55,18 @@ const app = new Vue({
 
     presets: await Ptq.fetchPresets(),
     selectedPreset: await Ptq.getCurrentPreset(),
-    is_paused: false,
-    is_playing: false,
-    is_recording: false,
-
+    seq: {
+      is_paused: false,
+      is_playing: false,
+      is_recording: false,
+    },
+    metronome: {
+      accentuate: true,
+      bpm: 60,
+      enabled: false,
+      timesig: "4/4",
+      volume_db: 0,
+    },
     rolandVoices: R.instruments,
     rolandMetronomeBeats: R.metronomeBeats,
     rolandMetronomeBeatOn: false,
@@ -132,7 +140,7 @@ const app = new Vue({
         })[variant](hexcode)
       }
     },
-    seq: async (command, event) => {
+    midiSeq: async (command, event) => {
       event.currentTarget.blur()
       // F0 7F <Device-ID> <Sub-ID#1> [<Sub-ID#2> [<parameters>]] F7
       await Ptq.api({
@@ -158,19 +166,58 @@ const app = new Vue({
         0xf7,
       ])
       await updateState()
-    }
+    },
+    metro: async function(command, event) {
+      event.currentTarget.blur()
+      let {
+        enabled,
+        bpm,
+        volume_db,
+        timesig,
+        accentuate,
+      } = this.metronome
+      if (command === 'toggle') {
+        enabled = !enabled
+        await Ptq.api('setMetronome',{ volume_db: -30 })
+        await Ptq.api('setMetronome',{ enabled })
+      }
+      if (command === 'bpm') {
+        bpm -= bpm % 30
+        bpm += 30
+        bpm %= 400
+        await Ptq.api('setMetronome',{ bpm })
+      }
+      if (command === 'timesig') {
+        const SIGNATURES = ['2/4', '3/4', '4/4', '2/2']
+        let i = SIGNATURES.indexOf(timesig)
+        i++
+        i %= SIGNATURES.length
+        timesig = SIGNATURES[i]
+        await Ptq.api('setMetronome',{ timesig })
+      }
+
+      setTimeout(updateState, 50)
+    },
   }
 })
 
 const updateState = async () => {
-  const state = await Ptq.api('getSequencerInfo')
-  if (!state) {
+  const [seq] = await Ptq.api('getSequencerInfo') || []
+  if (!seq) {
     return
   }
-  const [seq] = state
-  app.is_paused = seq.is_paused
-  app.is_playing = seq.is_playing
-  app.is_recording = seq.is_recording
+  app.seq.is_paused = seq.is_paused
+  app.seq.is_playing = seq.is_playing
+  app.seq.is_recording = seq.is_recording
+
+  const [metronome] = await Ptq.api('getMetronome') || []
+  if (!metronome) {
+    return
+  }
+  // console.log('getMetronome', metronome)
+  for (const key in metronome) {
+    app.metronome[key] = metronome[key]
+  }
 }
 
 updateState()

@@ -374,26 +374,6 @@ input.checkbox:checked::before {
             </li>
           </ul>
         </div>
-        <div class="btn-group seq" role="group">
-          <button class="btn btn-secondary" @click="seq('rewind', $event)">
-            <span class="mdi mdi-skip-backward"></span>
-          </button>
-          <!-- <button class="btn btn-secondary" @click="seq('forward', $event)">
-            <span class="mdi mdi-skip-forward"></span>
-          </button> -->
-          <button class="btn btn-secondary" @click="seq('stop', $event)">
-            <span class="mdi mdi-stop"></span>
-          </button>
-          <button class="btn btn-secondary" @click="seq('record', $event)">
-            <span class="mdi mdi-record" :class="{red: is_recording}"></span>
-          </button>
-          <button class="btn btn-secondary" @click="seq('pause', $event)">
-            <span class="mdi mdi-pause" :class="{green: is_paused}"></span>
-          </button>
-          <button class="btn btn-secondary" @click="seq('play', $event)">
-            <span class="mdi mdi-play" :class="{green: is_playing}"></span>
-          </button>
-        </div>
         <button
           id="midi-button"
           class="btn btn-lg btn-dark text-white-50"
@@ -408,6 +388,40 @@ input.checkbox:checked::before {
 
     <!-- pianoteq page -->
     <div id="page-pianoteq" v-show="page === 'pianoteq'" class="container mb-3">
+      <nav class="row navbar navbar-lightd-flex justify-content-between">
+        <div class="btn-group seq" role="group">
+          <button class="btn btn-secondary" @click="midiSeq('rewind', $event)">
+            <span class="mdi mdi-skip-backward"></span>
+          </button>
+          <!-- <button class="btn btn-secondary" @click="midiSeq('forward', $event)">
+            <span class="mdi mdi-skip-forward"></span>
+          </button> -->
+          <button class="btn btn-secondary" @click="midiSeq('stop', $event)">
+            <span class="mdi mdi-stop"></span>
+          </button>
+          <button class="btn btn-secondary" @click="midiSeq('record', $event)">
+            <span class="mdi mdi-record" :class="{red: seq.is_recording}"></span>
+          </button>
+          <button class="btn btn-secondary" @click="midiSeq('pause', $event)">
+            <span class="mdi mdi-pause" :class="{green: seq.is_paused}"></span>
+          </button>
+          <button class="btn btn-secondary" @click="midiSeq('play', $event)">
+            <span class="mdi mdi-play" :class="{green: seq.is_playing}"></span>
+          </button>
+        </div>
+
+        <div class="btn-group seq" role="group">
+          <button class="btn btn-secondary" @click="metro('toggle', $event)">
+            <span class="mdi mdi-metronome-tick" :class="{green: metronome.enabled}"></span>
+          </button>
+          <button class="btn btn-secondary" @click="metro('bpm', $event)">
+            <span class="-">{{metronome.bpm}}</span>
+          </button>
+          <button class="btn btn-secondary" @click="metro('timesig', $event)">
+            <span class="-">{{metronome.timesig}}</span>
+          </button>
+        </div>
+      </nav>
       <div class="row">
         <div v-for="(list, groupName) in presets" class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mt-3" :key="groupName">
           <h4>
