@@ -683,7 +683,7 @@ window.onload = async () => {
 
 
     // Whenever the brush moves, re-rendering everything.
-    function renderAll() {
+    function renderAll(noadjust) {
       const sumNotes = data.reduce((sum, { notes }) => (sum + notes), 0)
       const sumDuration = data.reduce((sum, { duration }) => (sum + +duration), 0)
       const sumCount = data.filter(({ notes }) => notes > 0).length
@@ -748,6 +748,9 @@ window.onload = async () => {
         )
       )
       
+      if (!noadjust) {
+        return
+      }
 
       // adjust widths of months columns
       d3.selectAll('#month-chart .chart-body .bar')
