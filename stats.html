@@ -31,6 +31,11 @@ svg {
   justify-items: center;
 }
 
+.loader {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 150%;
+}
+
 .row {
   display: flex;
   flex-direction: row;
@@ -43,7 +48,7 @@ svg {
 }
 .totals {
   background: #1f77b41d;
-  padding: 1em;
+  padding: 0 1em;
 }
 
 .totals p {
@@ -88,54 +93,80 @@ svg {
   align-items: flex-end;
   margin: 2em 0;
   background-color: #eee;
-  translate: 0 -40px;
 }
 
 .key {
-  display: flex;
-  flex-direction: column-reverse;
+  display: bloc;
   width: calc(1500px / 88);
-  height: 50px;
-  justify-content: flex-end;
-  translate: 0 -15px;
+  height: 40px;
+  position: relative;
 }
-.key>.sub {
+.key::before,
+.key::after {
+  font-size: 18px;
+  opacity: 0;
+  transition: 0.2s all ease;
+  pointer-events: none;
+  white-space: nowrap;
+  position: absolute;
+  top: 40px;
+}
+.key::before {
+  content: attr(data-key-name) ' ⬏';
+  right: calc(1500px / 88 / 2);
+}
+.key::after {
+  content: '⬑' attr(data-key-count);
+  left: calc(1500px / 88 / 2);
+}
+.key:hover::after,
+.key:hover::before {
+  opacity: 1;
+}
+.key .sub {
+  display: block;
+  height: 25px;
+}
+
+.key .bar {
   display: flex;
   width: 100%;
-  height: var(--height);
+  height: calc(var(--height) * 1.5);
   background-color: #1f77b4dd;
-  border-bottom: 1px solid transparent;
+  /* border-bottom: 1px solid transparent; */
   transition: 0.15s all linear;
-  translate: 0 65px;
   transform-origin: top;
+  position: absolute;
+  bottom: 40px;
 }
-#all-keys:hover.key {
-  background-color: transparent;
+.key:hover .bar {
+  filter: brightness(0.25);
 }
-#all-keys:hover .key>.sub {
-  border-bottom: 1px solid red;
+#all-keys:hover .key .bar {
+  /* border-bottom: 1px solid red; */
   /* scale: 1 5; */
 }
 
 /* black keys */
-.key:nth-child(12n+2),
-.key:nth-child(12n+5),
-.key:nth-child(12n+7),
-.key:nth-child(12n+10),
-.key:nth-child(12n+12) {
+.key:nth-child(12n+2) .sub,
+.key:nth-child(12n+5) .sub,
+.key:nth-child(12n+7) .sub,
+.key:nth-child(12n+10) .sub,
+.key:nth-child(12n+12) .sub {
   background-color: #555a;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
 /* white keys */
-/* .key:nth-child(12n+1),
-.key:nth-child(12n+3),
-.key:nth-child(12n+4),
-.key:nth-child(12n+6),
-.key:nth-child(12n+8),
-.key:nth-child(12n+9),
-.key:nth-child(12n+11) {
+/*
+.key:nth-child(12n+1) .sub,
+.key:nth-child(12n+3) .sub,
+.key:nth-child(12n+4) .sub,
+.key:nth-child(12n+6) .sub,
+.key:nth-child(12n+8) .sub,
+.key:nth-child(12n+9) .sub,
+.key:nth-child(12n+11)  .sub{
   background-color: #ccca;
 } */
 
@@ -147,7 +178,7 @@ svg {
 </style>
 
 <div id="charts" hidden="true">
-  <div calss="row" style="overflow: hidden;">
+  <div calss="row">
     <div id="all-keys" class=""></div>
   </div>
   <div class="row">
@@ -160,6 +191,12 @@ svg {
       </p>
       <p>
         notes: <b> <span id="total-notes">0 ?</span></b>
+      </p>
+      <p>
+        <span id="max-note-name"></span> <b> <span id="max-note-count">0 ?</span></b>
+      </p>
+      <p>
+        <span id="min-note-name"></span> <b> <span id="min-note-count">0 ?</span></b>
       </p>
       <p>
         midi files: <b> <span id="total-count">0 ?</span></b>
@@ -222,7 +259,7 @@ svg {
     </div>
   </div>
 </div>
-<div class="loader">...</div>
+<div class="loader">Loading...</div>
 
 <script src="lib/luxon.min.js"></script>
 <script src="lib/crossfilter.v1.min.js"></script>
@@ -232,6 +269,34 @@ svg {
 const { DateTime } = luxon
 
 const zeroedList = (n) => Array.from({ length: n }).map(() => 0)
+
+// key index (0..87) to note name (A0 to C8)
+const keyToNote = (n) => {
+  return [
+    ["A"],
+    ["A♯", "B♭"],
+    ["B"],
+    ["C"],
+    ["C♯", "D♭"],
+    ["D"],
+    ["D♯", "E♭"],
+    ["E"],
+    ["F"],
+    ["F♯", "G♭"],
+    ["G"],
+    ["G♯", "A♭"],
+  ][n%12][0] + ((n-(n%12))/12 + (n%12 >= 3 ? 1 : 0))
+}
+;[
+  [0, 'A0'],
+  [2, 'B0'],
+  [3, 'C1'],
+  [87, 'C8'],
+].forEach(([n, name]) => {
+  const res = keyToNote(n)
+  console.assert(res  === name, n, name, res)
+})
+
 
 window.onload = async () => {
   const response = await fetch('https://local.pian.co/archive.json')
@@ -642,17 +707,47 @@ window.onload = async () => {
       const notes = allNotes.value()
       const keys = allKeys.value()
       const maxKey = Math.max(...keys)
-      d3.select('#all-keys')
+      const minKey = Math.min(...keys)
+      const keySel = d3.select('#all-keys')
         .selectAll('.key')
           .data(keys)
           .join('span')
           .attr('class', 'key')
-          .attr('title', d => numberFormat(d))
-          .html('')
-          .insert('span')
-          .attr('class', 'sub')
-          .style('--height', d => `${(d / maxKey)*100}%`)
-          .attr('title', d => numberFormat(d))
+          // .attr('title', d => numberFormat(d))
+          .attr('data-key-name', (d, i) => keyToNote(i))
+          .attr('data-key-count', d => numberFormat(d))
+
+      keySel.selectAll('.sub')
+        .data(d => [d])
+        .join('span')
+        .attr('class', 'sub')
+      keySel.selectAll('.bar')
+        .data(d => [d])
+        .join('span')
+        .attr('class', 'bar')
+        .style('--height', d => `${(d / maxKey)*100}%`)
+
+         
+          
+      const maxKeyName = keyToNote(keys.indexOf(maxKey))
+      const minKeyName = keyToNote(87-[...keys].reverse().indexOf(minKey))
+      d3.select('#min-note-count').text(numberFormat(minKey))
+      d3.select('#max-note-count').text(numberFormat(maxKey))
+      d3.select('#min-note-name').text(
+        minKeyName + (
+          keys.filter(v => v == minKey).length > 1
+            ? '+'
+            : ''
+        )
+      )
+      d3.select('#max-note-name').text(
+        maxKeyName + (
+          keys.filter(v => v == maxKey).length > 1
+            ? '+'
+            : ''
+        )
+      )
+      
 
       // adjust widths of months columns
       d3.selectAll('#month-chart .chart-body .bar')
@@ -677,6 +772,7 @@ window.onload = async () => {
       chart.on('renderlet', renderAll)
     })
 
+    renderAll() // render immideately
 
     let broadcasting = false // don't repropogate (infinite loop)
     charts.slice(-3).forEach((chart, i, charts) => {
