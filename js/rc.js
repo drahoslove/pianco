@@ -222,6 +222,23 @@ const updateState = async () => {
   }
 }
 
+const activate = async () => {
+  const serial = prompt('serial')
+  const device_name = prompt('device_name')
+  if (serial && device_name) {
+    console.log(await Ptq.api('activate', { serial, device_name }))
+  }
+}
+window.activate = activate
+setTimeout(async () => {
+  const [data] = await Ptq.api('getActivationInfo') || []
+  if (data && !data.status) {
+    const ok = confirm('Not activated, activate now?')
+    if (ok) {
+      await activate()
+    }
+  }
+}, 500)
 updateState()
 setInterval(updateState, 5000)
 

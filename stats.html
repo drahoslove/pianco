@@ -81,6 +81,65 @@ svg {
   pointer-events: none;
 }
 
+#all-keys {
+  width: 1500px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  margin: 2em 0;
+  background-color: #eee;
+  translate: 0 -40px;
+}
+
+.key {
+  display: flex;
+  flex-direction: column-reverse;
+  width: calc(1500px / 88);
+  height: 50px;
+  justify-content: flex-end;
+  translate: 0 -15px;
+}
+.key>.sub {
+  display: flex;
+  width: 100%;
+  height: var(--height);
+  background-color: #1f77b4dd;
+  border-bottom: 1px solid transparent;
+  transition: 0.15s all linear;
+  translate: 0 65px;
+  transform-origin: top;
+}
+#all-keys:hover.key {
+  background-color: transparent;
+}
+#all-keys:hover .key>.sub {
+  border-bottom: 1px solid red;
+  /* scale: 1 5; */
+}
+
+/* black keys */
+.key:nth-child(12n+2),
+.key:nth-child(12n+5),
+.key:nth-child(12n+7),
+.key:nth-child(12n+10),
+.key:nth-child(12n+12) {
+  background-color: #555a;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+/* white keys */
+/* .key:nth-child(12n+1),
+.key:nth-child(12n+3),
+.key:nth-child(12n+4),
+.key:nth-child(12n+6),
+.key:nth-child(12n+8),
+.key:nth-child(12n+9),
+.key:nth-child(12n+11) {
+  background-color: #ccca;
+} */
+
+
 
 :is(#month-chart, #week-chart) svg .x.axis .tick text {
   transform: translateY(5px) rotate(-20deg);
@@ -88,6 +147,9 @@ svg {
 </style>
 
 <div id="charts" hidden="true">
+  <div calss="row" style="overflow: hidden;">
+    <div id="all-keys" class=""></div>
+  </div>
   <div class="row">
     <div class="totals">
       <p>
@@ -169,13 +231,16 @@ svg {
 <script>
 const { DateTime } = luxon
 
+const zeroedList = (n) => Array.from({ length: n }).map(() => 0)
+
 window.onload = async () => {
   const response = await fetch('https://local.pian.co/archive.json')
   const rawData = await response.json()
-  const data = rawData.map(({ t: timestamp, d: duration, n: notes }) => ({
+  const data = rawData.map(({ t: timestamp, d: duration, n: notes, k: keys }) => ({
     date: new Date(timestamp*1000),
     duration: new Date((duration+0.5)*1000), // add half second to compensate for rounding
     notes,
+    keys,
     tempo: notes/(duration+0.5),
   }))
   
@@ -198,6 +263,7 @@ window.onload = async () => {
         duration: new Date(0),
         notes: 0,
         tempo: 0,
+        keys: zeroedList(88)
       })
     }
     data.sort(({ date: a }, { date: b }) => +a - +b) // older first, newest last
@@ -240,7 +306,13 @@ window.onload = async () => {
           +date >= +start &&
           +date <= +end
         ))
-        filteredDate.push({ date: new Date(+end), duration: new Date(0), notes: 0, tempo: 0})
+        filteredDate.push({
+          date: new Date(+end),
+          duration: new Date(0),
+          notes: 0,
+          tempo: 0,
+          keys: zeroedList(88),
+        })
 
         return selectInterval(filteredDate, duration)
       }
@@ -339,7 +411,46 @@ window.onload = async () => {
           : `${+m}m ${+s}s`
     }
 
+    // keys
+    const allKeys = archive.groupAll().reduce(
+      (p, v) => { // add 
+        (v.keys||[]).forEach((val, i) => {
+          p[i] += val
+        })
+        return p
+      },
+      (p, v) => { // remove
+        (v.keys||[]).forEach((val, i) => {
+          p[i] -= val
+        })
+        return p
+      },
+      () => { // init
+        return zeroedList(88)
+      }
+    )
+
+      // const keysDimension = archive.dimension(d => true)
+      // const keysGroup = keysDimension.group()
+      
     const chartDefs = [
+      // chart => {
+      //   chart
+      //     .width(1000)
+      //     .height(100)
+      //     .dimension(keysDimension)
+      //     .group(keysGroup)
+      //     .x(d3.scaleLinear()
+      //       .domain([1, 88])
+      //       .range([0, 87])
+      //     )
+      //   chart
+      //     .valueAccessor((d, ...x) => {
+      //       console.log('ddd', d, x)
+      //       return d.keys
+      //     } )
+      //   return chart
+      // },
       chart => {
         chart
           .width(500)
@@ -528,6 +639,21 @@ window.onload = async () => {
         durationFormat(allDays.value().avgDuration)// + ' ' + allDays.value().count
       )
 
+      const notes = allNotes.value()
+      const keys = allKeys.value()
+      const maxKey = Math.max(...keys)
+      d3.select('#all-keys')
+        .selectAll('.key')
+          .data(keys)
+          .join('span')
+          .attr('class', 'key')
+          .attr('title', d => numberFormat(d))
+          .html('')
+          .insert('span')
+          .attr('class', 'sub')
+          .style('--height', d => `${(d / maxKey)*100}%`)
+          .attr('title', d => numberFormat(d))
+
       // adjust widths of months columns
       d3.selectAll('#month-chart .chart-body .bar')
         .transition()
@@ -575,9 +701,11 @@ window.onload = async () => {
       dateDim1.dispose()
       dateDim2.dispose()
       dateDim3.dispose()
+      activeDay.dispose()
       dayHour.dispose()
       weekDay.dispose()
       tempo.dispose()
+      allKeys.dispose()
     }
   }
 }
