@@ -1,0 +1,10 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app/ # mount source code for dynamic updates
+    environment:
+      - PORT=80
