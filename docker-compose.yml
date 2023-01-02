@@ -1,10 +1,19 @@
 version: '3'
 services:
   frontend:
+    ports:
+      - "80:80"
     build:
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.frontend
     volumes:
       - ./:/app/ # mount source code for dynamic updates
-    environment:
-      - PORT=80
+  backend:
+    ports:
+      - "11088:11088"
+    build:
+      context: ./
+      dockerfile: Dockerfile.frontend
+    volumes:
+      - ./:/app # mount source code for dynamic updates
+    command: "node backend/server.js"
