@@ -6,14 +6,10 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.frontend
-    volumes:
-      - ./:/app/ # mount source code for dynamic updates
   backend:
     ports:
       - "11088:11088"
     build:
       context: ./
       dockerfile: Dockerfile.frontend
-    volumes:
-      - ./:/app # mount source code for dynamic updates
     command: "node backend/server.js"
