@@ -5,7 +5,8 @@
 # THIS file should be called after Roland piano is connected (turned on)
 # defined by rules in /etc/udev/rules.d/
 
-/usr/bin/curl http://127.0.0.1:1212/wled/on
+# put IPAddressAllow=127.0.0.1 to  /lib/systemd/system/udev.service to make this work from within 20-midi.rules
+/usr/bin/curl http://127.0.0.1:1212/wled/on &
 
 service raspotify stop
 

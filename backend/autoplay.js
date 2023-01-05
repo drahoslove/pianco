@@ -3,9 +3,6 @@ const fs = require('fs').promises
 const path = require('path')
 const fetch = import('node-fetch')
 const { normalRand, rand } = require('./rand.js')
-
-const MIDI_CACHE_DIR = '../audio/midi'
-
 const {
   CC_SUTAIN,
   NOTE_A0,
@@ -13,6 +10,8 @@ const {
   toCmd,
   toVal,
 } = require('./midi.js')
+
+const MIDI_CACHE_DIR = './midi-cache'
 
 class Autoplay {
   static midis = {}

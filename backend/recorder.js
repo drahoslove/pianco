@@ -5,7 +5,7 @@ const {
   CC_SUTAIN, NOTE_A0, NOTE_C8,
 } = require('./midi.js')
 
-let WSS // set on importy
+let WSS // set on import
 
 
 // stopped -> recording

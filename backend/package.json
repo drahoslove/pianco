@@ -1,14 +1,13 @@
 {
   "name": "pianoecho",
-  "version": "1.0.0",
   "description": "backend for pian.co",
+  "author": "Drahoslav Bednář",
+  "license": "MIT",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@tonejs/midi": "^2.0.22",
     "jsonwebtoken": "^8.5.1",

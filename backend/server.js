@@ -115,7 +115,7 @@ wss.echo = echo
 wss.status = status
 
 groups[ROOT_GRP].add(ROOT_USR) // add ghost player to main room permanently
-identities[ROOT_SECRET] = { name: 'Pianco', gid: 0, uid: 0 }
+identities[ROOT_SECRET] = { name: 'Pianco', gid: ROOT_GRP, uid: ROOT_USR }
 
 
 const Autoplay = require('./autoplay.js')(wss)

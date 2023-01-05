@@ -1,5 +1,8 @@
 {
   "name": "painco",
+  "description": "online multiplayer virtual piano",
+  "author": "Drahoslav Bednář",
+  "license": "MIT",
   "main": "index.html",
   "scripts": {
     "build": "webpack --config=webpack.config.js --mode development",
@@ -30,9 +33,5 @@
   },
   "browserslist": [
     "> .05% in CZ and not ie <= 9"
-  ],
-  "dependencies": {
-    "@tonejs/midi": "^2.0.22",
-    "ws": "^7.4.6"
-  }
+  ]
 }
