@@ -49,7 +49,7 @@ const solidFiles = [ // these will not ever change
   'https://code.iconify.design/1/1.0.6/iconify.min.js',
   'https://code.jquery.com/jquery-3.5.1.slim.min.js',
 ]
-const filesToPrecache = [
+const filesToCache = [
   '/',
   '/css/main.css',
   '/js/main.js',
@@ -68,9 +68,9 @@ const filesToPrecache = [
   '/js/roland.js',
   '/js/pianoteq.js',
 ]
-const filesToCache = [
+const filesToPrecache = [
   ...solidFiles,
-  ...filesToPrecache,
+  ...filesToCache,
 ]
 
 self.addEventListener('install', e => {
