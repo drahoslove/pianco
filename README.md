@@ -17,20 +17,23 @@ Go: http://localhost/
 
 # How to start without docker
 
-## 1. Install dependencies
 
-```bash
-npm install
-```
-
-## 2. Start frontend
+## Frontend
     
 ```bash
+# 1. install dependencies
+npm install
+# 2. run server
 npm run start
 ```
 
-## 3. Start backend
+## Backend
 
 ```bash
-node backend/server.js
+# 1. go to backend folder
+cd backend
+# 2. install dependencies
+npm install
+# 3. run server
+node server.js
 ```
