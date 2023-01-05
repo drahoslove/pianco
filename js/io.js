@@ -294,9 +294,9 @@ const connect = () => {
   console.log('connecting')
   try {
     ws = new WebSocket(
-      location.hostname !== 'pian.co'
-        ? `ws://${location.hostname}:11088`
-        : 'wss://pianoecho.draho.cz'
+      location.hostname === 'pian.co'
+        ? 'wss://backend.pian.co'
+        : `ws://${location.hostname}:11088`
     )
     // handle regroup
     ws.addEventListener('message', onRegroup)
