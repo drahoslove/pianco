@@ -11,5 +11,4 @@ services:
       - "11088:11088"
     build:
       context: ./
-      dockerfile: Dockerfile
-    command: "node backend/server.js"
+      dockerfile: Dockerfile.backend
