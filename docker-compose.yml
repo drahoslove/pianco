@@ -5,11 +5,11 @@ services:
       - "80:80"
     build:
       context: ./
-      dockerfile: Dockerfile.frontend
+      dockerfile: Dockerfile
   backend:
     ports:
       - "11088:11088"
     build:
       context: ./
-      dockerfile: Dockerfile.frontend
+      dockerfile: Dockerfile
     command: "node backend/server.js"
