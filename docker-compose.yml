@@ -11,4 +11,4 @@ services:
       - "11088:11088"
     build:
       context: ./
-      dockerfile: Dockerfile.backend
+      dockerfile: backend.Dockerfile
