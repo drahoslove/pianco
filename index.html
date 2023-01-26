@@ -307,8 +307,8 @@
 						>
 							<img :src="u.avatar" width="20px" height="24px" />
 						</span>
+						<span v-if="reactions[u.id]" class="reaction">{{reactions[u.id]}}</span>
 					</button>
-					<span v-if="reactions[u.id]" class="reaction">{{reactions[u.id]}}</span>
 				</label>
 			</div>
 		</div>
