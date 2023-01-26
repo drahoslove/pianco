@@ -6,10 +6,10 @@ export const instrumentApp = new Vue({
   el: '#instrument-app',
   data: {
     muted: false,
-    volume: 0,
-    minVolume: -40,
-    maxVolume: 0,
-    stepVolume: 2.5,
+    volume: 100,
+    minVolume: 0,
+    maxVolume: 100,
+    stepVolume: 5,
     instrument: 'none',
     midiEnabled: false,
     midiTooltip: 'MIDI in',
@@ -18,16 +18,17 @@ export const instrumentApp = new Vue({
   computed: {
   },
   watch: {
-    instrument (oldInstumen, newInstrument) {
+    instrument (newInstrument, oldInstumen) {
       allOff()
       // TODO - blur on click?
     },
-    volume (oldVolume, newVolume) {
+    volume (newVolume, oldVolume) {
+      const toDb = (v) => (v / 100 * 40 - 40) // 0..100 % to -40..0 dB
       if (oldVolume === newVolume) {
         return
       }
-      Tone.getDestination().volume.value = newVolume
-      if (newVolume <= this.minVolume) {
+      Tone.getDestination().volume.value = toDb(newVolume)
+      if (newVolume <= +this.minVolume) {
         Tone.getDestination().mute = true
       } else {
         Tone.getDestination().mute = false
@@ -52,7 +53,7 @@ export const instrumentApp = new Vue({
         return
       }
       // TODO - normalize deltaY (may differ browser from browser)
-      const val =  Math.max(
+      const val = Math.max(
         +this.minVolume,
         Math.min(
           Math.sign(-e.deltaY) * +this.stepVolume + +this.volume,
