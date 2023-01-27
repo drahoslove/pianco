@@ -33,7 +33,7 @@ const solidFiles = [ // these will not ever change
   '/audio/salamander/Fs6.mp3',
   '/audio/salamander/Fs7.mp3',
   '/font/Bravura.woff2',
-  'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
+  'https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js',
   'https://cdn.jsdelivr.net/npm/vue-tippy/dist/vue-tippy.min.js',
   'https://cdn.jsdelivr.net/npm/@mdi/font@5.9.55/css/materialdesignicons.min.css',
   'https://cdn.jsdelivr.net/npm/@mdi/font@5.9.55/fonts/materialdesignicons-webfont.woff?v=5.9.55',
