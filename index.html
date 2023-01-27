@@ -181,8 +181,8 @@
 						>
 							<span class="volume-icon" id="mute-span" @click="toggleMute">
 								<span class="iconify" data-icon="mdi-volume-mute" v-if="muted" ></span>
-								<span class="iconify" data-icon="mdi-volume-high" v-else-if="volume > -15" ></span>
-								<span class="iconify" data-icon="mdi-volume-medium" v-else-if="volume > -30" ></span>
+								<span class="iconify" data-icon="mdi-volume-high" v-else-if="volume > 65" ></span>
+								<span class="iconify" data-icon="mdi-volume-medium" v-else-if="volume > 30" ></span>
 								<span class="iconify" data-icon="mdi-volume-low" v-else ></span>
 							</span>
 							<input
