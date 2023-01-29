@@ -318,23 +318,29 @@
 		</div>
 		<div id="tabs" class="tabs">
 			<button
-				v-for="room of [0,1,2,3]"
-				@click="changeRoom(room)"
-				:disabled="!isOnline"
-				:class="gid === room ? 'on' : ''"
-				v-tippy :content="`room ${room}`"
-				:aria-label="`go to room ${room}`"
-				:data-user-dots="dotsOfRoom(room)"
+				:class="gid !== -1 ? 'on' : ''"
+				v-tippy content="change room"
+				aria-label="change room"
+				@click="roomChange = '0'"
+				:data-user-dots="dotsOfRoom(gid)"
 			>
-				<span class="iconify" :data-icon="`mdi-numeric-${ room }-circle`"></span>
+				<span class="iconify" data-icon="mdi-seat-recline-extra"></span>
+			</button>
+			<button
+				v-tippy content="empty room"
+				aria-label="go to empty room"
+				@click="findEmptyRoom"
+				id="EmptyRoomButton"
+			>
+				<span class="iconify" data-icon="mdi-sofa"></span>
 			</button>
 			<button
 				:class="gid === -1 ? 'on' : ''"
-				v-tippy content="isolation"
-				aria-label="go to isolation"
-				@click="changeRoom(-1)"
+				v-tippy content="private room"
+				aria-label="go to private room"
+				@click="changeRoom('-')"
 			>
-				<span class="iconify" data-icon="mdi-minus-circle"></span>
+				<span class="iconify" data-icon="mdi-incognito"></span>
 			</button>
 		</div>
 		<prompt v-if="showRename" @submit="userRename" :name="showRename">
@@ -342,6 +348,9 @@
 		</prompt>
 		<prompt v-if="showCustomEmoji" @submit="react" :name="showCustomEmoji" single-char>
 			Insert custom emoji
+		</prompt>
+		<prompt v-if="roomChange" @submit="roomChangeHandler" :name="hash(gid)">
+			Room hash
 		</prompt>
 		<div id="links">
 			<span class="copy">

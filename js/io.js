@@ -17,10 +17,10 @@ import { recorderApp } from './vue/recorder.js'
 
 
 Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || function () {
-  return new Response(this).arrayBuffer()
-} // polyfill for safari
+    return new Response(this).arrayBuffer()
+  } // polyfill for safari
 
-
+  
 const isFramed = window.parent !== window
 
 let lastJwt
@@ -47,7 +47,7 @@ const isJwtNew = (jwt) => {
         return val - (old[key]||0) > 1000 * 60 * 15 // is older than 15 minutes
       }
       return val !== old[key]
-  })
+    })
 }
 
 const onMessage = (event) => {
@@ -74,7 +74,7 @@ const requestUserData = async () => {
   if (!isFramed) {
     return {}
   }
-  
+
   return new Promise((resolve) => {
     const timer = new AbortController()
     const { signal } = timer
@@ -89,7 +89,7 @@ const requestUserData = async () => {
       }
       if (!(event.data instanceof Object)) {
         return
-      } 
+      }
       resolve({ secret: event.data.userJwt.replace(/ /g, '') })
     }
     window.removeEventListener('message', onMessage)
@@ -101,8 +101,7 @@ const requestUserData = async () => {
   })
 }
 
-
-const DEF_GID = isFramed ? 101 : 0
+const DEF_GID = isFramed ? 141167095653376 : 0
 
 let UID = 0 // will be changed by backend
 let GID = DEF_GID
@@ -110,10 +109,40 @@ let GID = DEF_GID
 // WS!
 let ws
 
-const gidFromHash = () => location.hash === '#-'
-  ? -1
-  : (parseInt(location.hash.slice(1))) % 100 || DEF_GID
+function hashToInt(hash) {
+  let int = 0
+  for (let i = 0; i < hash.length; i++) {
+    if (i !== 3 && i !== 8) {
+      int = int * 26 + hash[i].charCodeAt(0) - 97
+    }
+  }
+  return int
+}
 
+export function intToHash(int) {
+  let hash = []
+  while (int > 25) {
+    hash.push(((int % 26) + 10).toString(36))
+    int = parseInt(int / 26)
+  }
+  hash.push(((int % 26) + 10).toString(36))
+  while (hash.length < 10) {
+    hash.push('a')
+  }
+  hash.splice(7, 0, '-')
+  hash.splice(3, 0, '-')
+  return hash.reverse().join('')
+}
+
+const gidFromHash = () => {
+  const result =
+    location.hash === '#-'
+      ? -1
+      : /^[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(location.hash.slice(1))
+      ? hashToInt(location.hash.slice(1)) || DEF_GID
+      : 0
+  return result
+}
 
 export const rename = async (newName) => {
   if (isFramed) { // no self renaming in framed
@@ -132,14 +161,14 @@ export const react = (symbol) => {
 // ws message handlers
 
 const onCmd = (cmdName, callback) => async ({ data: message }) => {
-  if (typeof message !== 'string') {
-    return
+    if (typeof message !== 'string') {
+      return
+    }
+    const [cmd, ...values] = message.split(' ')
+    if (cmd === cmdName) {
+      callback(values)
+    }
   }
-  const [cmd, ...values] = message.split(' ')
-  if (cmd === cmdName) {
-    callback(values)
-  }
-}
 
 const onReaction = onCmd('reaction', (values) => {
   const [gid, uid] = values.map(Number)
@@ -152,7 +181,8 @@ const onRegroup = onCmd('regroup', (values) => {
   if (isFramed && newGid !== GID) { // regroup forbidden in frame
     return
   }
-  if (newGid !== GID && newGid > 100) { // no regroup of hidden groups
+  if (newGid !== GID && newGid > 141167095653375) {
+    // no regroup of hidden groups
     return
   }
   const [secret, name] = values.slice(2)
@@ -169,9 +199,7 @@ const onRegroup = onCmd('regroup', (values) => {
   }
   // update url if group changed
   if (gidFromHash() !== newGid) {
-    location.hash = newGid === -1
-      ? '-'
-      : (newGid || '') // + (location.hash.endsWith('m') ? 'm' : '')
+    location.hash = newGid === -1 ? '-' : intToHash(newGid) || '' // + (location.hash.endsWith('m') ? 'm' : '')
   }
   recorderApp.reset()
   console.log(`${UID}@${GID} changed`)
@@ -187,7 +215,7 @@ const onUserStatus = onCmd('status', (values) => {
   networkingApp.avatars = status.avatars || {}
   networkingApp.mods = status.mods || {}
   networkingApp.mics = status.mics || {}
-  
+
   removedUsers.forEach(uid => {
     releaseAll(uid)('cleanage')
     releaseSustain(uid, 'cleanage')
@@ -223,7 +251,7 @@ const onBlob = async ({ data }) => {
   }
   const [gid, uid, cmd, val1, val2] = new Uint8Array(await data.arrayBuffer())
   if (gid !== GID) { // another group
-    return 
+    return
   }
   if (uid === UID && chanFromCmd(cmd) === CHANNEL) { // your notes
     return
@@ -234,7 +262,7 @@ const onBlob = async ({ data }) => {
   if (fromCmd(cmd) === CMD_NOTE_ON) {
     const velocity = fromVal(val2)
     pressNote(note, velocity, uid)(isMuted ? "mutedIO" : "IO")
-  } 
+  }
   if (fromCmd(cmd) === CMD_NOTE_OFF) {
     releaseNote(note, uid)(isMuted ? "mutedIO" : "IO")
   }
@@ -311,7 +339,7 @@ const connect = () => {
     ws.addEventListener('message', onRecorderStatus)
     // handle reaction
     ws.addEventListener('message', onReaction)
-    
+
     ws.onopen = async () => {
       const newGid = gidFromHash()
       let { secret, name } = isFramed
@@ -366,13 +394,13 @@ const send = (data) => {
 }
 
 const sendNoteOn = (note, velocity=0.5) => (source) => {
-  pressNote(note, velocity, UID)(source)
-  if (networkingApp.isMuted(UID)) {
-    return
+    pressNote(note, velocity, UID)(source)
+    if (networkingApp.isMuted(UID)) {
+      return
+    }
+    const midiNote = Tone.Midi(note).toMidi()
+    send(new Uint8Array([GID, UID, toCmd(1), midiNote, toVal(velocity)]))
   }
-  const midiNote = Tone.Midi(note).toMidi()
-  send(new Uint8Array([GID, UID, toCmd(1), midiNote, toVal(velocity)]))
-}
 
 const sendNoteOff = (note) => (source) => {
   releaseNote(note, UID)(source)
@@ -405,10 +433,10 @@ const dropMic = () => {
 }
 
 const recorder = ['record', 'stop', 'replay', 'pause'].reduce((recorder, action) => ({
-  ...recorder,
-  [action]: () => {
-    ws.send(action)
-  },
+    ...recorder,
+    [action]: () => {
+      ws.send(action)
+    },
 }), {})
 
 window.recorder = recorder
@@ -442,10 +470,10 @@ window.autoplay = (url) => {
       let question = "Select intruments:\n"
       const preselection = []
       question += data.split(';').map((str, i) => {
-        const [id, notes] = str.split(':')
+          const [id, notes] = str.split(':')
         if (i<3) {
           preselection.push(i+1)
-        }
+          }
         return `${i+1}: ${instrumentById[id]} - ${notes} notes`
       }).join('\n')
       const selection = prompt(question, preselection).split(',').map(i => i-1).join(',')

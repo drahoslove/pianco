@@ -6,6 +6,7 @@ import {
   giveMic as ioGiveMic,
   dropMic as ioDropMic,
   react,
+  intToHash,
 } from '../io.js'
 import { getStorage } from '../storage.js';
 
@@ -26,7 +27,7 @@ Vue.component('prompt', {
     prop: 'name',
   },
   data () { return {
-    value: this.name,
+      value: this.name,
   }},
   mounted () {
     this.focusInput()
@@ -43,6 +44,7 @@ Vue.component('prompt', {
 export const networkingApp = new Vue({
   el: '#networking-app',
   data: {
+    roomChange: false, //modal
     showCustomEmoji: false, // modal
     showRename: false, // modal
     showReacter: false,
@@ -90,7 +92,7 @@ export const networkingApp = new Vue({
     },
     lastEmojisMap () {
       return this.lastEmojis.slice(this.lastEmojis.length === 4 ? 1 : 0).reduce((map, symbol, i) => ({
-        ...map,
+          ...map,
         [symbol]: `custom ${i+1}`,
       }), {})
     }
@@ -193,27 +195,58 @@ export const networkingApp = new Vue({
         ioRename(newName)
       }
     },
-    userName (uid) {
-      const name = (this.names[this.gid]||[])[uid] || ''
+    roomChangeHandler(room) {
+      if (room !== null) {
+        this.changeRoom(room)
+      }
+      this.roomChange = false
+    },
+    userName(uid) {
+      const name = (this.names[this.gid] || [])[uid] || ''
       const isMod = this.isMod(uid)
       const hasMic = this.hasMic(uid)
-      return name 
-        + (uid === this.uid ? ' <small>- you</small>' : '')
-        + (isMod ? ' <small>- mod</small>' : '')
-        + (hasMic ? ' <small>- exclusive</small>' : '')
-
+      return (
+        name +
+        (uid === this.uid ? ' <small>- you</small>' : '') +
+        (isMod ? ' <small>- mod</small>' : '') +
+        (hasMic ? ' <small>- exclusive</small>' : '')
+      )
     },
-    userColor (uid) {
-      return uid === this.uid
-        ? '#eee'
-        :`hsla(${(uid/256) * 360}, 50%, 50%)`
+    userColor(uid) {
+      return uid === this.uid ? '#eee' : `hsla(${(uid / 256) * 360}, 50%, 50%)`
     },
-    changeRoom (room) {
-      window.location.hash = room === -1 ? '-' : (room || '')
+    changeRoom(room) {
+      if (/^[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(room) || room === '-') {
+        window.location.hash = room
+        // } else {
+        //   const intRoom = parseInt(room)
+        //   if (
+        //     intRoom &&
+        //     intRoom < 141167095653376 &&
+        //     intRoom > -2 &&
+        //     intRoom === +room
+        //   ) {
+        //     window.location.hash = intRoom === -1 ? '-' : intToHash(intRoom) || ''
+        //   }
+        //   if (+room === 0) {
+        //     window.location.hash = 'aaa-aaaa-aaa'
+        //   }
+      }
     },
-    dotsOfRoom (gid) {
-      return (this.groups[gid || 0]||[]).map(() => '.').join('')
-    }
+    findEmptyRoom() {
+      let gid
+      do {
+        gid = Math.floor(Math.random() * 141167095653376)
+        // gid = Math.floor(Math.random() * 100)
+      } while (this.groups[gid])
+      window.location.hash = intToHash(gid)
+    },
+    dotsOfRoom(gid) {
+      return (this.groups[gid || 0] || []).map(() => '.').join('')
+    },
+    hash(int) {
+      return int === -1 ? '-' : intToHash(int)
+    },
   },
 })
 

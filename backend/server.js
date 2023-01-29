@@ -283,7 +283,7 @@ wss.on('connection', async function connection(ws) {
             ws.terminate()
             return console.error('cant change secret of ws.secret')
           }
-          if (gid >= 100) {
+          if (gid >= 141167095653376) {
             // remote room must be accesed by remote signed secret only
             ws.terminate()
             return
@@ -386,7 +386,7 @@ wss.on('connection', async function connection(ws) {
           autoplayers[`${gid}`].stop(uid)
         }
       }
-
+      
     }
   })
 
@@ -404,7 +404,7 @@ wss.on('connection', async function connection(ws) {
       if (gid >= 0) {
         autoplayers[`${gid}`].stop(uid)
         recorders[`${gid}`].stop(uid)
-        // groups[gid].delete(uid)
+
         groups[`${gid}`].delete(uid)
       }
       if (ws.secret in identities) {
