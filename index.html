@@ -337,6 +337,12 @@
 				<span class="iconify" data-icon="mdi-minus-circle"></span>
 			</button>
 		</div>
+		<prompt v-if="showRename" @submit="userRename" :name="showRename">
+			Your name
+		</prompt>
+		<prompt v-if="showCustomEmoji" @submit="react" :name="showCustomEmoji" single-char>
+			Insert custom emoji
+		</prompt>
 		<div id="links">
 			<span class="copy">
 				&copy; <a href="https://draho.cz/" rel="me">draho.cz</a>
@@ -344,12 +350,6 @@
 				<a href="#about">about</a>
 			</span> -->
 		</div>
-		<prompt v-if="showRename" @submit="userRename" :name="showRename">
-			Your name
-		</prompt>
-		<prompt v-if="showCustomEmoji" @submit="react" :name="showCustomEmoji" single-char>
-			Insert custom emoji
-		</prompt>
 	</footer>
 	<div class="cinema-bar">
 		<button id="fullscreen" title="toggle fullscreen" data-placement="bottom">
