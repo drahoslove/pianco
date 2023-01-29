@@ -27,7 +27,7 @@ Vue.component('prompt', {
     prop: 'name',
   },
   data () { return {
-      value: this.name,
+    value: this.name,
   }},
   mounted () {
     this.focusInput()
@@ -92,7 +92,7 @@ export const networkingApp = new Vue({
     },
     lastEmojisMap () {
       return this.lastEmojis.slice(this.lastEmojis.length === 4 ? 1 : 0).reduce((map, symbol, i) => ({
-          ...map,
+        ...map,
         [symbol]: `custom ${i+1}`,
       }), {})
     }
@@ -218,19 +218,6 @@ export const networkingApp = new Vue({
     changeRoom(room) {
       if (/^[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(room) || room === '-') {
         window.location.hash = room
-        // } else {
-        //   const intRoom = parseInt(room)
-        //   if (
-        //     intRoom &&
-        //     intRoom < 141167095653376 &&
-        //     intRoom > -2 &&
-        //     intRoom === +room
-        //   ) {
-        //     window.location.hash = intRoom === -1 ? '-' : intToHash(intRoom) || ''
-        //   }
-        //   if (+room === 0) {
-        //     window.location.hash = 'aaa-aaaa-aaa'
-        //   }
       }
     },
     findEmptyRoom() {

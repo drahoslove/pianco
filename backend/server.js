@@ -27,7 +27,7 @@ const verify = (secret, key) => { // return null or identity from secret
     return jwt.verify(secret, key)
   } catch(e) {
     return null
-  }
+  } 
 }
 
 const send = (gid, uid, message) => { // to specific identity
@@ -164,7 +164,7 @@ wss.on('connection', async function connection(ws) {
   ws.on('message', function incoming(message) {
     // common vars
     let { uid, gid } = identities[ws.secret] || { uid: undefined, gid: undefined}
-    const isDirectApi = ws.secret === undefined
+    const isDirectApi = ws.secret === undefined 
     if (isDirectApi) { // assume gid=0 for gopiano
       gid = ROOT_GRP
     }
@@ -264,7 +264,7 @@ wss.on('connection', async function connection(ws) {
 
 
         const nameExistsInGroup = Object.entries(identities).some(([key, iden]) => (
-            iden.name === name && iden.gid === newGid && key !== secret
+          iden.name === name && iden.gid === newGid && key !== secret
         ))
         if (!name || nameExistsInGroup) { // assign default anon name derived from uid
           name = `anon${newUid}` // might be overwritten by remoteIdentity.name
@@ -318,10 +318,10 @@ wss.on('connection', async function connection(ws) {
           if (iden.name === identity.name && key !== secret && remoteIdentity && verify(key, REMOTE_KEY)) { // new secret - remove old one
             wss.clients
               .forEach(cws => {
-              if (cws.secret === key) {
-                cws.secret = secret
-              }
-            })
+                if (cws.secret === key) {
+                  cws.secret = secret
+                }
+              })
             const oldIdent = identities[key]
             groups[`${oldIdent?.gid}`]?.delete(oldIdent.uid)
             delete identities[key]
@@ -386,7 +386,7 @@ wss.on('connection', async function connection(ws) {
           autoplayers[`${gid}`].stop(uid)
         }
       }
-      
+
     }
   })
 
@@ -404,7 +404,6 @@ wss.on('connection', async function connection(ws) {
       if (gid >= 0) {
         autoplayers[`${gid}`].stop(uid)
         recorders[`${gid}`].stop(uid)
-
         groups[`${gid}`].delete(uid)
       }
       if (ws.secret in identities) {
@@ -421,7 +420,7 @@ wss.on('connection', async function connection(ws) {
 const healthInterval = setInterval(() => {
   wss.clients.forEach(ws => {
     if (ws.secret === undefined) { // ignore health of gopiano connection
-      return
+      return 
     }
     if (ws.isAlive === false) {
       console.log(`ws.secret`, ws.secret)

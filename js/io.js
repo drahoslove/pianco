@@ -17,10 +17,10 @@ import { recorderApp } from './vue/recorder.js'
 
 
 Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || function () {
-    return new Response(this).arrayBuffer()
-  } // polyfill for safari
+  return new Response(this).arrayBuffer()
+} // polyfill for safari
 
-  
+
 const isFramed = window.parent !== window
 
 let lastJwt
@@ -47,7 +47,7 @@ const isJwtNew = (jwt) => {
         return val - (old[key]||0) > 1000 * 60 * 15 // is older than 15 minutes
       }
       return val !== old[key]
-    })
+  })
 }
 
 const onMessage = (event) => {
@@ -89,7 +89,7 @@ const requestUserData = async () => {
       }
       if (!(event.data instanceof Object)) {
         return
-      }
+      } 
       resolve({ secret: event.data.userJwt.replace(/ /g, '') })
     }
     window.removeEventListener('message', onMessage)
@@ -161,14 +161,14 @@ export const react = (symbol) => {
 // ws message handlers
 
 const onCmd = (cmdName, callback) => async ({ data: message }) => {
-    if (typeof message !== 'string') {
-      return
-    }
-    const [cmd, ...values] = message.split(' ')
-    if (cmd === cmdName) {
-      callback(values)
-    }
+  if (typeof message !== 'string') {
+    return
   }
+  const [cmd, ...values] = message.split(' ')
+  if (cmd === cmdName) {
+    callback(values)
+  }
+}
 
 const onReaction = onCmd('reaction', (values) => {
   const [gid, uid] = values.map(Number)
@@ -251,7 +251,7 @@ const onBlob = async ({ data }) => {
   }
   const [gid, uid, cmd, val1, val2] = new Uint8Array(await data.arrayBuffer())
   if (gid !== GID) { // another group
-    return
+    return 
   }
   if (uid === UID && chanFromCmd(cmd) === CHANNEL) { // your notes
     return
@@ -262,7 +262,7 @@ const onBlob = async ({ data }) => {
   if (fromCmd(cmd) === CMD_NOTE_ON) {
     const velocity = fromVal(val2)
     pressNote(note, velocity, uid)(isMuted ? "mutedIO" : "IO")
-  }
+  } 
   if (fromCmd(cmd) === CMD_NOTE_OFF) {
     releaseNote(note, uid)(isMuted ? "mutedIO" : "IO")
   }
@@ -339,7 +339,7 @@ const connect = () => {
     ws.addEventListener('message', onRecorderStatus)
     // handle reaction
     ws.addEventListener('message', onReaction)
-
+    
     ws.onopen = async () => {
       const newGid = gidFromHash()
       let { secret, name } = isFramed
@@ -394,13 +394,13 @@ const send = (data) => {
 }
 
 const sendNoteOn = (note, velocity=0.5) => (source) => {
-    pressNote(note, velocity, UID)(source)
-    if (networkingApp.isMuted(UID)) {
-      return
-    }
-    const midiNote = Tone.Midi(note).toMidi()
-    send(new Uint8Array([GID, UID, toCmd(1), midiNote, toVal(velocity)]))
+  pressNote(note, velocity, UID)(source)
+  if (networkingApp.isMuted(UID)) {
+    return
   }
+  const midiNote = Tone.Midi(note).toMidi()
+  send(new Uint8Array([GID, UID, toCmd(1), midiNote, toVal(velocity)]))
+}
 
 const sendNoteOff = (note) => (source) => {
   releaseNote(note, UID)(source)
@@ -433,10 +433,10 @@ const dropMic = () => {
 }
 
 const recorder = ['record', 'stop', 'replay', 'pause'].reduce((recorder, action) => ({
-    ...recorder,
-    [action]: () => {
-      ws.send(action)
-    },
+  ...recorder,
+  [action]: () => {
+    ws.send(action)
+  },
 }), {})
 
 window.recorder = recorder
@@ -470,10 +470,10 @@ window.autoplay = (url) => {
       let question = "Select intruments:\n"
       const preselection = []
       question += data.split(';').map((str, i) => {
-          const [id, notes] = str.split(':')
+        const [id, notes] = str.split(':')
         if (i<3) {
           preselection.push(i+1)
-          }
+        }
         return `${i+1}: ${instrumentById[id]} - ${notes} notes`
       }).join('\n')
       const selection = prompt(question, preselection).split(',').map(i => i-1).join(',')
