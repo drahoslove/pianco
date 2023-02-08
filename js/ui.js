@@ -72,10 +72,6 @@ function loadSetting(key) {
   }[key] 
 }
 
-if (location.hash.includes('m')) {
-  saveSetting('cinema', true)
-}
-
 const setOnClass = (el, val) => {
   el.classList.remove('on', 'onon', 'ononon')
   if (val) {
