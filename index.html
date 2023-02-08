@@ -170,14 +170,15 @@
 							@keyup.enter.space="changeInstrument"
 						>
 							<span>
-								<span v-if="instrument === 'sampledPiano'" class="iconify" data-icon="mdi-piano"></span>
-								<span v-if="instrument === 'midiout'" class="iconify" data-icon="mdi-midi"></span>
-								<span v-if="instrument === 'none'" class="iconify" data-icon="mdi-dots-horizontal"></span>
+								<span v-if="instrument.includes('piano')" class="iconify" data-icon="mdi-piano"></span>
+								<span v-else-if="instrument === 'midiout'" class="iconify" data-icon="mdi-midi"></span>
+								<span v-else-if="instrument === 'none'" class="iconify" data-icon="mdi-dots-horizontal"></span>
+								<span v-else class="iconify" data-icon="mdi-music-note"></span>
 							</span>
 							<select id="instrument" name="instrument" hidden v-model="instrument" @click="changeInstrument">
-								<option value="sampledPiano"> piano</option>
+								<!-- <option value="sampledPiano"> piano</option>
 								<option value="midiout" :hidden="!midiEnabled">MIDI out</option>
-								<option value="none" selected hidden>...</option>
+								<option value="none" selected hidden>...</option> -->
 							</select>
 						</label>
 						<label class="volume-label" title="volume" @wheel="scrollVolume" tabindex="0"

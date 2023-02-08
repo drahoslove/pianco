@@ -31,16 +31,16 @@ allNotes.forEach(note => {
 	sustainedNotes[note] = new Set()
 })
 
-const instruments = {
-  // polySynth: new Tone.PolySynth(Tone.Synth, {
-  //   envelope: {
-  //     attack: 0.01,
-  //     release: .5,
-  //   }
-  // }).toDestination(),
-  // AMSynth: new Tone.AMSynth().toDestination(),
-  // FMSynth: new Tone.FMSynth().toDestination(),
-  sampledPiano: new Tone.Sampler({
+export const instruments = {
+	// polySynth: new Tone.PolySynth(Tone.Synth, {
+	//   envelope: {
+	//     attack: 0.01,
+	//     release: .5,
+	//   }
+	// }).toDestination(),
+	// AMSynth: new Tone.AMSynth().toDestination(),
+	// FMSynth: new Tone.FMSynth().toDestination(),
+	'Salamander piano': new Tone.Sampler({
 		urls: {
 			"A0" : "A0.[mp3|ogg]",
 			"C1" : "C1.[mp3|ogg]",
@@ -74,10 +74,10 @@ const instruments = {
 			"C8" : "C8.[mp3|ogg]"
 		},
 		baseUrl: "/audio/salamander/",
-    release: 1,
-    onload: () => {
+		release: 1,
+		onload: () => {
 			if (instrumentApp.instrument === 'none') {
-				instrumentApp.instrument = 'sampledPiano'
+				instrumentApp.instrument = 'Salamander piano'
 			}
     },
   }).toDestination(),
@@ -479,8 +479,8 @@ const instrumentById = [
 ];
 
 export {
-  pressNote,
-  releaseNote,
+	pressNote,
+	releaseNote,
 	releaseAll,
 	pressSustain,
 	releaseSustain,

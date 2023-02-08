@@ -1,5 +1,5 @@
 // uses global.Tone
-import { allOff } from '../instrument.js'
+import { allOff, instruments } from '../instrument.js'
 
 
 export const instrumentApp = new Vue({
@@ -37,16 +37,12 @@ export const instrumentApp = new Vue({
   },
   methods: {
     changeInstrument (e) {
-      if (this.midiEnabled){
-        this.instrument = {
-          'sampledPiano': 'midiout',
-          'midiout': 'sampledPiano'
-        }[this.instrument] || 'none'
-      } else {
-        this.instrument = {
-          'sampledPiano': 'sampledPiano',
-        }[this.instrument] || 'none'
-      }
+      const instrumentNames = Object.keys(instruments)
+        .filter(name => name !== 'none')
+        .filter(name => this.midiEnabled || name !== 'midiout')
+      const index = instrumentNames.indexOf(this.instrument)
+      const nextInstrument = instrumentNames[(index+1) % instrumentNames.length]
+      this.instrument = nextInstrument
     },
     scrollVolume (e) {
       if (this.muted) {
