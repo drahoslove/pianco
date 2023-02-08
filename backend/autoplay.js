@@ -150,15 +150,15 @@ class Autoplay {
   )
 
   sendSustain = (value, uid) => {
-    Autoplay.wss.broadcast([this.gid, uid || this.uid, toCmd(3), CC_SUTAIN, toVal(value)])
+    Autoplay.wss.broadcast(this.gid, [this.gid, uid || this.uid, toCmd(3), CC_SUTAIN, toVal(value)])
   }
   
   sendNoteOn = (note, uid) => {
-    Autoplay.wss.broadcast([this.gid, uid || this.uid, toCmd(1), note.midi, toVal(note.velocity)])
+    Autoplay.wss.broadcast(this.gid, [this.gid, uid || this.uid, toCmd(1), note.midi, toVal(note.velocity)])
   }
   
   sendNoteOff = (note, uid) => {
-    Autoplay.wss.broadcast([this.gid, uid || this.uid, toCmd(0), note.midi,toVal(0)])
+    Autoplay.wss.broadcast(this.gid, [this.gid, uid || this.uid, toCmd(0), note.midi,toVal(0)])
   }
 
 }

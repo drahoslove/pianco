@@ -38,8 +38,7 @@ const send = (gid, uid, message) => { // to specific identity
   })
 }
 
-const broadcast = (data) => { // to everyone in group
-  const [gid] = data
+const broadcast = (gid, data) => { // to everyone in group
   wss.clients.forEach(client => {
     const { gid: clientGid } = identities[client.secret] || {}
     if (clientGid === gid && client.readyState === WebSocket.OPEN) {
@@ -57,8 +56,7 @@ const broadcastText = (gid, text) => {
   })
 }
 
-const echo = (data) => { // to eveyone in group except origin
-  const [gid, uid] = data
+const echo = (gid, uid, data) => { // to eveyone in group except origin
   wss.clients.forEach(client => {
     const { gid: clientGid, uid: clientUid } = identities[client.secret] || {}
     if (clientGid === gid && clientUid !== uid && client.readyState === WebSocket.OPEN) {
@@ -148,6 +146,7 @@ wss.on('connection', async function connection(ws) {
     const isDirectApi = ws.secret === undefined 
     if (isDirectApi) { // assume gid=0 for gopiano
       gid = ROOT_GRP
+      uid = ROOT_USR
     }
 
     if (message instanceof Buffer) {
@@ -157,8 +156,8 @@ wss.on('connection', async function connection(ws) {
         return
       }
 
-      echo(message) // <--- this is the most important
       recorders[gid].pass(message) // pass message to recorder
+      echo(gid, uid, message) // <--- this is the most important
 
       // interrupt ghost:
       if (gid === ROOT_GRP) { // gopiano also triggesr this

@@ -66,7 +66,7 @@ class Tape {
     this.timeout = setTimeout(() => {
       this.seekIndex++
       this.seekTime = event.time
-      WSS.broadcast(event.data)
+      WSS.broadcast(this.gid, event.data)
       this.play() // next note
     }, event.time - this.seekTime)
   }
@@ -132,15 +132,15 @@ class Recorder {
   }
 
   sendSustain = (value, uid) => {
-    WSS.broadcast([this.gid, uid, toCmd(3), CC_SUTAIN, toVal(value)])
+    WSS.broadcast(this.gid, [this.gid, uid, toCmd(3), CC_SUTAIN, toVal(value)])
   }
   
   sendNoteOn = (note, uid) => {
-    WSS.broadcast([this.gid, uid, toCmd(1), note, toVal(note.velocity)])
+    WSS.broadcast(this.gid, [this.gid, uid, toCmd(1), note, toVal(note.velocity)])
   }
   
   sendNoteOff = (note, uid) => {
-    WSS.broadcast([this.gid, uid, toCmd(0), note, toVal(0)])
+    WSS.broadcast(this.gid, [this.gid, uid, toCmd(0), note, toVal(0)])
   }
 }
 
