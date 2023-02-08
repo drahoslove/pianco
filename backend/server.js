@@ -11,12 +11,13 @@ const fromCmd = (cmd) => (cmd>>4) & 7
 const ROOT_SECRET = '0000000000000000'
 const ROOT_USR = 0
 const ROOT_GRP = 0
+const OFFLINE_GID = -1
 
 const PORT = process.env.PORT || 11088
 
 const wss = new WebSocket.Server({ port: PORT })
 
-const groups = Array.from({ length: 255 }).map(() => new Set()) // 255 is offline 'room''
+const groups = Array.from({ length: 255 }).map(() => new Set())
 const identities = {} // {[secret]: { name: 'pianco', gid: 0, uid: 0 }}
 
 
@@ -38,11 +39,11 @@ const send = (gid, uid, message) => { // to specific identity
 }
 
 const broadcast = (data) => { // to everyone in group
-  const [gid, uid] = data
+  const [gid] = data
   wss.clients.forEach(client => {
     const { gid: clientGid } = identities[client.secret] || {}
     if (clientGid === gid && client.readyState === WebSocket.OPEN) {
-      client.send(new Uint8Array(data))
+      client.send(new Uint8Array(data)) // gid is being truncated here
     }
   })
 }
@@ -155,10 +156,9 @@ wss.on('connection', async function connection(ws) {
       if (mic && mic.uid !== uid) { // do not propagate if someone not you has mic
         return
       }
-      if (message[0] !== 255 && message[0] !== -1) {
-        echo(message) // <--- this is the most important
-        recorders[gid].pass(message) // pass message to recorder
-      }
+
+      echo(message) // <--- this is the most important
+      recorders[gid].pass(message) // pass message to recorder
 
       // interrupt ghost:
       if (gid === ROOT_GRP) { // gopiano also triggesr this
@@ -319,7 +319,7 @@ wss.on('connection', async function connection(ws) {
 
       const recorder = recorders[gid]
 
-      if (gid !== -1) {
+      if (gid !== OFFLINE_GID) {
         if (cmd === 'record') {
           recorder.record(uid)
         }

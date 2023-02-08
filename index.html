@@ -216,6 +216,7 @@
 		
 				<div id="recorder-app" v-cloak>
 					<div
+						v-if="visible"
 						:class="{ isRecording, isPlaying }"
 					>
 						<button @click="toggleRecord"
@@ -239,7 +240,7 @@
 	</div>
 	<footer class="bar" id="networking-app" v-cloak>
 		<div>
-			<div class="reacter" v-show="showReacter && gid !== -1">
+			<div class="reacter" v-show="showReacter && gid !== OFFLINE_GID">
 				<span
 					v-for="(label, symbol) of {
 						...defaultEmojis,
@@ -265,7 +266,7 @@
 					<span class="iconify" data-icon="mdi-dots-horizontal"></span>
 				</span>
 			</div>
-			<div v-if="gid !== -1">
+			<div v-if="gid !== OFFLINE_GID">
 				<button content="react" v-tippy @click="toggleReacter()" aria-label="make raction">
 					<span class="iconify" data-icon="mdi-chat"></span>
 				</button>
@@ -329,10 +330,10 @@
 				<span class="iconify" :data-icon="`mdi-numeric-${ room }-circle`"></span>
 			</button>
 			<button
-				:class="gid === -1 ? 'on' : ''"
+				:class="gid === OFFLINE_GID ? 'on' : ''"
 				v-tippy content="isolation"
 				aria-label="go to isolation"
-				@click="changeRoom(-1)"
+				@click="changeRoom(OFFLINE_GID)"
 			>
 				<span class="iconify" data-icon="mdi-minus-circle"></span>
 			</button>
@@ -483,6 +484,6 @@ if (window.parent !== window) { // frame
 		window.blur()
 	})
 }
-	</script>
+</script>
 </body>
 </html>
