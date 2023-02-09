@@ -11,6 +11,7 @@ const fromCmd = (cmd) => (cmd>>4) & 7
 const ROOT_SECRET = '0000000000000000'
 const ROOT_USR = 0
 const ROOT_GRP = 0
+const OFFLINE_GID = -1
 
 const PORT = process.env.PORT || 11088
 
@@ -39,12 +40,11 @@ const send = (gid, uid, message) => { // to specific identity
   })
 }
 
-const broadcast = (data) => { // to everyone in group
-  const [gid, uid] = data
+const broadcast = (gid, data) => { // to everyone in group
   wss.clients.forEach(client => {
     const { gid: clientGid } = identities[client.secret] || {}
     if (clientGid === gid && client.readyState === WebSocket.OPEN) {
-      client.send(new Uint8Array(data))
+      client.send(new Uint8Array(data)) // gid is being truncated here
     }
   })
 }
@@ -58,8 +58,7 @@ const broadcastText = (gid, text) => {
   })
 }
 
-const echo = (data) => { // to eveyone in group except origin
-  const [gid, uid] = data
+const echo = (gid, uid, data) => { // to eveyone in group except origin
   wss.clients.forEach(client => {
     const { gid: clientGid, uid: clientUid } = identities[client.secret] || {}
     if (clientGid === gid && clientUid !== uid && client.readyState === WebSocket.OPEN) {
@@ -167,6 +166,7 @@ wss.on('connection', async function connection(ws) {
     const isDirectApi = ws.secret === undefined 
     if (isDirectApi) { // assume gid=0 for gopiano
       gid = ROOT_GRP
+      uid = ROOT_USR
     }
 
     if (message instanceof Buffer) {
@@ -175,10 +175,9 @@ wss.on('connection', async function connection(ws) {
       if (mic && mic.uid !== uid) { // do not propagate if someone not you has mic
         return
       }
-      if (message[0] !== 255 && message[0] !== -1) {
-        echo(message) // <--- this is the most important
-        recorders[`${gid}`].pass(message) // pass message to recorder
-      }
+
+      recorders[`${gid}`].pass(message) // pass message to recorder
+      echo(gid, uid, message) // <--- this is the most important
 
       // interrupt ghost:
       if (gid === ROOT_GRP) { // gopiano also triggesr this
@@ -353,7 +352,7 @@ wss.on('connection', async function connection(ws) {
 
       const recorder = recorders[`${gid}`]
 
-      if (gid !== -1) {
+      if (gid !== OFFLINE_GID) {
         if (cmd === 'record') {
           recorder.record(uid)
         }

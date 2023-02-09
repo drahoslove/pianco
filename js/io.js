@@ -102,6 +102,8 @@ const requestUserData = async () => {
 }
 
 const DEF_GID = isFramed ? 141167095653376 : 0
+const OFFLINE_GID = -1
+window.OFFLINE_GID = OFFLINE_GID
 
 let UID = 0 // will be changed by backend
 let GID = DEF_GID
@@ -118,6 +120,7 @@ function hashToInt(hash) {
   }
   return int
 }
+
 
 export function intToHash(int) {
   let hash = []
@@ -137,7 +140,7 @@ export function intToHash(int) {
 const gidFromHash = () => {
   const result =
     location.hash === '#-'
-      ? -1
+      ? OFFLINE_GID
       : /^[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(location.hash.slice(1))
       ? hashToInt(location.hash.slice(1)) || DEF_GID
       : 0
@@ -199,9 +202,11 @@ const onRegroup = onCmd('regroup', (values) => {
   }
   // update url if group changed
   if (gidFromHash() !== newGid) {
-    location.hash = newGid === -1 ? '-' : intToHash(newGid) || '' // + (location.hash.endsWith('m') ? 'm' : '')
+    location.hash = newGid === OFFLINE_GID ? '-' : intToHash(newGid) || ''
+
   }
   recorderApp.reset()
+  recorderApp.visible = newGid !== OFFLINE_GID // hide recorder in offline mode
   console.log(`${UID}@${GID} changed`)
 })
 
@@ -249,8 +254,11 @@ const onBlob = async ({ data }) => {
   if (!(data instanceof Blob)) {
     return
   }
-  const [gid, uid, cmd, val1, val2] = new Uint8Array(await data.arrayBuffer())
-  if (gid !== GID) { // another group
+  if (GID === OFFLINE_GID) { // ignore incoming notes in offline mode
+    return
+  }
+  const [gidTopByte, uid, cmd, val1, val2] = new Uint8Array(await data.arrayBuffer())
+  if (gidTopByte !== GID & 0xFF) { // another group
     return 
   }
   if (uid === UID && chanFromCmd(cmd) === CHANNEL) { // your notes
@@ -357,7 +365,7 @@ const connect = () => {
     ws.onclose = () => {
       console.log('ws close')
       networkingApp.isOnline = false
-      networkingApp.gid = -1
+      networkingApp.gid = OFFLINE_GID
       // unpress keys of all users in group
       const leavingUsers = (networkingApp.groups[GID]||[]) 
         .filter(uid => uid !== UID)
@@ -395,7 +403,7 @@ const send = (data) => {
 
 const sendNoteOn = (note, velocity=0.5) => (source) => {
   pressNote(note, velocity, UID)(source)
-  if (networkingApp.isMuted(UID)) {
+  if (networkingApp.isMuted(UID) || GID === OFFLINE_GID) {
     return
   }
   const midiNote = Tone.Midi(note).toMidi()
@@ -404,7 +412,7 @@ const sendNoteOn = (note, velocity=0.5) => (source) => {
 
 const sendNoteOff = (note) => (source) => {
   releaseNote(note, UID)(source)
-  if (networkingApp.isMuted(UID)) {
+  if (networkingApp.isMuted(UID) || GID === OFFLINE_GID) {
     return
   }
   const midiNote = Tone.Midi(note).toMidi()
@@ -416,6 +424,9 @@ const sendSustain = (value, source) => {
     pressSustain(UID, source)
   } else {
     releaseSustain(UID, source)
+  }
+  if (GID === OFFLINE_GID) {
+    return
   }
   send(new Uint8Array([GID, UID, toCmd(3), CC_SUTAIN, toVal(value)]))
 }

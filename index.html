@@ -170,14 +170,15 @@
 							@keyup.enter.space="changeInstrument"
 						>
 							<span>
-								<span v-if="instrument === 'sampledPiano'" class="iconify" data-icon="mdi-piano"></span>
-								<span v-if="instrument === 'midiout'" class="iconify" data-icon="mdi-midi"></span>
-								<span v-if="instrument === 'none'" class="iconify" data-icon="mdi-dots-horizontal"></span>
+								<span v-if="instrument.includes('piano')" class="iconify" data-icon="mdi-piano"></span>
+								<span v-else-if="instrument === 'midiout'" class="iconify" data-icon="mdi-midi"></span>
+								<span v-else-if="instrument === 'none'" class="iconify" data-icon="mdi-dots-horizontal"></span>
+								<span v-else class="iconify" data-icon="mdi-music-note"></span>
 							</span>
 							<select id="instrument" name="instrument" hidden v-model="instrument" @click="changeInstrument">
-								<option value="sampledPiano"> piano</option>
+								<!-- <option value="sampledPiano"> piano</option>
 								<option value="midiout" :hidden="!midiEnabled">MIDI out</option>
-								<option value="none" selected hidden>...</option>
+								<option value="none" selected hidden>...</option> -->
 							</select>
 						</label>
 						<label class="volume-label" title="volume" @wheel="scrollVolume" tabindex="0"
@@ -216,6 +217,7 @@
 		
 				<div id="recorder-app" v-cloak>
 					<div
+						v-if="visible"
 						:class="{ isRecording, isPlaying }"
 					>
 						<button @click="toggleRecord"
@@ -239,7 +241,7 @@
 	</div>
 	<footer class="bar" id="networking-app" v-cloak>
 		<div>
-			<div class="reacter" v-show="showReacter && gid !== -1">
+			<div class="reacter" v-show="showReacter && gid !== OFFLINE_GID">
 				<span
 					v-for="(label, symbol) of {
 						...defaultEmojis,
@@ -265,7 +267,7 @@
 					<span class="iconify" data-icon="mdi-dots-horizontal"></span>
 				</span>
 			</div>
-			<div v-if="gid !== -1">
+			<div v-if="gid !== OFFLINE_GID">
 				<button content="react" v-tippy @click="toggleReacter()" aria-label="make raction">
 					<span class="iconify" data-icon="mdi-chat"></span>
 				</button>
@@ -335,7 +337,7 @@
 				<span class="iconify" data-icon="mdi-sofa"></span>
 			</button>
 			<button
-				:class="gid === -1 ? 'on' : ''"
+				:class="gid === OFFLINE_GID ? 'on' : ''"
 				v-tippy content="private room"
 				aria-label="go to private room"
 				@click="changeRoom('-')"
@@ -492,6 +494,6 @@ if (window.parent !== window) { // frame
 		window.blur()
 	})
 }
-	</script>
+</script>
 </body>
 </html>

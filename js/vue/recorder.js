@@ -5,20 +5,21 @@ export const recorderApp = new Vue({
   data: {
     isRecording: false,
     isPlaying: false,
+    visible: false,
   },
   methods: {
-    reset: function () {
+    reset () {
       this.isRecording = false
       this.isPlaying = false
     },
-    toggleRecord: function () {
+    toggleRecord () {
       if (this.isRecording || this.isPlaying) {
         recorder.stop()
       } else {
         recorder.record()
       }
     },
-    togglePlay: function () {
+    togglePlay () {
       if (this.isPlaying) {
         recorder.pause()
       } else {

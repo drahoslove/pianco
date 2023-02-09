@@ -73,5 +73,5 @@ export function nameOfChord(chord) {
       return rootNote.map(nameFunc).join(' / ')
     }
   }
-	return ""
+  return ""
 }
