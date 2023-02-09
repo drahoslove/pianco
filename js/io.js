@@ -74,7 +74,7 @@ const requestUserData = async () => {
   if (!isFramed) {
     return {}
   }
-  
+
   return new Promise((resolve) => {
     const timer = new AbortController()
     const { signal } = timer
@@ -101,8 +101,7 @@ const requestUserData = async () => {
   })
 }
 
-
-const DEF_GID = isFramed ? 101 : 0
+const DEF_GID = isFramed ? 141167095653376 : 0
 const OFFLINE_GID = -1
 window.OFFLINE_GID = OFFLINE_GID
 
@@ -112,10 +111,41 @@ let GID = DEF_GID
 // WS!
 let ws
 
-const gidFromHash = () => location.hash === '#-'
-  ? OFFLINE_GID
-  : (parseInt(location.hash.slice(1))) % 100 || DEF_GID
+function hashToInt(hash) {
+  let int = 0
+  for (let i = 0; i < hash.length; i++) {
+    if (i !== 3 && i !== 8) {
+      int = int * 26 + hash[i].charCodeAt(0) - 97
+    }
+  }
+  return int
+}
 
+
+export function intToHash(int) {
+  let hash = []
+  while (int > 25) {
+    hash.push(((int % 26) + 10).toString(36))
+    int = parseInt(int / 26)
+  }
+  hash.push(((int % 26) + 10).toString(36))
+  while (hash.length < 10) {
+    hash.push('a')
+  }
+  hash.splice(7, 0, '-')
+  hash.splice(3, 0, '-')
+  return hash.reverse().join('')
+}
+
+const gidFromHash = () => {
+  const result =
+    location.hash === '#-'
+      ? OFFLINE_GID
+      : /^[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(location.hash.slice(1))
+      ? hashToInt(location.hash.slice(1)) || DEF_GID
+      : 0
+  return result
+}
 
 export const rename = async (newName) => {
   if (isFramed) { // no self renaming in framed
@@ -154,7 +184,8 @@ const onRegroup = onCmd('regroup', (values) => {
   if (isFramed && newGid !== GID) { // regroup forbidden in frame
     return
   }
-  if (newGid !== GID && newGid > 100) { // no regroup of hidden groups
+  if (newGid !== GID && newGid > 141167095653375) {
+    // no regroup of hidden groups
     return
   }
   const [secret, name] = values.slice(2)
@@ -171,9 +202,8 @@ const onRegroup = onCmd('regroup', (values) => {
   }
   // update url if group changed
   if (gidFromHash() !== newGid) {
-    location.hash = newGid === OFFLINE_GID
-      ? '-'
-      : (newGid || '') // + (location.hash.endsWith('m') ? 'm' : '')
+    location.hash = newGid === OFFLINE_GID ? '-' : intToHash(newGid) || ''
+
   }
   recorderApp.reset()
   recorderApp.visible = newGid !== OFFLINE_GID // hide recorder in offline mode
@@ -190,7 +220,7 @@ const onUserStatus = onCmd('status', (values) => {
   networkingApp.avatars = status.avatars || {}
   networkingApp.mods = status.mods || {}
   networkingApp.mics = status.mics || {}
-  
+
   removedUsers.forEach(uid => {
     releaseAll(uid)('cleanage')
     releaseSustain(uid, 'cleanage')

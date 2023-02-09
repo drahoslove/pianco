@@ -17,8 +17,10 @@ const PORT = process.env.PORT || 11088
 
 const wss = new WebSocket.Server({ port: PORT })
 
-const groups = Array.from({ length: 255 }).map(() => new Set())
+const groups = {}
 const identities = {} // {[secret]: { name: 'pianco', gid: 0, uid: 0 }}
+const recorders = {}
+const autoplayers = {}
 
 
 const verify = (secret, key) => { // return null or identity from secret
@@ -65,40 +67,54 @@ const echo = (gid, uid, data) => { // to eveyone in group except origin
   })
 }
 
-const status = () => { // broadcast state of the world to everyone
+const status = () => {
+  let tempGroups = {}
+  let tempMods = {}
+  let tempMics = {}
+  let tempNames = {}
+  let tempAvatars = {}
+  for (const [g, uids] of Object.entries(groups)) {
+    tempGroups = { ...tempGroups, ...(uids.size > 0 && { [g]: [...uids] }) }
+    tempMods = {
+      ...tempMods,
+      ...(uids.size > 0 && {
+        [g]: Object.values(identities)
+          .filter(({ gid, mod }) => gid === +g && mod)
+          .map(({ uid }) => uid),
+      }),
+    }
+    tempMics = {
+      ...tempMics,
+      ...(uids.size > 0 && {
+        [g]: Object.values(identities)
+          .filter(({ gid, hasMic }) => gid === +g && hasMic)
+          .map(({ uid }) => uid),
+      }),
+    }
+    tempNames = {
+      ...tempNames,
+      ...(uids.size > 0 && {
+        [g]: Object.values(identities)
+          .filter(({ gid }) => gid === +g)
+          .reduce((map, { uid, name }) => ({ ...map, [uid]: name }), {}),
+      }),
+    }
+    tempAvatars = {
+      ...tempAvatars,
+      ...(uids.size > 0 && {
+        [g]: Object.values(identities)
+          .filter(({ gid, avatar }) => gid === +g && avatar)
+          .reduce((map, { uid, avatar }) => ({ ...map, [uid]: avatar }), {}),
+      }),
+    }
+  }
+  // broadcast state of the world to everyone
   const data = JSON.stringify({
-    groups: groups.reduce((groups, uids, g) => ({ // {0: [0, 42]}
-      ...groups,
-      ...(uids.size > 0 && {[g]: [...uids]})
-    }), {}),
-    mods: groups.reduce((groups, uids, g) => ({ // {0: [42]},
-      ...groups,
-      ...(uids.size > 0 && {[g]: Object.values(identities)
-        .filter(({ gid, mod }) => gid === g && mod)
-        .map(({ uid }) => uid)
-      }),
-    }), {}),
-    mics: groups.reduce((groups, uids, g) => ({ // {0: [42]},
-      ...groups,
-      ...(uids.size > 0 && {[g]: Object.values(identities)
-        .filter(({ gid, hasMic }) => gid === g && hasMic)
-        .map(({ uid }) => uid)
-      }),
-    }), {}),
-    names: groups.reduce((groups, uids, g) => ({ // {0: {0: 'draho'}, 3: {}}
-      ...groups,
-      ...(uids.size > 0 && {[g]: Object.values(identities)
-        .filter(({ gid }) => gid === g)
-        .reduce((map, {uid, name}) => ({...map, [uid]: name}), {})
-      }),
-    }), {}),
-    avatars: groups.reduce((groups, uids, g) => ({ // {0: {0: 'http...jpg'}, 3: {}}
-      ...groups,
-      ...(uids.size > 0 && {[g]: Object.values(identities)
-        .filter(({ gid, avatar }) => gid === g && avatar)
-        .reduce((map, {uid, avatar}) => ({...map, [uid]: avatar}), {})
-      }),
-    }), {}),
+    groups: tempGroups,
+    mods: tempMods,
+    mics: tempMics,
+    names: tempNames,
+    avatars: tempAvatars,
   })
   console.log('identities', identities)
   wss.clients.forEach(client => {
@@ -113,26 +129,30 @@ wss.broadcast = broadcast
 wss.echo = echo
 wss.status = status
 
-groups[ROOT_GRP].add(ROOT_USR) // add ghost player to main room permanently
+groups[`${ROOT_GRP}`] = new Set().add(ROOT_USR)
 identities[ROOT_SECRET] = { name: 'Pianco', gid: ROOT_GRP, uid: ROOT_USR }
 
 
 const Autoplay = require('./autoplay.js')(wss)
-const autoplayers = groups.map((_, gid) => new Autoplay(gid, ROOT_USR)) // init autoplaye for each group
+autoplayers[`${ROOT_GRP}`] = new Autoplay(ROOT_GRP, ROOT_USR) // init autoplayer for each group
 
 const Recorder = require('./recorder.js')(wss)
-const recorders = groups.map((_, gid) => new Recorder(gid)) // init recorder for each group
+recorders[`${ROOT_GRP}`] = new Recorder(ROOT_GRP) // init recorder for each group
 
 // return uid which is not yet in the group
 const genUid = (gid) => {
-  if (groups[gid].size >= 255) {
-    return null
+  if (!groups[`${gid}`]) {
+    return rand(255)
+  } else {
+    if (groups[`${gid}`].size >= 255) {
+      return null
+    }
+    let uid
+    do {
+      uid = rand(255) // 0-254 - 255 is ghost
+    } while (uid === ROOT_USR || groups[`${gid}`].has(uid))
+    return uid
   }
-  let uid
-  do {
-    uid = rand(255) // 0-254 - 255 is ghost
-  } while (uid === ROOT_USR || groups[gid].has(uid))
-  return uid
 }
 
 
@@ -156,14 +176,15 @@ wss.on('connection', async function connection(ws) {
         return
       }
 
-      recorders[gid].pass(message) // pass message to recorder
+      recorders[`${gid}`].pass(message) // pass message to recorder
       echo(gid, uid, message) // <--- this is the most important
 
       // interrupt ghost:
       if (gid === ROOT_GRP) { // gopiano also triggesr this
         const [_, __, cmd] = new Uint8Array(message)
-        if (fromCmd(cmd) === CMD_NOTE_ON) { // note on
-          autoplayers[ROOT_GRP].resetGhost({
+        if (fromCmd(cmd) === CMD_NOTE_ON) {
+          // note on
+          autoplayers[`${ROOT_GRP}`].resetGhost({
             delay: 120,
             stopCurrent: true,
             pretendScared: !isDirectApi,
@@ -220,9 +241,9 @@ wss.on('connection', async function connection(ws) {
         let newUid = oldUid // possibly unchanged
 
         // wipe user activity in group
-        if (oldUid && oldGid >=0) {
-          autoplayers[oldGid].stop(oldUid)
-          recorders[oldGid].stop(oldUid)
+        if (oldUid && oldGid >= 0) {
+          autoplayers[`${oldGid}`].stop(oldUid)
+          recorders[`${oldGid}`].stop(oldUid)
         }
         // prepare new values:
         if (oldGid !== newGid || oldUid === undefined) { // only change uid when changing gid
@@ -261,7 +282,7 @@ wss.on('connection', async function connection(ws) {
             ws.terminate()
             return console.error('cant change secret of ws.secret')
           }
-          if (gid >= 100) {
+          if (gid >= 141167095653376) {
             // remote room must be accesed by remote signed secret only
             ws.terminate()
             return
@@ -270,9 +291,22 @@ wss.on('connection', async function connection(ws) {
         }
 
         // update stored values
-        groups[oldGid]?.delete(oldUid)
+        // groups[oldGid]?.delete(oldUid)
+        groups[`${oldGid}`]?.delete(oldUid)
+        if (groups[`${oldGid}`] && !groups[`${oldGid}`].size) {
+          delete groups[`${oldGid}`]
+          delete recorders[`${oldGid}`]
+          delete autoplayers[`${oldGid}`]
+        }
         if (newGid >= 0) {
-          groups[newGid].add(newUid)
+          // groups[newGid].add(newUid)
+          if (groups[`${newGid}`]) {
+            groups[`${newGid}`].add(newUid)
+          } else {
+            groups[`${newGid}`] = new Set().add(newUid)
+            recorders[`${newGid}`] = new Recorder(newGid)
+            autoplayers[`${newGid}`] = new Autoplay(newGid, ROOT_USR)
+          }
         }
         // remove deprecated identity
         Object.entries(identities).forEach(([key, iden]) => {
@@ -288,7 +322,7 @@ wss.on('connection', async function connection(ws) {
                 }
               })
             const oldIdent = identities[key]
-            groups[oldIdent?.gid]?.delete(oldIdent.uid)
+            groups[`${oldIdent?.gid}`]?.delete(oldIdent.uid)
             delete identities[key]
           }
         })
@@ -309,14 +343,14 @@ wss.on('connection', async function connection(ws) {
 
         // reset ghost player timer
         if (newGid === 0) {
-          autoplayers[newGid].resetGhost({
+          autoplayers[`${newGid}`].resetGhost({
             delay: 60,
             stopCurrent: false,
           })
         }
       } // end regroup
 
-      const recorder = recorders[gid]
+      const recorder = recorders[`${gid}`]
 
       if (gid !== OFFLINE_GID) {
         if (cmd === 'record') {
@@ -336,19 +370,19 @@ wss.on('connection', async function connection(ws) {
         if (cmd === 'autoplayurl') {
           const [gid, uid] = values.map(Number)
           const url = values[2]
-          autoplayers[gid].requestHandler(ws)(url)
+          autoplayers[`${gid}`].requestHandler(ws)(url)
         }
         if (cmd === 'playrandomfile') {
           const [gid, uid] = values.map(Number)
-          autoplayers[gid].playRandomFile(uid)
+          autoplayers[`${gid}`].playRandomFile(uid)
         }
         if (cmd === 'playrandomnotes') {
           const [gid, uid, count] = values.map(Number)
-          autoplayers[gid].playRandomNotes(uid, count)
+          autoplayers[`${gid}`].playRandomNotes(uid, count)
         }
         if (cmd === 'stopplay') {
           const [gid, uid] = values.map(Number)
-          autoplayers[gid].stop(uid)
+          autoplayers[`${gid}`].stop(uid)
         }
       }
 
@@ -366,10 +400,10 @@ wss.on('connection', async function connection(ws) {
       }
     })
     if (isLast && gid !== undefined && uid !== undefined) {
-      if (gid >=0) {
-        autoplayers[gid].stop(uid)
-        recorders[gid].stop(uid)
-        groups[gid].delete(uid)
+      if (gid >= 0) {
+        autoplayers[`${gid}`].stop(uid)
+        recorders[`${gid}`].stop(uid)
+        groups[`${gid}`].delete(uid)
       }
       if (ws.secret in identities) {
         identities[ws.secret].uid = undefined
