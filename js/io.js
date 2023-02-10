@@ -264,7 +264,7 @@ const onBlob = async ({ data }) => {
     return
   }
   const [gidTopByte, uid, cmd, val1, val2] = new Uint8Array(await data.arrayBuffer())
-  if (gidTopByte !== GID & 0xFF) { // another group
+  if (gidTopByte !== (GID & 0xFF)) { // another group
     return 
   }
   if (uid === UID && chanFromCmd(cmd) === CHANNEL) { // your notes
