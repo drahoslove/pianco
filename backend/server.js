@@ -11,6 +11,10 @@ const fromCmd = (cmd) => (cmd>>4) & 7
 const ROOT_SECRET = '0000000000000000'
 const ROOT_USR = 0
 const ROOT_GRP = 0
+const HASH_BASE = 32 // 'hash' means url hash
+const HASH_SIZE = 8
+const MAX_HASHABLE_GID = HASH_BASE**HASH_SIZE - 1
+const FIRST_EXTERNAL_GID = MAX_HASHABLE_GID + 1
 const OFFLINE_GID = -1
 
 const PORT = process.env.PORT || 11088
@@ -282,7 +286,7 @@ wss.on('connection', async function connection(ws) {
             ws.terminate()
             return console.error('cant change secret of ws.secret')
           }
-          if (gid >= 141167095653376) {
+          if (gid >= FIRST_EXTERNAL_GID) {
             // remote room must be accesed by remote signed secret only
             ws.terminate()
             return

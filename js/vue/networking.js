@@ -6,7 +6,9 @@ import {
   giveMic as ioGiveMic,
   dropMic as ioDropMic,
   react,
-  intToHash,
+  toBase32,
+  MAX_HASHABLE_GID,
+  OFFLINE_GID,
 } from '../io.js'
 import { getStorage } from '../storage.js';
 
@@ -19,15 +21,15 @@ const normalizeEmoji = (s) => s.match(emojiReg) && s.match(emojiReg)[0]
 Vue.component('prompt', {
   template: '#prompt-template',
   props: {
-    name: String,
+    val: String,
     singleChar: Boolean,
   },
   emits: ['submit'],
   model: {
-    prop: 'name',
+    prop: 'val',
   },
   data () { return {
-    value: this.name,
+    value: this.val,
   }},
   mounted () {
     this.focusInput()
@@ -44,13 +46,16 @@ Vue.component('prompt', {
 export const networkingApp = new Vue({
   el: '#networking-app',
   data: {
-    roomChange: false, //modal
+    OFFLINE_GID,
+    showShareLink: false, //modal
     showCustomEmoji: false, // modal
     showRename: false, // modal
     showReacter: false,
     isOnline: false,
+    copied: false,
     gid: 0,
     uid: 0,
+    myRooms: JSON.parse(getStorage().myRooms || '[]'),
     groups: [],
     names: [],
     avatars: [],
@@ -66,6 +71,16 @@ export const networkingApp = new Vue({
       '👌🏻': 'okay',
       '👎🏻': 'bad',
       '🍅': 'boo!',
+    },
+  },
+  watch: {
+    gid (newGid) { // add current room to list if it's missing
+      if (newGid > 0 && !this.myRooms.includes(newGid)) {
+        this.myRooms.push(newGid)
+      }
+    },
+    myRooms (myRooms) {
+      getStorage().myRooms = JSON.stringify(myRooms)
     },
   },
   computed: {
@@ -215,24 +230,55 @@ export const networkingApp = new Vue({
     userColor(uid) {
       return uid === this.uid ? '#eee' : `hsla(${(uid / 256) * 360}, 50%, 50%)`
     },
-    changeRoom(room) {
-      if (/^[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(room) || room === '-') {
-        window.location.hash = room
-      }
+    changeRoom(gid) {
+      window.location.hash = !gid
+        ? ''
+        : (gid === -1
+          ? '-'
+          : toBase32(gid)
+        )
     },
-    findEmptyRoom() {
+    goToEmptyRoom() {
       let gid
       do {
-        gid = Math.floor(Math.random() * 141167095653376)
-        // gid = Math.floor(Math.random() * 100)
-      } while (this.groups[gid])
-      window.location.hash = intToHash(gid)
+        gid = Math.floor(Math.random() * MAX_HASHABLE_GID)
+      } while (
+        this.groups[gid] || 
+        this.myRooms
+          .map(r => toBase32(r).slice(-1))
+          .includes(toBase32(gid).slice(-1)) // ensure unique icon
+      )
+      this.myRooms.push(gid)
+      window.location.hash = toBase32(gid)
+    },
+    removeRoom(gid) {
+      this.myRooms = this.myRooms.filter(r => r !== gid)
+    },
+    iconOfRoom(gid) {
+      const symbol = toBase32(gid).slice(-1)
+      if (/[a-z]/.test(symbol)) {
+        return `mdi-alpha-${symbol}-circle`
+      }
+      if (/[0-9]/.test(symbol)) {
+        return `mdi-numeric-${symbol}-circle`
+      }
+    },
+    labelOfRoom(gid) {
+      return gid ? `room ${toBase32(gid)}` : 'main room'
     },
     dotsOfRoom(gid) {
       return (this.groups[gid || 0] || []).map(() => '.').join('')
     },
-    hash(int) {
-      return int === -1 ? '-' : intToHash(int)
+    copyUrl(url) {
+      this.showShareLink = false
+      if (!url) {
+        return
+      }
+      this.copied = true
+      navigator.clipboard.writeText(url)
+      setTimeout(() => {
+        this.copied = false
+      }, 1500)
     },
   },
 })

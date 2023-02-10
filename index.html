@@ -49,7 +49,7 @@
 			<div class="modal-header">
 				<slot name="header"></slot>
 			</div>
-			<form class="modal-content" @submit="$emit('submit', value)">
+			<form class="modal-content" @submit="$emit('submit', value, $event)">
 				<label for="prompt">
 					<slot></slot>
 				</label>
@@ -320,39 +320,77 @@
 		</div>
 		<div id="tabs" class="tabs">
 			<button
-				:class="gid !== -1 ? 'on' : ''"
-				v-tippy content="change room"
-				aria-label="change room"
-				@click="roomChange = '0'"
-				:data-user-dots="dotsOfRoom(gid)"
+				class="notab"
+				v-tippy content="share room link"
+				aria-label="share room link"
+				@click="showShareLink = true && !copied"
+				:disabled="myRooms.length >= 10"
 			>
-				<span class="iconify" data-icon="mdi-seat-recline-extra"></span>
+				<span
+					v-if="!copied"
+					class="iconify"
+					data-icon="mdi-link"
+				></span>
+				<span
+					v-else
+					class="iconify"
+					data-icon="mdi-clipboard-check-outline"
+				></span>
 			</button>
 			<button
-				v-tippy content="empty room"
-				aria-label="go to empty room"
-				@click="findEmptyRoom"
-				id="EmptyRoomButton"
+				:class="gid === 0 ? 'on' : ''"
+				v-tippy content="main room"
+				aria-label="main room"
+				@click="changeRoom(0)"
+				:data-user-dots="dotsOfRoom(0)"
 			>
-				<span class="iconify" data-icon="mdi-sofa"></span>
+				<span class="iconify" data-icon="mdi-globe"></span>
+			</button>
+			<button
+				v-for="room of myRooms"
+				:key="room"
+				:class="gid === room ? 'on' : ''"
+				v-tippy :content="labelOfRoom(room)"
+				:aria-label="labelOfRoom(room)"
+				@click="changeRoom(room)"
+				:data-user-dots="dotsOfRoom(room)"
+			>
+				<span class="iconify" :data-icon="iconOfRoom(room)"></span>
+				<span
+					v-if="room !== gid && (myRooms.length >= 10 || !dotsOfRoom(room))"
+					class="close"
+					@click="removeRoom(room)"
+				>
+				 ×
+				</span>
 			</button>
 			<button
 				:class="gid === OFFLINE_GID ? 'on' : ''"
-				v-tippy content="private room"
-				aria-label="go to private room"
-				@click="changeRoom('-')"
+				v-tippy content="offline room"
+				aria-label="go to offline room"
+				@click="changeRoom(-1)"
 			>
-				<span class="iconify" data-icon="mdi-incognito"></span>
+				<span class="iconify" data-icon="mdi-lock"></span>
+			</button>
+			<button
+				class="notab"
+				v-tippy :content="myRooms.length >= 10 ? 'limit reached' : 'new empty room'"
+				aria-label="go to empty room"
+				@click="goToEmptyRoom()"
+				:disabled="myRooms.length >= 10"
+			>
+				<span class="iconify" data-icon="mdi-plus-thick"></span>
 			</button>
 		</div>
-		<prompt v-if="showRename" @submit="userRename" :name="showRename">
+		<prompt v-if="showRename" @submit="userRename" :val="showRename">
 			Your name
 		</prompt>
-		<prompt v-if="showCustomEmoji" @submit="react" :name="showCustomEmoji" single-char>
+		<prompt v-if="showCustomEmoji" @submit="react" :val="showCustomEmoji" single-char>
 			Insert custom emoji
 		</prompt>
-		<prompt v-if="roomChange" @submit="roomChangeHandler" :name="hash(gid)">
-			Room hash
+		<prompt v-if="showShareLink" @submit="copyUrl" :val="window.location.href">
+			Room link
+			<template v-slot:ok>copy</template>
 		</prompt>
 		<div id="links">
 			<span class="copy">

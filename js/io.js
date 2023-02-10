@@ -101,9 +101,16 @@ const requestUserData = async () => {
   })
 }
 
-const DEF_GID = isFramed ? 141167095653376 : 0
+const HASH_BASE = 32
+const HASH_SIZE = 8
+const MAX_HASHABLE_GID = HASH_BASE**HASH_SIZE - 1
+const FIRST_EXTERNAL_GID = MAX_HASHABLE_GID + 1
+const DEF_GID = isFramed
+  ? FIRST_EXTERNAL_GID // musn't be accesible from url in nonframed (noraml) mode
+  : 0
 const OFFLINE_GID = -1
-window.OFFLINE_GID = OFFLINE_GID
+
+export { MAX_HASHABLE_GID, OFFLINE_GID }
 
 let UID = 0 // will be changed by backend
 let GID = DEF_GID
@@ -111,39 +118,37 @@ let GID = DEF_GID
 // WS!
 let ws
 
-function hashToInt(hash) {
-  let int = 0
-  for (let i = 0; i < hash.length; i++) {
-    if (i !== 3 && i !== 8) {
-      int = int * 26 + hash[i].charCodeAt(0) - 97
-    }
-  }
-  return int
-}
+const BASE32_LETTERS = "abcdefghijkmnopqrstvwxyz23456789" // l u 0 1
+const fromBase32 = str =>
+  parseInt(String(str)
+    .toLowerCase()
+    .replace(/[0]/g, 'o')
+    .replace(/[1l]/g, 'i')
+    .replace(/[u]/g, 'v')
+    .split('')  
+    .filter(c => BASE32_LETTERS.includes(c))
+    .map(c => BASE32_LETTERS.indexOf(c).toString(HASH_BASE))
+    .join(''),
+    HASH_BASE)
 
-
-export function intToHash(int) {
-  let hash = []
-  while (int > 25) {
-    hash.push(((int % 26) + 10).toString(36))
-    int = parseInt(int / 26)
-  }
-  hash.push(((int % 26) + 10).toString(36))
-  while (hash.length < 10) {
-    hash.push('a')
-  }
-  hash.splice(7, 0, '-')
-  hash.splice(3, 0, '-')
-  return hash.reverse().join('')
-}
+export const toBase32 = (int) =>
+  ((+int) % MAX_HASHABLE_GID)
+    .toString(HASH_BASE)
+    .padStart(HASH_SIZE, '0')
+    .split('')
+    .map(c => BASE32_LETTERS[parseInt(c, HASH_BASE)])
+    .join('')
 
 const gidFromHash = () => {
   const result =
     location.hash === '#-'
       ? OFFLINE_GID
-      : /^[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(location.hash.slice(1))
-      ? hashToInt(location.hash.slice(1)) || DEF_GID
-      : 0
+      : fromBase32(location.hash.slice(1)) || DEF_GID
+  if ( // normalize hash url
+    result < MAX_HASHABLE_GID && result > 0 &&
+    location.hash.slice(1) !== toBase32(result)) {
+    window.history.replaceState(null, null, `#${toBase32(result)}`)
+  }
   return result
 }
 
@@ -202,8 +207,9 @@ const onRegroup = onCmd('regroup', (values) => {
   }
   // update url if group changed
   if (gidFromHash() !== newGid) {
-    location.hash = newGid === OFFLINE_GID ? '-' : intToHash(newGid) || ''
-
+    location.hash = newGid === OFFLINE_GID
+      ? '-'
+      : toBase32(newGid) || ''
   }
   recorderApp.reset()
   recorderApp.visible = newGid !== OFFLINE_GID // hide recorder in offline mode
