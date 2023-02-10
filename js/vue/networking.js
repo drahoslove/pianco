@@ -75,7 +75,7 @@ export const networkingApp = new Vue({
   },
   watch: {
     gid (newGid) { // add current room to list if it's missing
-      if (newGid > 0 && !this.myRooms.includes(newGid)) {
+      if (newGid > 0 && newGid <= MAX_HASHABLE_GID && !this.myRooms.includes(newGid)) {
         this.myRooms.push(newGid)
       }
     },
@@ -244,6 +244,7 @@ export const networkingApp = new Vue({
         gid = Math.floor(Math.random() * MAX_HASHABLE_GID)
       } while (
         this.groups[gid] || 
+        this.myRooms.includes(gid) ||
         this.myRooms
           .map(r => toBase32(r).slice(-1))
           .includes(toBase32(gid).slice(-1)) // ensure unique icon
