@@ -35,5 +35,5 @@ cd backend
 # 2. install dependencies
 npm install
 # 3. run server
-npm start
+npm run start
 ```
