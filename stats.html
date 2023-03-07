@@ -371,7 +371,7 @@ window.onload = async () => {
           +date >= +start &&
           +date <= +end
         ))
-        filteredDate.push({
+        filteredDate.push({ // add empty data at the endDate
           date: new Date(+end),
           duration: new Date(0),
           notes: 0,
@@ -399,13 +399,18 @@ window.onload = async () => {
     const endDate = new Date(+data[data.length-1].date)
     const histDomain = [startDate, endDate]
 
-    const totalNotes = data.reduce((sum, { notes }) => sum + notes, 0)
-    const totalDuration = data.reduce((sum, { duration }) => sum + +duration/1000)
+    // const totalNotes = data.reduce((sum, { notes }) => sum + notes, 0)
+    // const totalDuration = data.reduce((sum, { duration }) => sum + +duration/1000)
 
     const roundTo = (n=1) => (x) => Math.floor(x / n) * n
 
+    const isEmptyEndFill = (v) => !+v.duration && data[data.length-1] === v
+
     const avgReducers = (batchDefiner) => [
       (p, v) => {
+        if (isEmptyEndFill(v)) {
+          return p
+        }
         const batchKey = batchDefiner(v)
         if (!p.batchCounted[batchKey]) {
           ++p.count
@@ -417,6 +422,9 @@ window.onload = async () => {
         return p
       },
       (p, v) => {
+          if (isEmptyEndFill(v)) {
+            return p
+          }
           const batchKey = batchDefiner(v)
           p.batchCounted[batchKey]--
           if (!p.batchCounted[batchKey]) {
@@ -445,7 +453,7 @@ window.onload = async () => {
 
 
     const activeDay = archive.dimension(d => d.notes ? true : false)
-    const activeDays = activeDay.group().reduce(...avgReducers(d =>  dayString(d.date)))
+    const activeDays = activeDay.group().reduce(...avgReducers(d => dayString(d.date)))
 
     // by day hour
     const dayHour = archive.dimension(d => roundTo(1)(d.date.getHours() + d.date.getMinutes()/60))
