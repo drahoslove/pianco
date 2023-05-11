@@ -73,7 +73,7 @@ export const instruments = {
       "A7" : "A7.[mp3|ogg]",
       "C8" : "C8.[mp3|ogg]"
     },
-    baseUrl: "/audio/salamander/",
+    baseUrl: "https://vocal-default-songs.s3.amazonaws.com/pianco/",
     release: 1,
     onload: () => {
       if (instrumentApp.instrument === 'none') {
