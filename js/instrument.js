@@ -42,52 +42,50 @@ export const instruments = {
   // FMSynth: new Tone.FMSynth().toDestination(),
   'Salamander piano': new Tone.Sampler({
     urls: {
-      "A0" : "A0.[mp3|ogg]",
-      "C1" : "C1.[mp3|ogg]",
-      "D#1" : "Ds1.[mp3|ogg]",
-      "F#1" : "Fs1.[mp3|ogg]",
-      "A1" : "A1.[mp3|ogg]",
-      "C2" : "C2.[mp3|ogg]",
-      "D#2" : "Ds2.[mp3|ogg]",
-      "F#2" : "Fs2.[mp3|ogg]",
-      "A2" : "A2.[mp3|ogg]",
-      "C3" : "C3.[mp3|ogg]",
-      "D#3" : "Ds3.[mp3|ogg]",
-      "F#3" : "Fs3.[mp3|ogg]",
-      "A3" : "A3.[mp3|ogg]",
-      "C4" : "C4.[mp3|ogg]",
-      "D#4" : "Ds4.[mp3|ogg]",
-      "F#4" : "Fs4.[mp3|ogg]",
-      "A4" : "A4.[mp3|ogg]",
-      "C5" : "C5.[mp3|ogg]",
-      "D#5" : "Ds5.[mp3|ogg]",
-      "F#5" : "Fs5.[mp3|ogg]",
-      "A5" : "A5.[mp3|ogg]",
-      "C6" : "C6.[mp3|ogg]",
-      "D#6" : "Ds6.[mp3|ogg]",
-      "F#6" : "Fs6.[mp3|ogg]",
-      "A6" : "A6.[mp3|ogg]",
-      "C7" : "C7.[mp3|ogg]",
-      "D#7" : "Ds7.[mp3|ogg]",
-      "F#7" : "Fs7.[mp3|ogg]",
-      "A7" : "A7.[mp3|ogg]",
-      "C8" : "C8.[mp3|ogg]"
+      "A0": "A0.[mp3|ogg]",
+      "C1": "C1.[mp3|ogg]",
+      "D#1": "Ds1.[mp3|ogg]",
+      "F#1": "Fs1.[mp3|ogg]",
+      "A1": "A1.[mp3|ogg]",
+      "C2": "C2.[mp3|ogg]",
+      "D#2": "Ds2.[mp3|ogg]",
+      "F#2": "Fs2.[mp3|ogg]",
+      "A2": "A2.[mp3|ogg]",
+      "C3": "C3.[mp3|ogg]",
+      "D#3": "Ds3.[mp3|ogg]",
+      "F#3": "Fs3.[mp3|ogg]",
+      "A3": "A3.[mp3|ogg]",
+      "C4": "C4.[mp3|ogg]",
+      "D#4": "Ds4.[mp3|ogg]",
+      "F#4": "Fs4.[mp3|ogg]",
+      "A4": "A4.[mp3|ogg]",
+      "C5": "C5.[mp3|ogg]",
+      "D#5": "Ds5.[mp3|ogg]",
+      "F#5": "Fs5.[mp3|ogg]",
+      "A5": "A5.[mp3|ogg]",
+      "C6": "C6.[mp3|ogg]",
+      "D#6": "Ds6.[mp3|ogg]",
+      "F#6": "Fs6.[mp3|ogg]",
+      "A6": "A6.[mp3|ogg]",
+      "C7": "C7.[mp3|ogg]",
+      "D#7": "Ds7.[mp3|ogg]",
+      "F#7": "Fs7.[mp3|ogg]",
+      "A7": "A7.[mp3|ogg]",
+      "C8": "C8.[mp3|ogg]"
     },
     baseUrl: "https://vocal-default-songs.s3.amazonaws.com/pianco/",
     release: 1,
     onload: () => {
-      if (instrumentApp.instrument === 'none') {
-        instrumentApp.instrument = 'Salamander piano'
-      }
+      instrumentApp.instrument = 'Salamander piano'
     },
   }).toDestination(),
   none: {
-    triggerAttack: () => {},
-    triggerRelease: () => {},
+    triggerAttack: () => { },
+    triggerRelease: () => { },
   },
   midiout: {
     triggerAttack: (note, _, velocity) => {
-      send([toCmd(CMD_NOTE_ON), Tone.Midi(note).toMidi(), toVal(velocity*0.75)])
+      send([toCmd(CMD_NOTE_ON), Tone.Midi(note).toMidi(), toVal(velocity * 0.75)])
     },
     triggerRelease: (note) => {
       send([toCmd(CMD_NOTE_OFF), Tone.Midi(note).toMidi(), 0])
@@ -112,7 +110,7 @@ if (!isFramed) {
           }
           output = out
           console.log('MIDI out available:', out.name)
-          instrumentApp.instrument = 'midiout'
+          instrumentApp.instrument = 'Salamaner piano'
           instrumentApp.midiEnabled = true
         }
       }
@@ -141,7 +139,7 @@ const getInstrument = (source) => {
 
 // change color of key and actually play/stop the audio of the note
 const updateNote = (note, velocity, action) => (source) => {
-  if (!(note in pressedNotes)){
+  if (!(note in pressedNotes)) {
     return
   }
   const wasPressed = pressedNotes[note].size > 0
@@ -155,7 +153,7 @@ const updateNote = (note, velocity, action) => (source) => {
     document.querySelectorAll(`[data-note="${note}"]`).forEach(({ classList, style }) => {
       source !== 'mutedIO' && classList.add('pressed')
       style.setProperty('--velocity', velocity)
-    })  
+    })
     if (rectSustainMode && isSustained) { // repressing sustained note
       releaseRect(note, source)
       getInstrument(source).triggerRelease([note])
@@ -182,7 +180,7 @@ const updateNote = (note, velocity, action) => (source) => {
   }
 }
 
-const pressNote = (note, velocity=0.5, uid) => updateNote(note, velocity, () => {
+const pressNote = (note, velocity = 0.5, uid) => updateNote(note, velocity, () => {
   pressedNotes[note].add(uid)
   // indicate which user played the note
   const userIcon = document.querySelector(`[data-uid="${uid}"]`)
@@ -263,7 +261,7 @@ function toggleRectSustainMode() {
   }
 }
 
-function updateChord () {
+function updateChord() {
   // get midi values of all pressed notes
   const notes = []
   Object.entries(pressedNotes).forEach(([note, noteset]) => {
@@ -275,7 +273,7 @@ function updateChord () {
   const chordName = nameOfChord(notes)
 
   const el = document.getElementById('chord-name')
-  if(!el) {
+  if (!el) {
     return
   }
   if (chordName) {
@@ -296,17 +294,17 @@ function updateHue(note) {
       [A0 + 9]: [-120, .2],// MODE_WHITE_COLD,
       [A0 + 11]: [, 0],// MODE_WHITE,
       [A0 + 13]: [+60, .2],// MODE_WHITE_WARM,
-      [A0 + 8]:  [, 1, 1/1], // MODE_RAINBOW_1,
-      [A0 + 10]: [, 1, 1/2], // MODE_RAINBOW_2,
-      [A0 + 12]: [, 1, 1/3], // MODE_RAINBOW_3,
-      [A0 + 14]: [, 1, 1/4], // MODE_RAINBOW_4,
+      [A0 + 8]: [, 1, 1 / 1], // MODE_RAINBOW_1,
+      [A0 + 10]: [, 1, 1 / 2], // MODE_RAINBOW_2,
+      [A0 + 12]: [, 1, 1 / 3], // MODE_RAINBOW_3,
+      [A0 + 14]: [, 1, 1 / 4], // MODE_RAINBOW_4,
       ...(Array(12).fill().reduce((obj, _, i) => ({
         ...obj,
-        [A0+15+i]: [(360/12)*i, 1, ],
+        [A0 + 15 + i]: [(360 / 12) * i, 1,],
       }), {})),
     }[Tone.Midi(note).toMidi()]
     if (colorMode) {
-      const [ globalHue=0, globalSat=1, rate=0 ] = colorMode
+      const [globalHue = 0, globalSat = 1, rate = 0] = colorMode
       const keyboard = document.querySelector('.keyboard')
       keyboard.style.setProperty('--global-hue', globalHue)
       keyboard.style.setProperty('--global-sat', globalSat)
@@ -342,7 +340,7 @@ function releaseRect(note, source) {
   Array.from(column.querySelectorAll('.pressed')).forEach(rect => {
     rect.classList.remove("pressed")
     rect.classList.add("released")
-    setTimeout(rect.remove.bind(rect), 10*1000)
+    setTimeout(rect.remove.bind(rect), 10 * 1000)
   })
 }
 
