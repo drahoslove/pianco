@@ -2,14 +2,14 @@ import { getStorage } from "./storage.js"
 
 // settings
 const defaultSettings = {
-  labels: 0,
-  qwerty: false,
-  velocity: false,
+  labels: 1,
+  qwerty: true,
+  velocity: true,
   score: 1,
   cinema: false,
 }
 
-function removeHash () { 
+function removeHash() {
   history.pushState("", document.title, window.location.pathname + window.location.search)
 }
 
@@ -52,7 +52,7 @@ function saveSetting(key, val) {
     settings = JSON.parse(
       getStorage().pianco || '{}'
     )
-  } catch (e) {}
+  } catch (e) { }
   settings[key] = val
   getStorage().pianco = JSON.stringify(settings)
 }
@@ -69,7 +69,7 @@ function loadSetting(key) {
   return {
     ...defaultSettings,
     ...settings,
-  }[key] 
+  }[key]
 }
 
 const setOnClass = (el, val) => {
@@ -90,7 +90,7 @@ Object.keys(defaultSettings).forEach(key => {
   button.onclick = function () {
     val = loadSetting(key)
     if (['score', 'labels'].includes(key)) {
-      val = (+val+1)%3
+      val = (+val + 1) % 3
     } else {
       val = !val
     }
@@ -115,10 +115,9 @@ if (!isMobile) {
 }
 
 
-
 // cinema off
 const cinemaOffButton = document.getElementById('cinema-off')
-const offCinema = async function() {
+const offCinema = async function () {
   document.getElementById('toggle-cinema').classList.remove('on')
   actions.cinema(false)
   saveSetting('cinema', false)
@@ -147,7 +146,7 @@ const toggleFullscreen = async function () {
     if (!loadSetting('cinema')) {
       actions.cinema(true)
     }
-    if ( document.body.parentElement.requestFullscreen) {
+    if (document.body.parentElement.requestFullscreen) {
       await document.body.parentElement.requestFullscreen()
     }
   }
@@ -202,16 +201,16 @@ document.body.onmousemove = () => {
   }, 2500)
 }
 
-;[...document.querySelectorAll('[title]')].forEach(el => {
-  VueTippy.tippy(el, {
-    content: el.title,
-    delay: [500, 100],
-    trigger: 'mouseenter',
-    hideOnClick: false
+  ;[...document.querySelectorAll('[title]')].forEach(el => {
+    VueTippy.tippy(el, {
+      content: el.title,
+      delay: [500, 100],
+      trigger: 'mouseenter',
+      hideOnClick: false
+    })
+    el.dataset.title = el.title
+    el.title = ''
   })
-  el.dataset.title = el.title
-  el.title=''
-})
 
 // instrument
 
