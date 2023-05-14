@@ -21,7 +21,7 @@ Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || function () {
 } // polyfill for safari
 
 
-const isFramed = window.parent !== window
+const isFramed = false
 
 let lastJwt
 
@@ -30,7 +30,7 @@ const getJwtData = (jwt) => {
     return jwt
       ? JSON.parse(window.atob(jwt.split('.')[1]))
       : {}
-  } catch(e) {
+  } catch (e) {
     return {}
   }
 }
@@ -44,14 +44,14 @@ const isJwtNew = (jwt) => {
     ))
     .some(([key, val]) => {
       if (key === 'iat') {
-        return val - (old[key]||0) > 1000 * 60 * 15 // is older than 15 minutes
+        return val - (old[key] || 0) > 1000 * 60 * 15 // is older than 15 minutes
       }
       return val !== old[key]
-  })
+    })
 }
 
 const onMessage = (event) => {
-  if(getStorage().DEBUG) {
+  if (getStorage().DEBUG) {
     console.log('globev', event)
   }
   if (!(event.data instanceof Object)) {
@@ -84,12 +84,12 @@ const requestUserData = async () => {
       window.addEventListener('message', onMessage)
     }, 1000)
     const handleResponse = (event) => {
-      if(getStorage().DEBUG) {
+      if (getStorage().DEBUG) {
         console.log('locev', event)
       }
       if (!(event.data instanceof Object)) {
         return
-      } 
+      }
       resolve({ secret: event.data.userJwt.replace(/ /g, '') })
     }
     window.removeEventListener('message', onMessage)
@@ -103,7 +103,7 @@ const requestUserData = async () => {
 
 const HASH_BASE = 32
 const HASH_SIZE = 8
-const MAX_HASHABLE_GID = HASH_BASE**HASH_SIZE - 1
+const MAX_HASHABLE_GID = HASH_BASE ** HASH_SIZE - 1
 const FIRST_EXTERNAL_GID = MAX_HASHABLE_GID + 1
 const DEF_GID = isFramed
   ? FIRST_EXTERNAL_GID // musn't be accesible from url in nonframed (noraml) mode
@@ -125,7 +125,7 @@ const fromBase32 = str =>
     .replace(/[0]/g, 'o')
     .replace(/[1l]/g, 'i')
     .replace(/[u]/g, 'v')
-    .split('')  
+    .split('')
     .filter(c => BASE32_LETTERS.includes(c))
     .map(c => BASE32_LETTERS.indexOf(c).toString(HASH_BASE))
     .join(''),
@@ -158,7 +158,7 @@ export const rename = async (newName) => {
   }
   const { secret } = getStorage()
   if (newName) {
-    send(`regroup ${GID} ${UID} ${GID} ${secret||''} ${newName||''}`)
+    send(`regroup ${GID} ${UID} ${GID} ${secret || ''} ${newName || ''}`)
   }
 }
 
@@ -219,7 +219,7 @@ const onRegroup = onCmd('regroup', (values) => {
 const onUserStatus = onCmd('status', (values) => {
   const status = JSON.parse(values.join(' '))
 
-  const removedUsers = (networkingApp.groups[GID]||[])
+  const removedUsers = (networkingApp.groups[GID] || [])
     .filter(uid => !status.groups[GID].includes(uid))
   networkingApp.groups = status.groups || {}
   networkingApp.names = status.names || {}
@@ -265,7 +265,7 @@ const onBlob = async ({ data }) => {
   }
   const [gidTopByte, uid, cmd, val1, val2] = new Uint8Array(await data.arrayBuffer())
   if (gidTopByte !== (GID & 0xFF)) { // another group
-    return 
+    return
   }
   if (uid === UID && chanFromCmd(cmd) === CHANNEL) { // your notes
     return
@@ -276,7 +276,7 @@ const onBlob = async ({ data }) => {
   if (fromCmd(cmd) === CMD_NOTE_ON) {
     const velocity = fromVal(val2)
     pressNote(note, velocity, uid)(isMuted ? "mutedIO" : "IO")
-  } 
+  }
   if (fromCmd(cmd) === CMD_NOTE_OFF) {
     releaseNote(note, uid)(isMuted ? "mutedIO" : "IO")
   }
@@ -301,7 +301,7 @@ window.addEventListener('hashchange', () => { // chagning group
   sendSustain(0) // to mute self for others before leaving
   allOff() // to mute others
   const { secret, name } = getStorage()
-  send(`regroup ${GID} ${UID} ${newGid} ${secret||''} ${name||''}`)
+  send(`regroup ${GID} ${UID} ${newGid} ${secret || ''} ${name || ''}`)
   console.log(`${UID}@${GID} => ?@${newGid} request`)
 })
 
@@ -322,13 +322,13 @@ const pingPong = () => {
       ws.send('ping')
     }
     pings++
-    timeout = setTimeout(ping, 5000 + Math.floor(Math.random()*2000))
+    timeout = setTimeout(ping, 5000 + Math.floor(Math.random() * 2000))
   }
   ws.addEventListener('message', ({ data }) => {
     if (data === 'pong') {
       pongs++
-      if (getStorage().DEBUG){
-        console.log('ping', Math.floor((performance.now() - now)*100) /100, 'ms')
+      if (getStorage().DEBUG) {
+        console.log('ping', Math.floor((performance.now() - now) * 100) / 100, 'ms')
       }
     }
   })
@@ -353,13 +353,13 @@ const connect = () => {
     ws.addEventListener('message', onRecorderStatus)
     // handle reaction
     ws.addEventListener('message', onReaction)
-    
+
     ws.onopen = async () => {
       const newGid = gidFromHash()
       let { secret, name } = isFramed
         ? await requestUserData()
         : getStorage()
-      send(`regroup ${GID} ${UID} ${newGid} ${secret||''} ${name||''}`)
+      send(`regroup ${GID} ${UID} ${newGid} ${secret || ''} ${name || ''}`)
       networkingApp.isOnline = true
       networkingApp.gid = newGid
       console.log('ws open')
@@ -373,7 +373,7 @@ const connect = () => {
       networkingApp.isOnline = false
       networkingApp.gid = OFFLINE_GID
       // unpress keys of all users in group
-      const leavingUsers = (networkingApp.groups[GID]||[]) 
+      const leavingUsers = (networkingApp.groups[GID] || [])
         .filter(uid => uid !== UID)
       leavingUsers.forEach(uid => {
         releaseAll(uid)('cleanage')
@@ -384,8 +384,8 @@ const connect = () => {
       networkingApp.avatars = {}
       setTimeout(connect, 3000)
     }
-  
-  } catch(e) {
+
+  } catch (e) {
     console.error(e)
   }
 }
@@ -399,7 +399,7 @@ const send = (data) => {
     queuedMessages.push(data)
     return
   }
-  while(queuedMessages.length > 0) {
+  while (queuedMessages.length > 0) {
     ws.send(queuedMessages.shift())
   }
   if (data) {
@@ -407,7 +407,7 @@ const send = (data) => {
   }
 }
 
-const sendNoteOn = (note, velocity=0.5) => (source) => {
+const sendNoteOn = (note, velocity = 0.5) => (source) => {
   pressNote(note, velocity, UID)(source)
   if (networkingApp.isMuted(UID) || GID === OFFLINE_GID) {
     return
@@ -488,12 +488,12 @@ window.autoplay = (url) => {
       const preselection = []
       question += data.split(';').map((str, i) => {
         const [id, notes] = str.split(':')
-        if (i<3) {
-          preselection.push(i+1)
+        if (i < 3) {
+          preselection.push(i + 1)
         }
-        return `${i+1}: ${instrumentById[id]} - ${notes} notes`
+        return `${i + 1}: ${instrumentById[id]} - ${notes} notes`
       }).join('\n')
-      const selection = prompt(question, preselection).split(',').map(i => i-1).join(',')
+      const selection = prompt(question, preselection).split(',').map(i => i - 1).join(',')
       ws.removeEventListener('message', selectOptions)
       ws.send(`auto! ${url};${selection}`)
     }
@@ -503,7 +503,7 @@ window.autoplay = (url) => {
 window.randomfile = () => {
   ws.send(`playrandomfile ${GID} ${UID}`)
 }
-window.randomnotes = (count=16) => {
+window.randomnotes = (count = 16) => {
   ws.send(`playrandomnotes ${GID} ${UID} ${count}`)
 }
 window.stopplay = () => {
