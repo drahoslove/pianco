@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>Pianco online</title>
+	<meta
+			name="description"
+			content="Virtual piano - with multiplayer. Play just for fun or cooperate with friends. Connect your digital piano via MIDI and show your skill to others online!"
+	/>
+	<meta name="theme-color" content="#212121"/>
+	<link rel="apple-touch-icon" href="/img/logo-192.png">
+	<link rel="icon" href="/img/logo.svg">
+	<link rel='manifest' href='/manifest.json'>
+	<!-- <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎹</text></svg>"> -->
+	<!-- fonts -->
+	<link rel="preload" fetchpriority="high" href="/font/Bravura.woff2" as="font" type="font/woff2" crossorigin/>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2&display=swap">
+	<!-- Sentry -->
+	<script
+			src="https://browser.sentry-cdn.com/7.34.0/bundle.min.js"
+			integrity="sha384-VbKYDKfqD/Ot8dcfLdRuwWu7DcsQt0X19E5IlKO4n/VMcYrBaLWebQIOFpsJYO9N"
+			crossorigin="anonymous"
+	></script>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-21351225-3"></script>
+	<script>
+		window.dataLayer = window.dataLayer || []
+
+		function gtag() {
+			dataLayer.push(arguments)
+		}
+
+		gtag('js', new Date())
+		gtag('config', 'UA-21351225-3')
+	</script>
+	<script>
+		if ('serviceWorker' in window.navigator && window.location.origin === 'https://pian.co') {
+			window.navigator.serviceWorker.register('/service-worker.js')
+		}
+	</script>
+	<link rel="stylesheet" href="/css/iframe.css"/>
+	<script defer src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/vue-tippy/dist/vue-tippy.min.js"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+	<script defer type="module" src="js/main.js"></script>
+	<script src="https://code.iconify.design/1/1.0.6/iconify.min.js"></script>
+	<script type="text/x-template" id="prompt-template">
+		<section class="modal-mask" @keypress.esc="$emit('submit', null)" @click="$emit('submit', null)">
+			<div class="modal" @click.stop>
+				<div class="modal-header">
+					<slot name="header"></slot>
+				</div>
+				<form class="modal-content" @submit="$emit('submit', value, $event)">
+					<label for="prompt">
+						<slot></slot>
+					</label>
+					<input
+							class="prompt"
+							id="prompt"
+							type="text"
+							autocomplete="off"
+							size="12"
+							ref="input"
+							:maxlength="singleChar ? 3 : 24"
+							v-model:value="value"
+							@keydown.esc="$emit('submit', null)"
+							@keyup.stop
+							@keydown.stop
+					>
+					<button type="submit">
+						<slot name="ok">OK</slot>
+					</button>
+				</form>
+			</div>
+		</section>
+	</script>
+</head>
+<body id="app">
+<div class="back-background"></div>
+<div class="background">
+	<div class="_smoke"></div>
+	<div class="_smoke"></div>
+	<div class="_smoke"></div>
+	<div class="_smoke"></div>
+	<div class="_smoke"></div>
+	<div class="_smoke"></div>
+	<div class="_smoke"></div>
+	<div class="_smoke"></div>
+</div>
+<header style="display: none" class="bar">
+	<div>
+		<a id="home-link" href="/">
+			<h1 id="logo">Pianco</h1>
+		</a>
+	</div>
+	<div>
+		<div>
+			<button id="toggle-score" title="show staff" aria-label="toggle show staff">
+				<span class="iconify" data-icon="mdi-music-clef-treble"></span>
+			</button>
+			<button id="toggle-qwerty" hidden title="show kayboard mapping" aria-label="toggle show keyboard mapping">
+				<span class="iconify" data-icon="mdi-keyboard-outline"></span>
+			</button>
+			<button id="toggle-labels" title="show note labels" aria-label="toggle show note labels">
+				<span class="iconify" data-icon="mdi-label-outline"></span>
+			</button>
+			<button id="toggle-velocity" title="show velocity" aria-label="toggle show velocity">
+				<span class="iconify" data-icon="mdi-glass-stange"></span>
+			</button>
+		</div>
+		<div>
+			<button id="toggle-cinema" title="cinema mode" aria-label="enter cinema mode">
+				<span class="iconify" data-icon="mdi-television-clean"></span>
+			</button>
+		</div>
+	</div>
+</header>
+<div class="content">
+	<div class="chat-sidebar"></div>
+	<div class="main-content">
+		<div style="display: none" class="info-row"> <!-- info row  -->
+			<div class="staff-paper">
+				<div class="staffs">
+					<div class="staff treble" hidden>
+						<span><i>𝄞</i>𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚</span>
+						<span>𝅗</span>
+					</div>
+					<div class="staff bass" hidden>
+						<span><i>𝄢</i>𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚</span>
+						<span>𝅗</span>
+					</div>
+				</div>
+				<div class="chord-info">
+					<b id="chord-name"></b>
+				</div>
+			</div>
+		</div> <!-- end info row -->
+		<div class="keyboard letters"> <!-- piano row -->
+			<div class="pianoroll"></div>
+			<div class="top-keys"></div>
+			<div class="bottom-keys"></div>
+			<div class="hint" hidden>
+				<button tabindex="-1" data-note="C">A</button>
+				<button tabindex="-1" data-note="C#">W</button>
+				<button tabindex="-1" data-note="D">S</button>
+				<button tabindex="-1" data-note="D#">E</button>
+				<button tabindex="-1" data-note="E">D</button>
+				<button tabindex="-1" data-note="F">F</button>
+				<button tabindex="-1" data-note="F#">T</button>
+				<button tabindex="-1" data-note="G">G</button>
+				<button tabindex="-1" data-note="G#">Y</button>
+				<button tabindex="-1" data-note="A">H</button>
+				<button tabindex="-1" data-note="A#">U</button>
+				<button tabindex="-1" data-note="B">J</button>
+				<button tabindex="-1" data-note="C">K</button>
+				<button tabindex="-1" data-note="C#">O</button>
+				<button tabindex="-1" data-note="D">L</button>
+				<button tabindex="-1" data-note="D#">P</button>
+				<button tabindex="-1" data-note="E">;</button>
+				<button tabindex="-1" data-note="F">'</button>
+			</div>
+		</div> <!-- end piano row -->
+		<div style="display: none" class="bar tool-bar"> <!-- tool bar row -->
+			<div id="instrument-app" class="tool-bar" v-cloak>
+				<div v-if="midiEnabled && isFramed" class="midi-status-icon" v-tippy :content="midiTooltip">
+					<span class="iconify" data-icon="mdi-midi"></span>
+				</div>
+				<div>
+					<button v-if="!isFramed" id="midi" v-tippy :content="midiTooltip" :aria-label="midiTooltip">
+						<span class="iconify" data-icon="mdi-midi"></span>
+					</button>
+					<label id="instrument-label" for="instrument" v-tippy :content="`out: ${instrument}`"
+						   @keyup.enter.space="changeInstrument"
+					>
+							<span>
+								<span v-if="instrument.includes('piano')" class="iconify" data-icon="mdi-piano"></span>
+								<span v-else-if="instrument === 'midiout'" class="iconify" data-icon="mdi-midi"></span>
+								<span v-else-if="instrument === 'none'" class="iconify"
+									  data-icon="mdi-dots-horizontal"></span>
+								<span v-else class="iconify" data-icon="mdi-music-note"></span>
+							</span>
+						<select id="instrument" name="instrument" hidden v-model="instrument" @click="changeInstrument">
+							<!-- <option value="sampledPiano"> piano</option>
+                            <option value="midiout" :hidden="!midiEnabled">MIDI out</option>
+                            <option value="none" selected hidden>...</option> -->
+						</select>
+					</label>
+					<label class="volume-label" title="volume" @wheel="scrollVolume" tabindex="0"
+						   @keyup.enter.space="toggleMute"
+					>
+							<span class="volume-icon" id="mute-span" @click="toggleMute">
+								<span class="iconify" data-icon="mdi-volume-mute" v-if="muted"></span>
+								<span class="iconify" data-icon="mdi-volume-high" v-else-if="volume > 65"></span>
+								<span class="iconify" data-icon="mdi-volume-medium" v-else-if="volume > 30"></span>
+								<span class="iconify" data-icon="mdi-volume-low" v-else></span>
+							</span>
+						<input
+								id="volume"
+								type="range"
+								class="volume"
+								:min="minVolume" :max="maxVolume" :step="stepVolume"
+								v-model.number="volume"
+								:disabled="muted"
+								tabindex="-1"
+						/>
+					</label>
+				</div>
+			</div>
+
+			<div id="arrows-app">
+				<button id="go-down" title="shift left" aria-label="shift octave down">
+					<span class="iconify" data-icon="mdi-chevron-left"></span>
+				</button>
+				<button id="go-mid" title="shift to middle" aria-label="return to mid octave">
+					<span class="iconify" data-icon="mdi-chevron-up"></span>
+				</button>
+				<button id="go-up" title="shift right" aria-label="=shift octave up">
+					<span class="iconify" data-icon="mdi-chevron-right"></span>
+				</button>
+			</div>
+
+			<div id="recorder-app" v-cloak>
+				<div
+						v-if="visible"
+						:class="{ isRecording, isPlaying }"
+				>
+					<button @click="toggleRecord"
+							v-tippy :content="(isRecording || isPlaying) ? 'stop' : 'record'"
+							:aria-label="(isRecording || isPlaying) ? 'stop' : 'record'"
+					>
+						<span v-if="!isRecording && !isPlaying" class="iconify" data-icon="mdi-record"></span>
+						<span v-if="isRecording || isPlaying" class="iconify" data-icon="mdi-stop"></span>
+					</button>
+					<button @click="togglePlay"
+							v-tippy :content="!isPlaying ? 'replay' : 'pause'"
+							:aria-label="!isPlaying ? 'replay' : 'pause'"
+					>
+						<span v-if="!isPlaying" class="iconify" data-icon="mdi-play"></span>
+						<span v-if="isPlaying" class="iconify" data-icon="mdi-pause"></span>
+					</button>
+				</div>
+			</div>
+		</div> <!-- end toolbar row -->
+	</div>
+</div>
+<footer style="display: none" class="bar" id="networking-app" v-cloak>
+	<div>
+		<div class="reacter" v-show="showReacter && gid !== OFFLINE_GID">
+				<span
+						v-for="(label, symbol) of {
+						...defaultEmojis,
+						'': '',
+						...lastEmojisMap,
+					}"
+						:content="label"
+						v-tippy="label ? { placement : 'right',  arrow: true } : false"
+						:tabindex="showReacter ? 0 : -1"
+						:disabled="!!reactions[uid]"
+						@click="react(symbol)"
+						:class="!symbol ? 'sep': ''"
+				>
+					{{symbol}}
+				</span>
+			<span
+					content="custom"
+					v-tippy="{ placement : 'right',  arrow: true }"
+					tabindex="-1"
+					:disabled="!!reactions[uid]"
+					@click="react()"
+			>
+					<span class="iconify" data-icon="mdi-dots-horizontal"></span>
+				</span>
+		</div>
+		<div v-if="gid !== OFFLINE_GID">
+			<button content="react" v-tippy @click="toggleReacter()" aria-label="make raction">
+				<span class="iconify" data-icon="mdi-chat"></span>
+			</button>
+		</div>
+		<div>
+			<button v-if="!isOnline" content="disconnected" v-tippy tabindex="-1">
+				<span class="iconify" data-icon="mdi-close-network"></span>
+			</button>
+			<label
+					v-if="isOnline"
+					v-for="u of users"
+					:key="u.name"
+			>
+				<button
+						@click="userClick(u.id, $event)"
+						:content="u.name" v-tippy
+						:aria-label="`${u.isMuted ? 'un': ''}mute ${u.name}`"
+				>
+						<span class="user-flags">
+							<!-- left -->
+							<span class="iconify flag self-muted" data-icon="mdi-microphone-off"
+								  v-if="u.isMe && u.isMuted"></span>
+							<span class="iconify flag mic" data-icon="mdi-microphone" v-if="u.hasMic"></span>
+							<!-- right -->
+							<span class="iconify flag muted" data-icon="mdi-volume-mute"
+								  v-if="!u.isMe && u.isMuted"></span>
+							<span class="iconify flag mod" data-icon="mdi-tie" v-else-if="u.isMod && u.avatar"></span>
+							<!-- bottom -->
+							<span class="iconify flag self" data-icon="mdi-dots-horizontal" v-if="u.id === uid"></span>
+						</span>
+					<span
+							v-if="!u.avatar"
+							class="user-icon"
+							:style="{'--color': userColor(u.id)}"
+							:data-uid="u.id"
+					>
+							<span class="iconify" data-icon="mdi-account-tie" v-if="u.id===0"></span>
+							<span class="iconify" data-icon="mdi-account-tie" v-else-if="u.isMod"></span>
+							<span class="iconify" data-icon="mdi-account" v-else></span>
+						</span>
+					<span
+							v-if="u.avatar"
+							class="user-avatar"
+							:data-uid="u.id"
+					>
+							<img :src="u.avatar" width="20px" height="24px"/>
+						</span>
+					<span v-if="reactions[u.id]" class="reaction">{{reactions[u.id]}}</span>
+				</button>
+			</label>
+		</div>
+	</div>
+	<div id="tabs" class="tabs">
+		<button
+				class="notab"
+				v-tippy content="share room link"
+				aria-label="share room link"
+				@click="showShareLink = true && !copied"
+				:disabled="myRooms.length >= 10"
+		>
+				<span
+						v-if="!copied"
+						class="iconify"
+						data-icon="mdi-link"
+				></span>
+			<span
+					v-else
+					class="iconify"
+					data-icon="mdi-clipboard-check-outline"
+			></span>
+		</button>
+		<button
+				:class="gid === 0 ? 'on' : ''"
+				v-tippy content="main room"
+				aria-label="main room"
+				@click="changeRoom(0)"
+				:data-user-dots="dotsOfRoom(0)"
+		>
+			<span class="iconify" data-icon="mdi-globe"></span>
+		</button>
+		<button
+				v-for="room of myRooms"
+				:key="room"
+				:class="gid === room ? 'on' : ''"
+				v-tippy :content="labelOfRoom(room)"
+				:aria-label="labelOfRoom(room)"
+				@click="changeRoom(room)"
+				:data-user-dots="dotsOfRoom(room)"
+		>
+			<span class="iconify" :data-icon="iconOfRoom(room)"></span>
+			<span
+					v-if="room !== gid && (myRooms.length >= 10 || !dotsOfRoom(room))"
+					class="close"
+					@click="removeRoom(room)"
+			>
+				 ×
+				</span>
+		</button>
+		<button
+				:class="gid === OFFLINE_GID ? 'on' : ''"
+				v-tippy content="offline room"
+				aria-label="go to offline room"
+				@click="changeRoom(-1)"
+		>
+			<span class="iconify" data-icon="mdi-lock"></span>
+		</button>
+		<button
+				class="notab"
+				v-tippy :content="myRooms.length >= 10 ? 'limit reached' : 'new empty room'"
+				aria-label="go to empty room"
+				@click="goToEmptyRoom()"
+				:disabled="myRooms.length >= 10"
+		>
+			<span class="iconify" data-icon="mdi-plus-thick"></span>
+		</button>
+	</div>
+	<prompt v-if="showRename" @submit="userRename" :val="showRename">
+		Your name
+	</prompt>
+	<prompt v-if="showCustomEmoji" @submit="react" :val="showCustomEmoji" single-char>
+		Insert custom emoji
+	</prompt>
+	<prompt v-if="showShareLink" @submit="copyUrl" :val="window.location.href">
+		Room link
+		<template v-slot:ok>copy</template>
+	</prompt>
+	<div id="links">
+			<span class="copy">
+				&copy; <a href="https://draho.cz/" rel="me">draho.cz</a>
+				<!-- &ensp;|&ensp;
+				<a href="#about">about</a>
+			</span> -->
+	</div>
+</footer>
+<div class="cinema-bar">
+	<button id="fullscreen" title="toggle fullscreen" data-placement="bottom">
+		<span class="iconify" data-icon="mdi-fullscreen"></span>
+		<span class="iconify" data-icon="mdi-fullscreen-exit" hidden></span>
+	</button>
+	<button id="cinema-off" title="close cinema mode" data-placement="bottom">
+		<span class="iconify" data-icon="mdi-close"></span>
+	</button>
+</div>
+<script> // render keyboard (moved from main, to speed up LCP)
+const allNotes = []
+allNotes.push("A0", "A#0", "B0")
+;[1, 2, 3, 4, 5, 6, 7].forEach(octave => {
+	"CDEFGAB".split('').forEach(letter => {
+		allNotes.push(`${letter}${octave}`)
+		if (letter !== 'E' && letter !== 'B') {
+			allNotes.push(`${letter}#${octave}`)
+		}
+	})
+})
+allNotes.push('C8')
+
+// create keys
+const keyboard = document.querySelector('.keyboard')
+const pianoroll = document.querySelector('.pianoroll')
+const noteToLabel = (note) => {
+	if (note.includes('#')) {
+		const [A, _, octave] = note.split('')
+		const aSharp = A + '♯'
+		const B = A === 'G' ? 'A' : String.fromCharCode(A.charCodeAt(0) + 1)
+		const bFlat = B + '♭'
+		return `<span>${aSharp}<sub>${octave}</sub></span></br><span>${bFlat}<sub>${octave}</sub></span>`
+	} else {
+		const [letter, octave] = note.split('')
+		return letter + `<sub>${octave}</sub>`
+	}
+}
+
+allNotes.forEach((note, i, { length }) => {
+	const key = document.createElement('button')
+	key.dataset.note = note
+	key.innerHTML = note.replace(/([A-G])(#?)(\d)/g, (note, n, s, i) =>
+			`<span>${noteToLabel(note)}</span>`
+	)
+	key.tabIndex = -1
+	keyboard.querySelector('.top-keys').appendChild(key)
+	const hue = 360 * ((i - 3) / (12))
+	key.style.setProperty('--key-hue', hue)
+	if (!note.includes('#')) {
+		const wideKey = key.cloneNode(true)
+		keyboard.querySelector('.bottom-keys').appendChild(wideKey)
+	}
+
+	const column = document.createElement('div')
+	column.dataset.note = note
+	column.style.setProperty('--key-hue', hue)
+	pianoroll.appendChild(column)
+})
+
+// init staff
+const staffBoxes = [...document.querySelectorAll('.staff')]
+const notes = [
+	[
+		'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4',
+		'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5',
+		'C6',
+	],
+	[
+		'C2', 'D2', 'E2', 'F2', 'G2', 'A2', 'B2',
+		'C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3',
+		'C4',
+	],
+]
+staffBoxes.forEach((staffBox, j) => {
+	const wholeNote = [...staffBox.children].pop()
+	notes[j].forEach((ch, i) => {
+		const hspace = 0.25
+		const hoffset = 3.6
+		const vspace = 0.125
+		const voffset = (j === 0 ? -0.125 : +0.125)
+		const note = wholeNote.cloneNode(true)
+		note.dataset.note = ch
+		note.style.top = (-i + 3) * vspace + voffset + 'em'
+		note.style.right = i * -hspace + hoffset + 'em'
+		staffBox.appendChild(note)
+
+		if (j === 0 ? ch === 'C6' : ch === "C4") return
+
+		const sharpNote = wholeNote.cloneNode(true)
+		sharpNote.innerHTML = `♯&thinsp;` + sharpNote.innerText
+		sharpNote.dataset.note = ch.split('').join('#')
+		sharpNote.style.top = (-i + 3) * vspace + voffset + 'em'
+		sharpNote.style.right = i * -hspace + hoffset + 'em'
+		staffBox.appendChild(sharpNote)
+	})
+	wholeNote.remove()
+})
+
+</script>
+<script>
+	// iframed mode
+	const $ = document.querySelector.bind(document)
+	if (window.parent !== window) { // frame
+		$('#home-link').target = "_blank"
+		document.body.classList.add('framed')
+
+		window.addEventListener('DOMContentLoaded', () => {
+			$('footer').insertBefore($('#arrows-app'), $('#tabs'))
+			$('footer').insertBefore($('#instrument-app'), $('#links'))
+		})
+
+
+		$('#tabs').remove()
+		$('#links').remove()
+		$('#midi').remove()
+		$('#toggle-velocity').remove()
+
+		$('#instrument-label').remove()
+
+		window.addEventListener('blur', () => {
+			document.body.classList.add('unfocused')
+		})
+		window.addEventListener('focus', () => {
+			document.body.classList.remove('unfocused')
+		})
+		window.focus()
+		document.body.addEventListener('mouseenter', () => {
+			window.focus()
+		})
+		document.body.addEventListener('mouseleave', () => {
+			window.blur()
+		})
+	}
+</script>
+</body>
+</html>
