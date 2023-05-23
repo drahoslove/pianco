@@ -175,10 +175,11 @@
 								<span v-else-if="instrument === 'none'" class="iconify" data-icon="mdi-dots-horizontal"></span>
 								<span v-else class="iconify" data-icon="mdi-music-note"></span>
 							</span>
-							<select id="instrument" name="instrument" hidden v-model="instrument" @click="changeInstrument">
-								<!-- <option value="sampledPiano"> piano</option>
+							<select id="instrument" name="instrument" hidden v-model="instrument"
+									@click="changeInstrument">
+								<option value="sampledPiano"> piano</option>
 								<option value="midiout" :hidden="!midiEnabled">MIDI out</option>
-								<option value="none" selected hidden>...</option> -->
+								<option value="none" selected hidden>...</option>
 							</select>
 						</label>
 						<label class="volume-label" title="volume" @wheel="scrollVolume" tabindex="0"
@@ -202,7 +203,7 @@
 						</label>
 					</div>
 				</div>
-		
+
 				<div id="arrows-app">
 					<button id="go-down" title="shift left" aria-label="shift octave down">
 						<span class="iconify" data-icon="mdi-chevron-left"></span>
@@ -214,8 +215,8 @@
 						<span class="iconify" data-icon="mdi-chevron-right"></span>
 					</button>
 				</div>
-		
-				<div id="recorder-app" v-cloak>
+
+				<div id="recorder-app">
 					<div
 						v-if="visible"
 						:class="{ isRecording, isPlaying }"
@@ -281,17 +282,19 @@
 					v-for="u of users"
 					:key="u.name"
 				>
-					<button		
-						@click="userClick(u.id, $event)"
-						:content="u.name" v-tippy
-						:aria-label="`${u.isMuted ? 'un': ''}mute ${u.name}`"
+					<button
+							@click="userClick(u.id, $event)"
+							:content="u.name" v-tippy
+							:aria-label="`${u.isMuted ? 'un': ''}mute ${u.name}`"
 					>
 						<span class="user-flags">
 							<!-- left -->
-							<span class="iconify flag self-muted" data-icon="mdi-microphone-off" v-if="u.isMe && u.isMuted"></span>
+							<span class="iconify flag self-muted" data-icon="mdi-microphone-off"
+								  v-if="u.isMe && u.isMuted"></span>
 							<span class="iconify flag mic" data-icon="mdi-microphone" v-if="u.hasMic"></span>
 							<!-- right -->
-							<span class="iconify flag muted" data-icon="mdi-volume-mute" v-if="!u.isMe && u.isMuted"></span>
+							<span class="iconify flag muted" data-icon="mdi-volume-mute"
+								  v-if="!u.isMe && u.isMuted"></span>
 							<span class="iconify flag mod" data-icon="mdi-tie" v-else-if="u.isMod && u.avatar"></span>
 							<!-- bottom -->
 							<span class="iconify flag self" data-icon="mdi-dots-horizontal" v-if="u.id === uid"></span>
@@ -395,7 +398,7 @@
 		<div id="links">
 			<span class="copy">
 				&copy; <a href="https://draho.cz/" rel="me">draho.cz</a>
-				<!-- &ensp;|&ensp; 
+				<!-- &ensp;|&ensp;
 				<a href="#about">about</a>
 			</span> -->
 		</div>
@@ -485,9 +488,9 @@ staffBoxes.forEach((staffBox, j) => {
 		note.style.top = (-i+3) * vspace + voffset  + 'em'
 		note.style.right = i * -hspace + hoffset + 'em'
 		staffBox.appendChild(note)
-	
+
 		if (j === 0 ? ch === 'C6' : ch === "C4") return
-	
+
 		const sharpNote = wholeNote.cloneNode(true)
 		sharpNote.innerHTML = `♯&thinsp;` + sharpNote.innerText
 		sharpNote.dataset.note = ch.split('').join('#')
@@ -505,15 +508,15 @@ const $ = document.querySelector.bind(document)
 if (window.parent !== window) { // frame
 	$('#home-link').target="_blank"
 	document.body.classList.add('framed')
-	
+
 	window.addEventListener('DOMContentLoaded', () => {
 		$('footer').insertBefore($('#arrows-app'), $('#tabs'))
 		$('footer').insertBefore($('#instrument-app'), $('#links'))
-	})
+
 
 	$('#tabs').remove()
 	$('#links').remove()
-	$('#midi').remove()
+	// $('#midi').remove()
 	$('#toggle-velocity').remove()
 
 	$('#instrument-label').remove()
