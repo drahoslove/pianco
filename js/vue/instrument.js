@@ -11,7 +11,7 @@ export const instrumentApp = new Vue({
     maxVolume: 100,
     stepVolume: 5,
     instrument: 'none',
-    midiEnabled: false,
+    midiEnabled: true,
     midiTooltip: 'MIDI in',
     isFramed: window.parent !== window,
   },
