@@ -7,6 +7,7 @@ export const recorderApp = new Vue({
     isPlaying: false,
     visible: true,
   },
+
   methods: {
     reset () {
       this.isRecording = false

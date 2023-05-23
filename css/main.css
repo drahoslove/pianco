@@ -16,7 +16,6 @@
 	opacity: 0;
 	transition: opacity 0.5s ease;
 }
-
 html body *[hidden=""],
 html body *[hidden="hidden"],
 html body *[hidden="true"]

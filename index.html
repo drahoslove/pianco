@@ -219,8 +219,7 @@
 				<div id="recorder-app">
 					<div
 						v-if="visible"
-						:class="{ isRecording, isPlaying }"
-					>
+						:class="{ isRecording, isPlaying }">
 						<button @click="toggleRecord"
 							v-tippy :content="(isRecording || isPlaying) ? 'stop' : 'record'"
 							:aria-label="(isRecording || isPlaying) ? 'stop' : 'record'"
