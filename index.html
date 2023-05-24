@@ -152,7 +152,7 @@
 				</div>
 			</div> <!-- end piano row -->
 			<div class="bar tool-bar"> <!-- tool bar row -->
-				<div id="instrument-app" class="tool-bar" v-cloak>
+				<div id="instrument-app" class="tool-bar">
 					<div v-if="midiEnabled && isFramed" class="midi-status-icon" v-tippy :content="midiTooltip" >
 						<span class="iconify" data-icon="mdi-midi"></span>
 					</div>
@@ -507,7 +507,7 @@ if (window.parent !== window) { // frame
 
 	$('#tabs').remove()
 	$('#links').remove()
-	$('#midi').remove()
+	// $('#midi').remove()
 	$('#toggle-velocity').remove()
 
 	$('#instrument-label').remove()
