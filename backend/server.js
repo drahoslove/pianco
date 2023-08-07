@@ -192,7 +192,7 @@ wss.on('connection', async function connection(ws) {
         return
       }
 
-      recorders[`${gid}`].pass(message) // pass message to recorder
+      recorders[`${gid}`]?.pass(message) // pass message to recorder (might not exist)
       echo(gid, uid, message) // <--- this is the most important
 
       // interrupt ghost:
@@ -424,16 +424,7 @@ wss.on('connection', async function connection(ws) {
       }
     })
     if (isLast && gid !== undefined && uid !== undefined) {
-      if (gid >= 0) {
-        autoplayers[`${gid}`].stop(uid)
-        recorders[`${gid}`].stop(uid)
-        groups[`${gid}`].delete(uid)
-      }
-      if (ws.secret in identities) {
-        identities[ws.secret].uid = undefined
-        identities[ws.secret].gid = undefined
-        identities[ws.secret].hasMic = false
-      }
+      wipeIdentity(ws.secret)
       console.log(`${uid}@${gid} => close`)
       wss.status()
     }
@@ -467,7 +458,33 @@ const healthInterval = setInterval(() => {
       }
     })
   })
+  // remove identities without opened socket - becasue ws.on('close', sometimes fails
+  Object.entries(identities).forEach((secret, identitiy) => {
+    const hasClient = false
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN && client.secret === secret) {
+        hasClient = true
+      }
+    })
+    if (hasClient) {
+      wipeIdentity(secret)
+    }
+  })
 }, 15000)
+
+function wipeIdentity (secret) {
+  const { gid, uid } = identities[secret] || {}
+  if (gid >= 0) {
+    autoplayers[`${gid}`].stop(uid)
+    recorders[`${gid}`].stop(uid)
+    groups[`${gid}`].delete(uid)
+  }
+  if (secret in identities) {
+    identities[secret].uid = undefined
+    identities[secret].gid = undefined
+    identities[secret].hasMic = false
+  }
+}
 
 wss.on('close', () => {
   clearInterval(healthInterval)
