@@ -1,7 +1,7 @@
 const { Midi } = require('@tonejs/midi')
 const fs = require('fs').promises
 const path = require('path')
-const fetch = import('node-fetch')
+const fetch = require('node-fetch')
 const { normalRand, rand } = require('./rand.js')
 const {
   CC_SUTAIN,
@@ -77,7 +77,7 @@ class Autoplay {
   }
 
 
-  requestHandler = (ws) => async (url) => {
+  requestHandler = (ws) => async (url, uid) => {
     console.log('midi autoplay requested', url)
     if (!(url in Autoplay.midis)) {
       const res = await fetch(url).catch(e => {
@@ -99,7 +99,7 @@ class Autoplay {
       fs.writeFile(filePath, midiFile) // save to midi cache
       console.log('file saved', filePath)
     }
-    this.askForTracks(Autoplay.midis[url], ws)
+    this.askForTracks(Autoplay.midis[url], ws, uid)
   }
 
   playTracks = (tracks, uid) => {
@@ -117,7 +117,7 @@ class Autoplay {
     }
   }
   
-  askForTracks = (midi, client) => {
+  askForTracks = (midi, client, uid) => {
     const tracksInfo = this.getTracks(midi)
       .map(({ instrument, notes }) => [instrument.number, notes.length].join(':'))
       .join(';')
@@ -134,7 +134,7 @@ class Autoplay {
       const selectedIndexes = selection.split(',').map(Number)
       const midi = Autoplay.midis[url]
       const selectedTracks = this.getTracks(midi).filter((_, i) => selectedIndexes.includes(i))
-      this.playTracks(selectedTracks, client.uid)
+      this.playTracks(selectedTracks, uid)
     })
   }
   

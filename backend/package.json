@@ -4,6 +4,9 @@
   "author": "Drahoslav Bednář",
   "license": "MIT",
   "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
@@ -11,7 +14,7 @@
   "dependencies": {
     "@tonejs/midi": "^2.0.22",
     "jsonwebtoken": "^9.0.0",
-    "node-fetch": "^3.2.10",
+    "node-fetch": "^2.6.12",
     "ws": "^7.4.6"
   }
 }

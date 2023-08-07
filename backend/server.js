@@ -5,8 +5,10 @@ const { rand } = require('./rand.js')
 const SERVER_KEY = process.env.SERVER_KEY || 'secret-server-key'
 const REMOTE_KEY = process.env.REMOTE_KEY || 'secret-remote-key'
 
+const CMD_NOTE_OFF = 0
 const CMD_NOTE_ON = 1
 const fromCmd = (cmd) => (cmd>>4) & 7
+const toVal = (x) => Math.round(x*127)
 
 const ROOT_SECRET = '0000000000000000'
 const ROOT_USR = 0
@@ -29,7 +31,17 @@ const autoplayers = {}
 
 const verify = (secret, key) => { // return null or identity from secret
   try {
-    return jwt.verify(secret, key)
+    const verified = jwt.verify(secret, key)
+    const n = key === SERVER_KEY ? 1000 : 1 // keys issues remotely has iat in ms instead of s
+    // const hour = n * 60 * 60 // server time is offset by 1 h, for some reason
+    const iat = verified.iat * n
+    const deadline = (Date.now() - (1000 * 60 * 15)) // older than 15min
+    const isTooOld = iat < deadline
+    if (isTooOld) {
+      console.log('tooOld', iat, deadline, iat - deadline)
+      return null
+    }
+    return verified
   } catch(e) {
     return null
   } 
@@ -184,8 +196,8 @@ wss.on('connection', async function connection(ws) {
       echo(gid, uid, message) // <--- this is the most important
 
       // interrupt ghost:
+      const [_, __, cmd] = new Uint8Array(message)
       if (gid === ROOT_GRP) { // gopiano also triggesr this
-        const [_, __, cmd] = new Uint8Array(message)
         if (fromCmd(cmd) === CMD_NOTE_ON) {
           // note on
           autoplayers[`${ROOT_GRP}`].resetGhost({
@@ -193,6 +205,14 @@ wss.on('connection', async function connection(ws) {
             stopCurrent: true,
             pretendScared: !isDirectApi,
           })
+        }
+      }
+      if (ws.secret in identities) {
+        if (fromCmd(cmd) === CMD_NOTE_ON) {
+          identities[ws.secret].lastNoteOnTime = Date.now()
+        }
+        if (fromCmd(cmd) === CMD_NOTE_OFF) {
+          identities[ws.secret].lastNoteOnTime = undefined
         }
       }
     }
@@ -374,7 +394,7 @@ wss.on('connection', async function connection(ws) {
         if (cmd === 'autoplayurl') {
           const [gid, uid] = values.map(Number)
           const url = values[2]
-          autoplayers[`${gid}`].requestHandler(ws)(url)
+          autoplayers[`${gid}`].requestHandler(ws)(url, uid)
         }
         if (cmd === 'playrandomfile') {
           const [gid, uid] = values.map(Number)
@@ -426,7 +446,7 @@ const healthInterval = setInterval(() => {
       return 
     }
     if (ws.isAlive === false) {
-      console.log(`ws.secret`, ws.secret)
+      // console.log(`ws.secret`, ws.secret)
       ws.terminate()
       return
     }
@@ -435,8 +455,19 @@ const healthInterval = setInterval(() => {
     ws.once('pong', () => {
       ws.isAlive = true
     })
+    Object.values(identities).forEach((iden) => { // cleanup
+      if (iden.lastNoteOnTime && iden.lastNoteOnTime < Date.now() - 1000 * 15) { // stucked for more than 12s
+        console.log('cealing up', iden.gid, iden.uid, iden.lastNoteOnTime)
+        for (let i=0; i<88; i++) { // unstuck all keys
+          echo(
+            iden.gid, iden.uid,
+            new Uint8Array([iden.gid, iden.uid, toCmd(CMD_NOTE_OFF), toVal(i)])
+          )
+        }
+      }
+    })
   })
-}, 30000)
+}, 15000)
 
 wss.on('close', () => {
   clearInterval(healthInterval)
