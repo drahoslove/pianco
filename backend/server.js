@@ -304,11 +304,13 @@ wss.on('connection', async function connection(ws) {
           console.error('no or invalid secret', secret)// invalid secret
           if (ws.secret) {
             ws.terminate()
+            wipeIdentity(secret)
             return console.error('cant change secret of ws.secret')
           }
           if (gid >= FIRST_EXTERNAL_GID) {
             // remote room must be accesed by remote signed secret only
             ws.terminate()
+            wipeIdentity(secret)
             return
           }
           secret = jwt.sign(identity, SERVER_KEY)
@@ -446,7 +448,8 @@ const healthInterval = setInterval(() => {
     ws.once('pong', () => {
       ws.isAlive = true
     })
-    Object.values(identities).forEach((iden) => { // cleanup
+    // cleanup stuck notes
+    Object.values(identities).forEach((iden) => {
       if (iden.lastNoteOnTime && iden.lastNoteOnTime < Date.now() - 1000 * 15) { // stucked for more than 12s
         console.log('cealing up', iden.gid, iden.uid, iden.lastNoteOnTime)
         for (let i=0; i<88; i++) { // unstuck all keys
@@ -455,18 +458,19 @@ const healthInterval = setInterval(() => {
             new Uint8Array([iden.gid, iden.uid, toCmd(CMD_NOTE_OFF), toVal(i)])
           )
         }
+        iden.lastNoteOnTime = undefined
       }
     })
   })
   // remove identities without opened socket - becasue ws.on('close', sometimes fails
-  Object.entries(identities).forEach((secret, identitiy) => {
-    const hasClient = false
+  Object.entries(identities).forEach(([secret, identitiy]) => {
+    let hasClient = false
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN && client.secret === secret) {
         hasClient = true
       }
     })
-    if (hasClient) {
+    if (!hasClient) {
       wipeIdentity(secret)
     }
   })
