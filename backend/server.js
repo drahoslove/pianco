@@ -477,8 +477,11 @@ const healthInterval = setInterval(() => {
 }, 15000)
 
 function wipeIdentity (secret) {
+  if (secret === ROOT_SECRET) { // never wipe root user
+    return
+  }
   const { gid, uid } = identities[secret] || {}
-  if (gid >= 0) {
+  if (gid !== undefined && gid >= 0) {
     autoplayers[`${gid}`].stop(uid)
     recorders[`${gid}`].stop(uid)
     groups[`${gid}`].delete(uid)
