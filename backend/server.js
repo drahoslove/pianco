@@ -183,6 +183,12 @@ wss.on('connection', async function connection(ws) {
     if (isDirectApi) { // assume gid=0 for gopiano
       gid = ROOT_GRP
       uid = ROOT_USR
+      if (message instanceof Buffer) {
+        const directGID = (new Uint8Array(message))[0]
+        if (directGID !== ROOT_GRP) {
+          gid = MAX_HASHABLE_GID + directGID
+        }
+      }
     }
 
     if (message instanceof Buffer) {

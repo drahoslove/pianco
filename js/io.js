@@ -189,7 +189,7 @@ const onRegroup = onCmd('regroup', (values) => {
   if (isFramed && newGid !== GID) { // regroup forbidden in frame
     return
   }
-  if (newGid !== GID && newGid > 141167095653375) {
+  if (newGid !== GID && newGid >= FIRST_EXTERNAL_GID) {
     // no regroup of hidden groups
     return
   }
