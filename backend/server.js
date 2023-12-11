@@ -180,20 +180,18 @@ wss.on('connection', async function connection(ws) {
     // common vars
     let { uid, gid } = identities[ws.secret] || { uid: undefined, gid: undefined}
     const isDirectApi = ws.secret === undefined 
-    if (isDirectApi) { // assume gid=0 for gopiano
-      gid = ROOT_GRP
-      uid = ROOT_USR
-      
-      if (message instanceof Buffer) {
-        if (isDirectApi) {
-          const array = new Uint8Array(message)
-          const [directGID] = array
-          if (directGID !== ROOT_GRP) { // 1 is actually mapped to 1 bigger tan should be 
-            // (so that the mod 256 would not be equal 0 - so it we need to subtract the 1 form the message
-            gid = MAX_HASHABLE_GID + directGID - 1
-            array[0]--
-            message = Buffer.from(array)
-          }
+
+    if (message instanceof Buffer) { // assume gid=0 for gopiano
+      if (isDirectApi) {
+        gid = ROOT_GRP
+        uid = ROOT_USR  
+        const array = new Uint8Array(message)
+        const [directGID] = array
+        if (directGID !== ROOT_GRP) { // 1 is actually mapped to 1 bigger tan should be 
+          // (so that the mod 256 would not be equal 0 - so it we need to subtract the 1 form the message
+          gid = MAX_HASHABLE_GID + directGID - 1
+          array[0]--
+          message = Buffer.from(array)
         }
       }
       const mic = Object.values(identities)
