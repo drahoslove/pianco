@@ -183,15 +183,19 @@ wss.on('connection', async function connection(ws) {
     if (isDirectApi) { // assume gid=0 for gopiano
       gid = ROOT_GRP
       uid = ROOT_USR
+      
       if (message instanceof Buffer) {
-        const directGID = (new Uint8Array(message))[0]
-        if (directGID !== ROOT_GRP) {
-          gid = MAX_HASHABLE_GID + directGID
+        if (isDirectApi) {
+          const array = new Uint8Array(message)
+          const [directGID] = array
+          if (directGID !== ROOT_GRP) { // 1 is actually mapped to 1 bigger tan should be 
+            // (so that the mod 256 would not be equal 0 - so it we need to subtract the 1 form the message
+            gid = MAX_HASHABLE_GID + directGID - 1
+            array[0]--
+            message = Buffer.from(array)
+          }
         }
       }
-    }
-
-    if (message instanceof Buffer) {
       const mic = Object.values(identities)
         .find(iden => iden.gid === gid && iden.hasMic)
       if (mic && mic.uid !== uid) { // do not propagate if someone not you has mic
