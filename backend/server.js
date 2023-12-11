@@ -189,7 +189,7 @@ wss.on('connection', async function connection(ws) {
         const [directGID] = array
         if (directGID !== ROOT_GRP) { // 1 is actually mapped to 1 bigger tan should be 
           // (so that the mod 256 would not be equal 0 - so it we need to subtract the 1 form the message
-          gid = MAX_HASHABLE_GID + directGID - 1
+          gid = FIRST_EXTERNAL_GID + directGID - 1
           array[0]--
           message = Buffer.from(array)
         }
