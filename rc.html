@@ -375,6 +375,15 @@ input.checkbox:checked::before {
           </ul>
         </div>
         <button
+          v-if="wsOut !== null"
+          id="togglewsout"
+          class="btn btn-lg btn-dark text-white-50"
+          title="toggle gopiano output"
+          @click="toggleWsout()"
+        >
+          <span :class="['mdi', { 'mdi-numeric-0-circle': !wsOut, 'mdi-numeric-1-circle': wsOut }]"></span>
+        </button>
+        <button
           id="midi-button"
           class="btn btn-lg btn-dark text-white-50"
           data-placement="left"

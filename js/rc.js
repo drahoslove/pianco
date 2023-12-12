@@ -1,13 +1,30 @@
 import * as R from "./roland.js"
 import * as Ptq from './pianoteq.js'
 import {
-  toCmd, fromCmd, toVal, fromVal, chanFromCmd,
+  toCmd, fromCmd, toVal, chanFromCmd,
   CMD_NOTE_ON, CMD_NOTE_OFF,
-  CMD_PROGRAM, CMD_CONTROL_CHANGE,
-  CC_BANK_0, CC_BANK_1, MID_C,
 } from './midi.js'
 
-const { instruments } = R
+
+const gopiano = new class GoPiano {
+  url = 'https://local.pian.co'
+  api = async (path, data) => {
+    try {
+      const res = await fetch(this.url + path, data && {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+      return await res.json()
+    } catch(e) {
+      return null
+    }
+  }
+  getWsout = async () => this.api('/wsout/get')
+  toggleWsout = async () => this.api('/wsout/toggle')
+}
 
 Vue.prototype.$log = console.log
 
@@ -77,6 +94,7 @@ const app = new Vue({
       dual: null,
       split: null
     },
+    wsOut: await gopiano.getWsout() ?? null,
   },
   methods: {
     setPage(page) {
@@ -197,8 +215,10 @@ const app = new Vue({
         timesig = SIGNATURES[i]
         await Ptq.api('setMetronome',{ timesig })
       }
-
       setTimeout(updateState, 50)
+    },
+    toggleWsout: async function(event) {
+      this.wsOut = await gopiano.toggleWsout()
     },
   }
 })
