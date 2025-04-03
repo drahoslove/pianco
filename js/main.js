@@ -251,23 +251,24 @@ midiEl.onclick = reloadMidi
 reloadMidi(true)
 
 
-function onMIDISuccess(isFrist) {
+function onMIDISuccess(isFirst) {
   return (midiAccess) => {
     const reconnectInputs = (e) => {
-      const input = [...midiAccess.inputs.values()]
+      const inputs = [...midiAccess.inputs.values()]
         .filter(input => !isBlacklistedDevice(input))
-        .find(input => input.state === 'connected')
-      if (!input) {
+        .filter(input => input.state === 'connected')
+      if (!inputs.length) {
         midiEl.className =  "none"
         instrumentApp.midiEnabled = false
         instrumentApp.midiTooltip = 'MIDI in: none'
       } else {
-        input.onmidimessage = handleMIDIMessage
-        instrumentApp.midiTooltip = `MIDI in: ${input.name}`
+        instrumentApp.midiTooltip = `MIDI in: ${inputs.map((i) => i.name).join("<br>")}`
         instrumentApp.midiEnabled = true
         midiEl.className = "on"
-        console.log('midi input connected', input.name)
-        
+        inputs.forEach((input) => {
+          input.onmidimessage = handleMIDIMessage
+          console.log('midi input connected', input.name)
+        })
       }
     }
     midiAccess.onstatechange = reconnectInputs
