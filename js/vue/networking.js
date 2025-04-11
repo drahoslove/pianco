@@ -62,7 +62,7 @@ export const networkingApp = new Vue({
     mods: [],
     mics: [],
     reactions: [],
-    muted: [{}],
+    muted: {0:{}},
     lastEmojis: (getStorage().lastEmojis || '').split(","),
     defaultEmojis: {
       '❤️': 'lovely',
