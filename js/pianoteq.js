@@ -55,7 +55,7 @@ export async function api(method, params=[]) {
 const groups = {
   "Grand Ant. Petrof": null,
   "Grand Petrof Mistral": null,
-  "Grand Bluethner": null,
+  "Grand Blüthner": null,
   "Grand C. Bechstein DG": null,
   "Other Pianos": [
     "Erard (1922)",
@@ -113,7 +113,11 @@ export async function fetchPresets() {
     .reduce((acc, [groupName, instrNames]) => {
       if (instrNames === null) {
         const instr = [...presets].find(({ name }) => name === groupName)
-        acc[groupName.replace('Grand ', '')] = instr.presets
+        if (instr) {
+          acc[groupName.replace('Grand ', '')] = instr.presets
+        } else {
+          console.warn(`Instrument ${groupName} not found`) // mismatch
+        }
       } else {
         acc[groupName] = instrNames
           .map(instrName => [...presets].find(({ name }) => name === instrName))
