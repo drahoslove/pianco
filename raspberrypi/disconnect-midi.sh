@@ -5,12 +5,16 @@
 # THIS file should be called after Roland piano is disconnected (turned off)
 # defined by rules in /etc/udev/rules.d/
 
-# put IPAddressAllow=127.0.0.1 to  /lib/systemd/system/udev.service to make this work from within 20-midi.rules
+# to make the curl work from within 20-midi.rules
+# put lines
+#  [Services]
+#  IPAddressAllow=127.0.0.1
+# to `sudo systemctl edit systemd-udevd.service`
 /usr/bin/curl http://127.0.0.1:1212/wled/off &
 
-service pianoteq stop
+/bin/systemctl stop pianoteq
 sleep 1
-service raspotify start
+/bin/systemctl start raspotify
 
 sleep 1
 

@@ -5,10 +5,14 @@
 # THIS file should be called after Roland piano is connected (turned on)
 # defined by rules in /etc/udev/rules.d/
 
-# put IPAddressAllow=127.0.0.1 to  /lib/systemd/system/udev.service to make this work from within 20-midi.rules
+# to make the curl work from within 20-midi.rules
+# put lines
+#  [Services]
+#  IPAddressAllow=127.0.0.1
+# to `sudo systemctl edit systemd-udevd.service`
 /usr/bin/curl http://127.0.0.1:1212/wled/on &
 
-service raspotify stop
+/bin/systemctl stop raspotify
 
 # `aconnect -l`
 # to check right values
@@ -16,14 +20,14 @@ service raspotify stop
 sleep 1
 
 # connect tablet with roland piano
-ROLAND=$( sudo aconnect -l  | grep Roland  | head -n 1 | awk '{ print $2 }' | sed 's/://' )
-ANDROID=$( sudo aconnect -l | grep Android | head -n 1 | awk '{ print $2 }' | sed 's/://' )
-GOPIANO=$( sudo aconnect -l | grep RtMidi  | head -n 1 | awk '{ print $2 }' | sed 's/://' )
+ROLAND=$( aconnect -l  | grep Roland  | head -n 1 | awk '{ print $2 }' | sed 's/://' )
+ANDROID=$( aconnect -l | grep Android | head -n 1 | awk '{ print $2 }' | sed 's/://' )
+GOPIANO=$( aconnect -l | grep RtMidi  | head -n 1 | awk '{ print $2 }' | sed 's/://' )
 aconnect $ANDROID:0 $ROLAND:0
 aconnect $ROLAND:0 $ANDROID:0
 aconnect $ROLAND:0 $GOPIANO:0
 
-service pianoteq start
+/bin/systemctl start pianoteq
 
 echo "Roland ON  `date +'%Y-%m-%d %H:%M:%S'`" >> /home/pi/roland.event.log
 
